@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>NextMind.Desktop.App</RootNamespace>
+    <AssemblyName>NextMindDesktop</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\nextmind.ico</ApplicationIcon>
+    <!-- Idle footprint: no background-GC thread, workstation GC. -->
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NextMind.Desktop.Core\NextMind.Desktop.Core.csproj" />
+    <ProjectReference Include="..\NextMind.Desktop.Shell\NextMind.Desktop.Shell.csproj" />
+  </ItemGroup>
+
+</Project>

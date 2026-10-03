@@ -1,0 +1,75 @@
+name: Bug report
+description: Something does not work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Do not post private data**: remove usernames, full local paths and file names from your real
+        Desktop in everything you paste or attach. Reproduce with throw-away files, never with files you cannot afford to lose.
+        For security vulnerabilities do **not** use this form — see SECURITY.md.
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      description: "Run `winver`, e.g. Windows 11 23H2 (build 22631)"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: NextMind Desktop version
+      description: "Version or commit you built from, e.g. v0.1.0 or a commit hash"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: managed
+    attributes:
+      label: Does the problem involve a Managed Item?
+      description: A Managed Item is a Desktop item that was moved into a zone (requires `ManagedDesktopMovesEnabled`).
+      options:
+        - "No - only references / zones / UI"
+        - "Yes - a Managed Item"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: data
+    attributes:
+      label: Was any data moved, renamed, overwritten or deleted unexpectedly?
+      options:
+        - "No"
+        - "Yes - moved or renamed"
+        - "Yes - overwritten or lost"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log excerpt (optional)
+      description: |
+        Relevant lines from `%LOCALAPPDATA%\NextMind\Desktop\logs\desktop.log`.
+        **Remove private data first** (usernames, paths, file names). If unsure, describe instead of pasting.
+      render: text
