@@ -1,0 +1,102 @@
+/* NextMind Desktop marketing graphics: shared look.
+   Direction: premium technology — deep navy, graphite, restrained blue accent, lots of space.
+   Palette is taken from the app itself (panel #181C24, accent #5AA9FF, muted #8C98A8). */
+:root {
+  --navy-950: #070b14;
+  --navy-900: #0a101c;
+  --navy-850: #0d1626;
+  --graphite: #1b2230;
+  --line: rgba(255, 255, 255, 0.09);
+  --text: #f0f4f8;
+  --muted: #8c98a8;
+  --soft: #c9d3e0;
+  --accent: #5aa9ff;
+  --accent-soft: #9ccbff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { background: var(--navy-950); }
+
+body {
+  font-family: "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.canvas {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(1100px 650px at 82% -12%, rgba(90, 169, 255, 0.17), transparent 62%),
+    radial-gradient(900px 600px at 6% 112%, rgba(90, 169, 255, 0.08), transparent 62%),
+    linear-gradient(180deg, var(--navy-850) 0%, var(--navy-900) 55%, #080d17 100%);
+}
+
+.abs { position: absolute; }
+
+.wordmark { font-weight: 600; letter-spacing: 0.01em; color: var(--text); }
+.wordmark span { color: var(--accent-soft); font-weight: 400; }
+
+h1 { font-weight: 600; letter-spacing: -0.022em; line-height: 1.04; }
+.accent {
+  background: linear-gradient(90deg, #cfe6ff 0%, #5aa9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub { color: var(--muted); font-weight: 400; letter-spacing: 0.002em; }
+.soft { color: var(--soft); }
+
+/* A real screenshot, framed: never edited, only placed and scaled. */
+.card {
+  position: absolute;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow:
+    0 34px 90px -24px rgba(0, 0, 0, 0.7),
+    0 0 130px -34px rgba(90, 169, 255, 0.28);
+}
+.card img { display: block; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--soft);
+  white-space: nowrap;
+}
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+.pill {
+  display: inline-block;
+  padding: 9px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(90, 169, 255, 0.45);
+  background: rgba(90, 169, 255, 0.1);
+  color: #cfe6ff;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kbd {
+  display: inline-block;
+  min-width: 1.9em;
+  padding: 0.18em 0.6em;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom-width: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-weight: 600;
+  text-align: center;
+}
+
+.note { color: rgba(140, 152, 168, 0.8); }
