@@ -7,6 +7,9 @@ public static class ForegroundWindow
 {
     public static long Current() => NativeMethods.GetForegroundWindow().ToInt64();
 
+    /// <summary>Class name of a window for diagnostics (never the title: titles can contain private text).</summary>
+    public static string Describe(long hwnd) => hwnd == 0 ? "none" : NativeMethods.GetClassName(new IntPtr(hwnd));
+
     /// <summary>Asks Windows to make the window the foreground one. Windows may refuse; the result says whether it did.</summary>
     public static bool TrySet(long hwnd) => hwnd != 0 && NativeMethods.SetForegroundWindow(new IntPtr(hwnd));
 }

@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
@@ -83,6 +83,21 @@ public partial class ZoneWindow : Window
             {
                 Repin();
             }
+            else if (!IsVisible)
+            {
+                CloseSearch();
+            }
+        };
+
+        // The user went to another window while the search box had the keyboard: the zone becomes inert again at once.
+        Deactivated += (_, _) =>
+        {
+            if (_textActivation)
+            {
+                _log.Info($"Search: zone deactivated; foreground moved to 0x{ForegroundWindow.Current():X} ({ForegroundWindow.Describe(ForegroundWindow.Current())}).");
+            }
+
+            EndTextActivation(restoreForeground: false);
         };
     }
 
@@ -236,6 +251,139 @@ public partial class ZoneWindow : Window
 
         Monitors.WriteRect(rectPointer, snapped);
         return true;
+    }
+
+    // ---------- search box (prototype B1: activation and text entry only) ----------
+
+    private bool _searchOpen;
+    private bool _textActivation;
+    private long _searchPrevious;
+
+    private void SearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_searchOpen)
+        {
+            CloseSearch();
+        }
+        else
+        {
+            OpenSearch();
+        }
+    }
+
+    /// <summary>A collapsed zone expands first (same direction logic as a normal expand), then the search bar opens and takes the keyboard.</summary>
+    public void OpenSearch()
+    {
+        if (_searchOpen || _hwnd == IntPtr.Zero)
+        {
+            return;
+        }
+
+        if (IsCollapsed)
+        {
+            ToggleCollapsed();
+        }
+
+        _searchOpen = true;
+        SearchBar.Visibility = Visibility.Visible;
+        BeginTextActivation();
+    }
+
+    /// <summary>Closes the bar, clears the box and gives the keyboard back. Safe to call at any time.</summary>
+    public void CloseSearch()
+    {
+        if (!_searchOpen)
+        {
+            return;
+        }
+
+        _searchOpen = false;
+        SearchBox.Clear();
+        SearchBar.Visibility = Visibility.Collapsed;
+        Keyboard.ClearFocus();
+        EndTextActivation(restoreForeground: true);
+    }
+
+    /// <summary>
+    /// A zone is inert (WS_EX_NOACTIVATE) so it can never take the keyboard. For the search box only: lift that flag, ask for the foreground
+    /// (allowed — the user just clicked this window) and focus the box. The z-order hook keeps the zone at desktop level even while it is active.
+    /// Windows may refuse the foreground change; then nothing is forced and the zone is made inert again.
+    /// </summary>
+    private void BeginTextActivation()
+    {
+        if (_hwnd == IntPtr.Zero || _textActivation)
+        {
+            return;
+        }
+
+        var self = _hwnd.ToInt64();
+        _searchPrevious = ForegroundWindow.Current();
+        DesktopLayer.SetNoActivate(_hwnd, false);
+        _textActivation = true;
+
+        var granted = ForegroundWindow.TrySet(self);
+        if (granted)
+        {
+            SearchBox.Focus();
+            Keyboard.Focus(SearchBox);
+        }
+
+        _log.Info($"Search: activation {(granted ? "granted" : "refused")}; foreground is zone={ForegroundWindow.Current() == self}, box has keyboard={SearchBox.IsKeyboardFocused}.");
+        if (!granted)
+        {
+            EndTextActivation(restoreForeground: false);
+        }
+    }
+
+    /// <summary>
+    /// Makes the zone inert again. The previous window gets the foreground back only if this zone still holds it —
+    /// if the user already moved on to another window, nothing is taken or given back.
+    /// </summary>
+    private void EndTextActivation(bool restoreForeground)
+    {
+        if (!_textActivation || _hwnd == IntPtr.Zero)
+        {
+            return;
+        }
+
+        _textActivation = false;
+        DesktopLayer.SetNoActivate(_hwnd, true);
+
+        var previous = _searchPrevious;
+        _searchPrevious = 0;
+        if (restoreForeground && MenuForeground.ShouldRestore(previous, _hwnd.ToInt64(), ForegroundWindow.Current()))
+        {
+            ForegroundWindow.TrySet(previous);
+        }
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        => SearchHint.Visibility = SearchBox.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            if (SearchBox.Text.Length > 0)
+            {
+                SearchBox.Clear();
+            }
+            else
+            {
+                CloseSearch();
+            }
+
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>Clicking the box after the zone went inert (the user had switched windows) takes the keyboard again.</summary>
+    private void SearchBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (!_textActivation)
+        {
+            BeginTextActivation();
+        }
     }
 
     // ---------- context-menu dismissal ----------
@@ -411,6 +559,7 @@ public partial class ZoneWindow : Window
 
     private void Collapse(RectPx expanded)
     {
+        CloseSearch(); // a collapsed zone has no search bar; this also makes the zone inert again
         _expandedHeightPx = expanded.Height;
         var shift = _autoShift;
         _autoShift = null;
@@ -879,6 +1028,7 @@ public partial class ZoneWindow : Window
     {
         SetDropHighlight(false);
         e.Handled = true;
+
 
         if (ZoneItemDrag.TryGet(e.Data, out var payload))
         {

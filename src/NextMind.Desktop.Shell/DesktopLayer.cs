@@ -85,6 +85,18 @@ public sealed class DesktopLayer
     }
 
     /// <summary>
+    /// Temporarily lets a zone take keyboard focus (the search box) or makes it inert again. The default for a zone is inert
+    /// (<c>WS_EX_NOACTIVATE</c>): clicking it never steals focus. Callers must restore it as soon as the text entry ends.
+    /// This changes activation only; the zone's desktop-level z-order is untouched (see <see cref="EnforceOnWindowPosChanging"/>).
+    /// </summary>
+    public static void SetNoActivate(IntPtr hwnd, bool noActivate)
+    {
+        var ex = NativeMethods.GetWindowLongPtr(hwnd, NativeMethods.GWL_EXSTYLE).ToInt64();
+        ex = noActivate ? ex | NativeMethods.WS_EX_NOACTIVATE : ex & ~NativeMethods.WS_EX_NOACTIVATE;
+        NativeMethods.SetWindowLongPtr(hwnd, NativeMethods.GWL_EXSTYLE, new IntPtr(ex));
+    }
+
+    /// <summary>
     /// Places the window directly above the desktop host. Returns false when the host cannot be found; in that case
     /// the window is left where Windows put it (a visible, ordinary-z-order window) — the safe fallback.
     /// </summary>

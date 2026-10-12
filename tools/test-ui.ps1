@@ -18,6 +18,7 @@
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -DryRun   # prepare + verify, start nothing
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1           # start the test instance
+  powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stress   # also seed two big zones (600 and 2000 dummy items)
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stop     # stop ONLY the test instance and re-verify production
 #>
 [CmdletBinding()]
@@ -25,6 +26,7 @@ param(
     [switch]$Build,
     [switch]$Stop,
     [switch]$DryRun,
+    [switch]$Stress,
     [string]$Exe
 )
 
@@ -136,6 +138,11 @@ if ((IsUnder $runDir $prodDir) -or (IsUnder $prodDir $runDir) -or ((Norm $cfgDir
 New-Item -ItemType Directory -Force -Path $cfgDir, $filesDir | Out-Null
 1..14 | ForEach-Object { Set-Content -Path (Join-Path $filesDir ("Test file $_.txt")) -Value "NextMind Desktop UI test file $_" }
 New-Item -ItemType Directory -Force -Path (Join-Path $filesDir 'Test folder') | Out-Null
+$stressDir = Join-Path $runDir 'stress'
+if ($Stress) {
+    New-Item -ItemType Directory -Force -Path $stressDir | Out-Null
+    1..2000 | ForEach-Object { [IO.File]::WriteAllText((Join-Path $stressDir ('Stress file {0:D4}{1}' -f $_, $(if ($_ % 7 -eq 0) { ' report.pdf' } else { '.txt' }))), 'x') }
+}
 
 # --- synthetic seed config (all geometry in physical pixels)
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -145,10 +152,11 @@ $s = $dpi / 96.0
 function Px([double]$dip) { [int][Math]::Round($dip * $s) }
 
 $files = Get-ChildItem $filesDir
-function NewItems([int]$count) {
+$stressFiles = if ($Stress) { Get-ChildItem $stressDir } else { @() }
+function NewItems([int]$count, $source = $files) {
     $list = @()
     $i = 0
-    foreach ($f in ($files | Select-Object -First $count)) {
+    foreach ($f in ($source | Select-Object -First $count)) {
         $i++
         $list += [ordered]@{
             id = [guid]::NewGuid().ToString('D'); kind = 'reference'; path = $f.FullName; name = $f.BaseName
@@ -157,11 +165,11 @@ function NewItems([int]$count) {
     }
     , $list
 }
-function NewZone([string]$title, [double]$xDip, [double]$yDip, [bool]$collapsed, [int]$items) {
+function NewZone([string]$title, [double]$xDip, [double]$yDip, [bool]$collapsed, [int]$items, $source = $files) {
     [ordered]@{
         id = [guid]::NewGuid().ToString('D'); title = $title
         x = $wa.X + (Px $xDip); y = $wa.Y + (Px $yDip); width = Px 320; height = Px 220
-        collapsed = $collapsed; dpi = $dpi; hidden = $false; sortMode = 'custom'; items = (NewItems $items)
+        collapsed = $collapsed; dpi = $dpi; hidden = $false; sortMode = 'custom'; items = (NewItems $items $source)
     }
 }
 $bottomY = ($wa.Height / $s) - 32 - 4 # collapsed title bar hugging the bottom edge of the work area
@@ -173,6 +181,10 @@ $zones = @(
     (NewZone 'TEST E overlap 1' 760 300 $false 6),
     (NewZone 'TEST F overlap 2' 800 370 $true 4)
 )
+if ($Stress) {
+    $zones += (NewZone 'TEST G 600 items' 1100 300 $false 600 $stressFiles)
+    $zones += (NewZone 'TEST H 2000 items' 1100 560 $false 2000 $stressFiles)
+}
 $config = [ordered]@{
     schemaVersion = 3; zonesVisible = $true; autostartDecided = $true; autostartEnabled = $false
     managedDesktopMovesEnabled = $false; zones = $zones

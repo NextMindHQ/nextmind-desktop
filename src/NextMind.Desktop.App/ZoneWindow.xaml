@@ -54,6 +54,27 @@
       </Style.Triggers>
     </Style>
 
+    <!-- Title-bar icon button (magnifier). A real Button: never takes focus, exposes Invoke to UI Automation. -->
+    <Style x:Key="ChromeIconButton" TargetType="Button">
+      <Setter Property="Width" Value="26" />
+      <Setter Property="Height" Value="22" />
+      <Setter Property="Focusable" Value="False" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bd" CornerRadius="5" Background="Transparent">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bd" Property="Background" Value="#33FFFFFF" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <Style x:Key="ItemContainer" TargetType="ListBoxItem">
       <Setter Property="Padding" Value="0" />
       <Setter Property="Margin" Value="0" />
@@ -114,6 +135,7 @@
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30" />
+        <RowDefinition Height="Auto" />
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
@@ -159,7 +181,13 @@
           </StackPanel>
 
           <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-            <Border x:Name="MinButton" Style="{StaticResource ChromeButton}" ToolTip="Collapse to title bar"
+            <Button x:Name="SearchButton" Style="{StaticResource ChromeIconButton}" ToolTip="Search in this zone"
+                    AutomationProperties.AutomationId="SearchButton" Click="SearchButton_Click">
+              <Grid Width="12" Height="12">
+                <Ellipse Width="8" Height="8" HorizontalAlignment="Left" VerticalAlignment="Top" Stroke="{StaticResource MutedBrush}" StrokeThickness="1.4" />
+                <Path Data="M7.4,7.4 L11,11" Stroke="{StaticResource MutedBrush}" StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+              </Grid>
+            </Button>            <Border x:Name="MinButton" Style="{StaticResource ChromeButton}" ToolTip="Collapse to title bar"
                     MouseLeftButtonDown="MinButton_MouseLeftButtonDown">
               <Path Data="M0,0 L10,0" Stroke="{StaticResource MutedBrush}" StrokeThickness="1.4"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6,0,0" />
@@ -173,8 +201,21 @@
         </Grid>
       </Border>
 
+      <!-- Search bar (prototype B1: text entry + activation only; filtering comes in B2). -->
+      <Border x:Name="SearchBar" Grid.Row="1" Visibility="Collapsed" Height="26" Margin="6,5,6,0" Padding="8,0,6,0"
+              Background="#22FFFFFF" CornerRadius="6">
+        <Grid>
+          <TextBlock x:Name="SearchHint" Text="Search in this zone" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                     IsHitTestVisible="False" VerticalAlignment="Center" />
+          <TextBox x:Name="SearchBox" AutomationProperties.AutomationId="SearchBox" Background="Transparent" BorderThickness="0"
+                   Foreground="{StaticResource TextBrush}" CaretBrush="{StaticResource TextBrush}" FontSize="12" MaxLength="80"
+                   VerticalContentAlignment="Center" Padding="0"
+                   TextChanged="SearchBox_TextChanged" PreviewKeyDown="SearchBox_PreviewKeyDown"
+                   PreviewMouseLeftButtonDown="SearchBox_PreviewMouseLeftButtonDown" />
+        </Grid>
+      </Border>
       <!-- Items: wrap grid, left-to-right then down; the column count follows the width; scrolls vertically. -->
-      <Grid x:Name="ContentArea" Grid.Row="1" AllowDrop="True">
+      <Grid x:Name="ContentArea" Grid.Row="2" AllowDrop="True">
         <TextBlock x:Name="EmptyHint" Text="Drop files, folders or shortcuts here" FontSize="12"
                    Foreground="{StaticResource MutedBrush}" Opacity="0.6" IsHitTestVisible="False"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
@@ -192,14 +233,14 @@
       </Grid>
 
       <!-- Resize handles (hidden while collapsed). -->
-      <Thumb x:Name="RightGrip" Grid.Row="1" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
+      <Thumb x:Name="RightGrip" Grid.Row="2" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
              Width="6" Margin="0,0,0,14" Cursor="SizeWE" DragDelta="RightGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
-      <Thumb x:Name="BottomGrip" Grid.Row="1" Style="{StaticResource GripThumb}" VerticalAlignment="Bottom"
+      <Thumb x:Name="BottomGrip" Grid.Row="2" Style="{StaticResource GripThumb}" VerticalAlignment="Bottom"
              Height="6" Margin="0,0,14,0" Cursor="SizeNS" DragDelta="BottomGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
-      <Thumb x:Name="CornerGrip" Grid.Row="1" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
+      <Thumb x:Name="CornerGrip" Grid.Row="2" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
              VerticalAlignment="Bottom" Width="14" Height="14" Cursor="SizeNWSE"
              DragDelta="CornerGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
-      <Path x:Name="CornerMark" Grid.Row="1" Data="M10,2 L2,10 M10,6 L6,10" Stroke="{StaticResource MutedBrush}"
+      <Path x:Name="CornerMark" Grid.Row="2" Data="M10,2 L2,10 M10,6 L6,10" Stroke="{StaticResource MutedBrush}"
             StrokeThickness="1" Opacity="0.6" Width="12" Height="12" HorizontalAlignment="Right"
             VerticalAlignment="Bottom" Margin="0,0,3,3" IsHitTestVisible="False" />
     </Grid>
