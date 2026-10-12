@@ -107,13 +107,19 @@ if (Test-Path $stateFile) {
 }
 
 if (-not $Exe) { $Exe = Join-Path $root 'src\NextMind.Desktop.App\bin\Release\net8.0-windows10.0.19041.0\NextMindDesktop.exe' }
-if ($Build -or -not (Test-Path $Exe)) {
-    Write-Host 'Building (Release, into bin\ only)...'
-    Push-Location $root
-    try { dotnet build src\NextMind.Desktop.App -c Release --nologo -v q | Out-Null; if ($LASTEXITCODE -ne 0) { Abort 'Build failed.' } } finally { Pop-Location }
-}
+# Always build (incremental, into bin\ only): the test project does not reference the App project, so a green `dotnet test`
+# says nothing about the App binaries. A stale exe lacks the isolation code and would talk to the production instance.
+Write-Host 'Building the App (Release, into bin\ only)...'
+Push-Location $root
+try { dotnet build src\NextMind.Desktop.App -c Release --nologo -v q | Out-Null; if ($LASTEXITCODE -ne 0) { Abort 'Build failed.' } } finally { Pop-Location }
 if (-not (Test-Path $Exe)) { Abort "Test exe not found: $Exe" }
 $Exe = Norm $Exe
+
+# Refuse a binary older than the sources it should contain.
+$exeTime = (Get-Item $Exe).LastWriteTime
+$newest = Get-ChildItem (Join-Path $root 'src') -Recurse -Include *.cs, *.xaml -File |
+    Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if ($newest -and $newest.LastWriteTime -gt $exeTime) { Abort "The exe ($exeTime) is older than $($newest.Name) ($($newest.LastWriteTime)). Build did not pick up the sources." }
 if (IsUnder $Exe $prodDir) { Abort "The exe lives inside the production folder ($prodDir). Refusing." }
 if ((Norm $Exe) -ieq (Norm $prodExe)) { Abort 'The exe is the production exe. Refusing.' }
 
@@ -213,9 +219,15 @@ Write-Host "Started TEST instance PID $($proc.Id) from $Exe"
 $logOk = $false
 for ($i = 0; $i -lt 40 -and -not $logOk; $i++) {
     Start-Sleep -Milliseconds 500
-    if ($proc.HasExited) { Write-Host "FAIL: test instance exited with code $($proc.ExitCode). Check $cfgDir\logs." -ForegroundColor Red; break }
+    if ($proc.HasExited) { Write-Host "FAIL: test instance exited with code $($proc.ExitCode). Check $cfgDir\logs." -ForegroundColor Red; $null = Test-ProdUnchanged $baseline; exit 2 }
     $log = Get-ChildItem (Join-Path $cfgDir 'logs') -Filter *.log -ErrorAction SilentlyContinue | Select-Object -First 1
     if ($log) { $text = Get-Content $log.FullName -Raw -ErrorAction SilentlyContinue; $logOk = $text -match 'Cold start' }
+}
+if (-not $logOk) {
+    Write-Host 'FAIL: the test instance did not report a clean start within 20 s. Stopping it (only that process).' -ForegroundColor Red
+    Stop-Process -Id $proc.Id -ErrorAction SilentlyContinue
+    $null = Test-ProdUnchanged $baseline
+    exit 2
 }
 if ($logOk) {
     $lines = $text -split "`r?`n" | Where-Object { $_ -match 'Config:|Managed Desktop Moves|Development run|Tray icon added|Cold start' }
