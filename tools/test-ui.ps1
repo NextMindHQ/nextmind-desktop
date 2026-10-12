@@ -19,6 +19,7 @@
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -DryRun   # prepare + verify, start nothing
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1           # start the test instance
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stress   # also seed two big zones (600 and 2000 dummy items)
+  powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Reuse    # restart on the PREVIOUS test config (save -> restart checks)
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stop     # stop ONLY the test instance and re-verify production
 #>
 [CmdletBinding()]
@@ -27,6 +28,7 @@ param(
     [switch]$Stop,
     [switch]$DryRun,
     [switch]$Stress,
+    [switch]$Reuse,
     [string]$Exe
 )
 
@@ -133,8 +135,16 @@ $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $runDir = Join-Path $testBase "run-$stamp"
 $cfgDir = Join-Path $runDir 'config'
 $filesDir = Join-Path $runDir 'files'
+if ($Reuse) {
+    # Restart on the config the previous test run left behind (it may have been re-saved by the app), instead of a fresh seed.
+    if (-not (Test-Path $stateFile)) { Abort 'No previous test run to reuse (state.json missing).' }
+    $cfgDir = (Get-Content $stateFile -Raw | ConvertFrom-Json).ConfigDir
+    $runDir = Split-Path $cfgDir -Parent
+    if (-not (IsUnder $cfgDir $testBase) -or -not (Test-Path (Join-Path $cfgDir 'config.json'))) { Abort 'The previous test config is missing or outside the test folder.' }
+}
 if (-not (IsUnder $runDir $env:TEMP)) { Abort 'Test folder is not under %TEMP%.' }
 if ((IsUnder $runDir $prodDir) -or (IsUnder $prodDir $runDir) -or ((Norm $cfgDir) -ieq (Norm $prodDir))) { Abort 'Test config folder overlaps the production folder.' }
+if (-not $Reuse) {
 New-Item -ItemType Directory -Force -Path $cfgDir, $filesDir | Out-Null
 1..14 | ForEach-Object { Set-Content -Path (Join-Path $filesDir ("Test file $_.txt")) -Value "NextMind Desktop UI test file $_" }
 New-Item -ItemType Directory -Force -Path (Join-Path $filesDir 'Test folder') | Out-Null
@@ -192,10 +202,11 @@ $config = [ordered]@{
 $json = $config | ConvertTo-Json -Depth 8
 [IO.File]::WriteAllText((Join-Path $cfgDir 'config.json'), $json, (New-Object Text.UTF8Encoding($false)))
 Write-Host "Seed config: $cfgDir\config.json ($($zones.Count) synthetic zones, dummy files in $filesDir)"
+} else { Write-Host "Reusing the previous test config: $cfgDir\config.json" }
 
 # --- warn when test zones would sit on top of the real zones (read-only look at the production config)
 $prodCfg = Join-Path $prodDir 'config.json'
-if (Test-Path $prodCfg) {
+if ((-not $Reuse) -and (Test-Path $prodCfg)) {
     try {
         $real = (Get-Content $prodCfg -Raw | ConvertFrom-Json).zones
         foreach ($t in $zones) {

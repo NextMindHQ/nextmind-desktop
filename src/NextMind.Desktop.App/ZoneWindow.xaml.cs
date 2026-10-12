@@ -621,11 +621,14 @@ public partial class ZoneWindow : Window
 
     private void ApplyConfigGeometry()
     {
-        var wanted = new RectPx(_config.X, _config.Y, _config.Width, _config.Height);
-        var rect = ZoneGeometry.ClampToWorkAreas(wanted, Monitors.GetWorkAreas());
+        // A collapsed zone is only its title bar: only the bar is clamped to the screen (at the DPI it was saved at), so a zone the user
+        // left near the bottom edge keeps its position; the remembered expanded height is kept for the next expand.
+        var saved = new RectPx(_config.X, _config.Y, _config.Width, _config.Height);
+        var restored = ZoneGeometry.RestoreBounds(
+            saved, _config.Collapsed, ZoneGeometry.CollapsedHeightPx(CollapsedHeightDip, _config.Dpi), Monitors.GetWorkAreas());
 
-        _expandedHeightPx = rect.Height;
-        Monitors.SetWindowBounds(_hwnd, rect);
+        _expandedHeightPx = restored.ExpandedHeight;
+        Monitors.SetWindowBounds(_hwnd, restored.Visible);
 
         if (_config.Collapsed)
         {
