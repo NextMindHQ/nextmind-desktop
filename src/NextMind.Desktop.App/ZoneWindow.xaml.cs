@@ -9,6 +9,7 @@ using System.Windows.Media;
 using NextMind.Desktop.Core.Config;
 using NextMind.Desktop.Core.Geometry;
 using NextMind.Desktop.Core.Logging;
+using NextMind.Desktop.Core.Search;
 using NextMind.Desktop.Core.Ui;
 using NextMind.Desktop.Shell;
 
@@ -29,6 +30,7 @@ public partial class ZoneWindow : Window
     private const double MinWidthDip = 160;
     private const double MinHeightDip = 80;
     private const double IconDip = 32;
+    private const string EmptyDropText = "Drop files, folders or shortcuts here";
     private const uint WM_WINDOWPOSCHANGING = 0x0046;
     private const int WM_MOVING = 0x0216;
     private const int WM_EXITSIZEMOVE = 0x0232;
@@ -253,11 +255,16 @@ public partial class ZoneWindow : Window
         return true;
     }
 
-    // ---------- search box (prototype B1: activation and text entry only) ----------
+    // ---------- in-zone search ----------
 
     private bool _searchOpen;
     private bool _textActivation;
     private long _searchPrevious;
+    private bool _filterActive;
+    private int _visibleMatches;
+
+    /// <summary>True while the search box holds a query; the zone then shows only matching tiles and manual reordering is off.</summary>
+    private bool IsFiltering => _filterActive;
 
     private void SearchButton_Click(object sender, RoutedEventArgs e)
     {
@@ -358,22 +365,132 @@ public partial class ZoneWindow : Window
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        => SearchHint.Visibility = SearchBox.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+    {
+        var empty = SearchBox.Text.Length == 0;
+        SearchHint.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        SearchClear.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+        ApplyFilter();
+    }
+
+    /// <summary>
+    /// Shows only the tiles matching the query (every word, ignoring case and Polish letters), in the zone's own order. A pure VIEW change:
+    /// tiles are hidden through their container style (layout only — a collection-view filter rebuilt every container per key), the
+    /// configuration, item order, icons and files are never touched. Clearing the query shows everything again.
+    /// </summary>
+    private void ApplyFilter()
+    {
+        var wasActive = _filterActive;
+        var words = ZoneSearch.Words(SearchBox.Text);
+        _filterActive = words.Count > 0;
+
+        var visible = 0;
+        ItemViewModel? first = null;
+        foreach (var item in _items)
+        {
+            var hide = _filterActive && !ZoneSearch.Matches(item.SearchKey, words);
+            item.IsFilteredOut = hide;
+            if (!hide)
+            {
+                visible++;
+                first ??= item;
+            }
+        }
+
+        _visibleMatches = visible;
+
+        if (ItemsList.SelectedItem is ItemViewModel { IsFilteredOut: true })
+        {
+            ItemsList.SelectedItem = null;
+        }
+
+        if (_filterActive && ItemsList.SelectedItem is null && first is not null)
+        {
+            ItemsList.SelectedItem = first; // the result Enter would open
+            ItemsList.ScrollIntoView(first);
+        }
+        else if (!_filterActive && wasActive)
+        {
+            ItemsList.SelectedItem = null;
+        }
+
+        UpdateEmptyHint();
+    }
+
+    /// <summary>Up/Down walk the visible results in order; the first press selects the first (Down) or last (Up) result.</summary>
+    private void MoveSelection(int delta)
+    {
+        var visible = _items.Where(i => !i.IsFilteredOut).ToList();
+        if (visible.Count == 0)
+        {
+            return;
+        }
+
+        var index = ItemsList.SelectedItem is ItemViewModel current ? visible.IndexOf(current) : -1;
+        var next = index < 0 ? (delta > 0 ? 0 : visible.Count - 1) : Math.Clamp(index + delta, 0, visible.Count - 1);
+        ItemsList.SelectedItem = visible[next];
+        ItemsList.ScrollIntoView(visible[next]);
+    }
+
+    /// <summary>Enter opens the selected result, or the first match. With no query and no selection nothing is opened.</summary>
+    private void OpenSelectedResult()
+    {
+        var target = ItemsList.SelectedItem is ItemViewModel { IsFilteredOut: false } selected
+            ? selected
+            : _filterActive ? _items.FirstOrDefault(i => !i.IsFilteredOut) : null;
+        if (target is not null)
+        {
+            OpenItem(target);
+        }
+    }
+
+    /// <summary>The ✕ inside the field: clears the whole query in one click and keeps typing possible.</summary>
+    private void SearchClear_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        SearchBox.Clear();
+        if (!_textActivation)
+        {
+            BeginTextActivation();
+        }
+        else
+        {
+            SearchBox.Focus();
+        }
+
+        e.Handled = true;
+    }
 
     private void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Escape)
+        switch (e.Key)
         {
-            if (SearchBox.Text.Length > 0)
-            {
-                SearchBox.Clear();
-            }
-            else
-            {
-                CloseSearch();
-            }
+            case Key.Escape:
+                // First Esc clears the query, the next one closes the bar.
+                if (SearchBox.Text.Length > 0)
+                {
+                    SearchBox.Clear();
+                }
+                else
+                {
+                    CloseSearch();
+                }
 
-            e.Handled = true;
+                e.Handled = true;
+                break;
+
+            case Key.Down:
+                MoveSelection(+1);
+                e.Handled = true;
+                break;
+
+            case Key.Up:
+                MoveSelection(-1);
+                e.Handled = true;
+                break;
+
+            case Key.Enter:
+                OpenSelectedResult();
+                e.Handled = true;
+                break;
         }
     }
 
@@ -639,7 +756,17 @@ public partial class ZoneWindow : Window
     }
 
     private void UpdateEmptyHint()
-        => EmptyHint.Visibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    {
+        if (_filterActive)
+        {
+            EmptyHint.Text = $"No matches for “{SearchBox.Text.Trim()}”";
+            EmptyHint.Visibility = _visibleMatches == 0 ? Visibility.Visible : Visibility.Collapsed;
+            return;
+        }
+
+        EmptyHint.Text = EmptyDropText;
+        EmptyHint.Visibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     /// <summary>
     /// Makes the displayed grid match the configuration (membership, custom order and sort mode). Existing tiles are reused, so icons do not reload.
@@ -670,6 +797,11 @@ public partial class ZoneWindow : Window
             {
                 _items.Move(existing, i);
             }
+        }
+
+        if (_filterActive)
+        {
+            ApplyFilter(); // new tiles start visible; keep the active filter consistent
         }
     }
 
@@ -887,6 +1019,12 @@ public partial class ZoneWindow : Window
 
     private void Items_PreviewMouseMove(object sender, MouseEventArgs e)
     {
+        if (IsFiltering)
+        {
+            _dragCandidate = null; // reordering by drag needs the full list; it is off while a filter is active
+            return;
+        }
+
         if (e.LeftButton != MouseButtonState.Pressed || _dragCandidate is null || _dragStart is null)
         {
             _dragCandidate = null;
@@ -1013,7 +1151,11 @@ public partial class ZoneWindow : Window
         {
             e.Effects = ZoneItemDrag.InternalEffect; // configuration-only drag between/inside zones
             SetDropHighlight(false);
-            ShowDropIndicator(ComputeInsertIndex(e.GetPosition(ItemsList)));
+            if (!_filterActive)
+            {
+                ShowDropIndicator(ComputeInsertIndex(e.GetPosition(ItemsList)));
+            }
+
             return;
         }
 
@@ -1029,6 +1171,11 @@ public partial class ZoneWindow : Window
         SetDropHighlight(false);
         e.Handled = true;
 
+        if (_filterActive)
+        {
+            SearchBox.Clear(); // a drop shows the whole list again: the new item must be visible and indexes must match the tiles
+            ItemsList.UpdateLayout();
+        }
 
         if (ZoneItemDrag.TryGet(e.Data, out var payload))
         {

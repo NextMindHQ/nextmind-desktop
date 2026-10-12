@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
 using NextMind.Desktop.Core.Config;
+using NextMind.Desktop.Core.Search;
 
 namespace NextMind.Desktop.App;
 
@@ -25,6 +26,19 @@ public sealed class ItemViewModel(ItemConfig config) : INotifyPropertyChanged
     public string Name => Config.Name;
 
     public bool IsManaged => Config.Kind == ItemKind.Managed;
+
+    private string? _searchKey;
+    private bool _isFilteredOut;
+
+    /// <summary>Normalised searchable text, computed once per tile (the name never changes while the tile exists).</summary>
+    public string SearchKey => _searchKey ??= ZoneSearch.BuildKey(Name, Path);
+
+    /// <summary>True while an in-zone search hides this tile. A view flag only: nothing in the configuration changes.</summary>
+    public bool IsFilteredOut
+    {
+        get => _isFilteredOut;
+        set => Set(ref _isFilteredOut, value, nameof(IsFilteredOut));
+    }
 
     public ImageSource? Icon
     {
