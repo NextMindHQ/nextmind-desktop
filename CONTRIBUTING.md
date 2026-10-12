@@ -21,6 +21,10 @@ dotnet test -c Release
 
 Product projects build with **warnings as errors**; the build must stay at 0 warnings and 0 errors, and all tests must pass.
 
+To try the app while you work on it, **use the isolated test instance** (`tools\test-ui.ps1`): it has its own config, its own single-instance lock, never touches
+the "Start with Windows" entry and never moves real files. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). Do not use `tools\start.ps1` / `tools\stop.ps1` for experiments
+(they act on an installed copy). Maintainers: see the [release checklist](docs/RELEASE-CHECKLIST.md).
+
 ## Filesystem safety rules (hard rules)
 
 1. **Never run destructive operations against your real Desktop, Documents, Pictures or OneDrive** — not in tests, not while debugging, not "just once".

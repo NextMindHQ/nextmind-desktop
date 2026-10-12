@@ -21,6 +21,7 @@
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stress   # also seed two big zones (600 and 2000 dummy items)
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Reuse    # restart on the PREVIOUS test config (save -> restart checks)
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -ManyZones # also 36 small collapsed zones (a long "Move to Zone" list); do not combine with -Stress
+  powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Demo     # a tidy, fully synthetic layout (neutral names, sample files) for documentation screenshots
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stop     # stop ONLY the test instance and re-verify production
 #>
 [CmdletBinding()]
@@ -31,6 +32,7 @@ param(
     [switch]$Stress,
     [switch]$Reuse,
     [switch]$ManyZones,
+    [switch]$Demo,
     [string]$Exe
 )
 
@@ -163,6 +165,17 @@ $g = [System.Drawing.Graphics]::FromHwnd([IntPtr]::Zero); $dpi = [int]$g.DpiX; $
 $s = $dpi / 96.0
 function Px([double]$dip) { [int][Math]::Round($dip * $s) }
 
+$demoDir = Join-Path $runDir 'demo'
+if ($Demo -and -not $Reuse) {
+    # Fully synthetic demo content: neutral names, empty sample files and folders, shortcuts to Windows' own tools only.
+    New-Item -ItemType Directory -Force -Path $demoDir | Out-Null
+    foreach ($n in 'Project Notes', 'Meeting Agenda', 'Budget Plan', 'Reading List', 'Travel Checklist', 'Release Notes', 'Weekly Review', 'Ideas') { Set-Content -Path (Join-Path $demoDir "$n.txt") -Value "Sample file: $n" }
+    foreach ($n in 'Reports', 'Photos', 'Archive', 'Templates', 'Downloads', 'Samples') { New-Item -ItemType Directory -Force -Path (Join-Path $demoDir $n) | Out-Null }
+    $shell = New-Object -ComObject WScript.Shell
+    foreach ($app in @(@('Notepad', 'notepad.exe'), @('Calculator', 'calc.exe'), @('Paint', 'mspaint.exe'), @('Command Prompt', 'cmd.exe'))) {
+        $lnk = $shell.CreateShortcut((Join-Path $demoDir "$($app[0]).lnk")); $lnk.TargetPath = Join-Path $env:SystemRoot "System32\$($app[1])"; $lnk.Save()
+    }
+}
 $files = Get-ChildItem $filesDir
 $stressFiles = if ($Stress) { Get-ChildItem $stressDir } else { @() }
 function NewItems([int]$count, $source = $files) {
@@ -208,6 +221,20 @@ if ($ManyZones) {
 if ($Stress) {
     $zones += (NewZone 'TEST G 600 items' 1100 300 $false 600 $stressFiles)
     $zones += (NewZone 'TEST H 2000 items' 1100 560 $false 2000 $stressFiles)
+}
+if ($Demo) {
+    function Em([int]$cp) { [char]::ConvertFromUtf32($cp) }  # code points, so the script file stays plain ASCII
+    function DemoItems([string[]]$names) { @(foreach ($n in $names) { Get-ChildItem $demoDir | Where-Object { $_.BaseName -eq $n } | Select-Object -First 1 }) }
+    $zones = @(
+        (NewZone "$(Em 0x1F4C1) Documents" 60 280 $false 99 (DemoItems 'Project Notes', 'Meeting Agenda', 'Budget Plan', 'Reading List', 'Travel Checklist', 'Release Notes')),
+        (NewZone "$(Em 0x1F5C2) Projects" 400 280 $false 99 (DemoItems 'Reports', 'Photos', 'Archive', 'Templates', 'Downloads', 'Samples')),
+        (NewZone "$(Em 0x1F6E0) Utilities" 740 280 $false 99 (DemoItems 'Notepad', 'Calculator', 'Paint', 'Command Prompt')),
+        (NewZone "$(Em 0x2B50) Favorites" 1080 280 $false 99 (DemoItems 'Project Notes', 'Photos', 'Notepad', 'Reports', 'Calculator', 'Ideas')),
+        (NewZone "$(Em 0x1F9F3) Travel" 60 560 $true 99 (DemoItems 'Travel Checklist', 'Photos')),
+        (NewZone "$(Em 0x1F4A1) Ideas" 400 560 $true 99 (DemoItems 'Ideas', 'Weekly Review')),
+        (NewZone "$(Em 0x1F4DA) Reading" 740 560 $true 99 (DemoItems 'Reading List')),
+        (NewZone "$(Em 0x1F3B5) Music" 1080 560 $true 99 (DemoItems 'Samples'))
+    )
 }
 $config = [ordered]@{
     schemaVersion = 3; zonesVisible = $true; autostartDecided = $true; autostartEnabled = $false
