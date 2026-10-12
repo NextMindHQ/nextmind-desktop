@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,6 +7,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
+using NextMind.Desktop.Core;
 using NextMind.Desktop.Core.Config;
 using NextMind.Desktop.Core.Geometry;
 using NextMind.Desktop.Core.Logging;
@@ -77,6 +80,7 @@ public partial class ZoneWindow : Window
         ContextMenuService.SetPlacement(TitleBar, PlacementMode.Custom);
         TitleBar.ContextMenu.CustomPopupPlacementCallback = (popup, _, _) => PlaceMenu(TitleBar.ContextMenu, popup);
         TitleBar.ContextMenuOpening += (_, _) => PrepareMenuForDismissal(TitleBar.ContextMenu);
+        UseSmartSubmenu(SortMenu);
 
         // Showing a hidden zone again must re-assert the desktop-level slot.
         IsVisibleChanged += (_, _) =>
@@ -503,6 +507,111 @@ public partial class ZoneWindow : Window
         }
     }
 
+    // ---------- submenu placement ----------
+
+    /// <summary>Detailed placement tracing only in development runs (redirected config); production logs warnings only.</summary>
+    private static readonly bool TraceSubmenus = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppPaths.ConfigDirectoryOverrideVariable));
+
+    /// <summary>Popups that already carry the smart placement. A zone's static "Sort by" popup is reused; each "Move to Zone" menu builds a new one.</summary>
+    private readonly ConditionalWeakTable<Popup, object> _smartSubmenus = new();
+
+    /// <summary>
+    /// Gives a submenu neighbour-aware placement through the PUBLIC template contract: <c>MenuItem</c> declares [TemplatePart("PART_Popup")] and
+    /// finds its popup by that name itself, so every template provides it. Only Placement and CustomPopupPlacementCallback of that popup are
+    /// set; hover, keyboard and closing stay native. Works for a static item and for one rebuilt on every menu open (it hooks <c>Loaded</c>).
+    /// If the popup is not there, or anything fails, WPF's default placement stays.
+    /// </summary>
+    private void UseSmartSubmenu(MenuItem item) => item.Loaded += (_, _) => AttachSubmenuPlacement(item);
+
+    private void AttachSubmenuPlacement(MenuItem item)
+    {
+        try
+        {
+            if (item.Template?.FindName("PART_Popup", item) is not Popup popup)
+            {
+                _log.Warn($"Submenu '{item.Header}': PART_Popup not found; the default placement stays.");
+                return;
+            }
+
+            if (_smartSubmenus.TryGetValue(popup, out _))
+            {
+                return;
+            }
+
+            _smartSubmenus.Add(popup, new object());
+            popup.Placement = PlacementMode.Custom;
+            popup.CustomPopupPlacementCallback = (size, _, offset) => PlaceSubmenu(item, popup, size, offset);
+        }
+        catch (Exception ex)
+        {
+            _log.Warn($"Submenu '{item.Header}': could not attach smart placement ({ex.Message}); the default placement stays.");
+        }
+    }
+
+    private CustomPopupPlacement[] PlaceSubmenu(MenuItem item, Popup popup, Size popupSize, Point offset)
+    {
+        try
+        {
+            var target = popup.PlacementTarget as FrameworkElement ?? item;
+            if (PresentationSource.FromVisual(target) is not { } source)
+            {
+                return DefaultSubmenuPlacement(item);
+            }
+
+            var scale = source.CompositionTarget.TransformToDevice.M11;
+            var origin = target.PointToScreen(new Point(0, 0)); // physical pixels
+            var parent = new RectPx((int)Math.Round(origin.X), (int)Math.Round(origin.Y),
+                (int)Math.Ceiling(target.ActualWidth * scale), (int)Math.Ceiling(target.ActualHeight * scale));
+            var size = new SizePx((int)Math.Ceiling(popupSize.Width * scale), (int)Math.Ceiling(popupSize.Height * scale));
+            var offsetPx = new PointPx((int)Math.Round(offset.X * scale), (int)Math.Round(offset.Y * scale));
+            var areas = Monitors.GetWorkAreas();
+
+            // The template adds its popup offset after this callback, so the candidates are the TRUE rectangles and the returned points are
+            // the raw positions (true minus offset).
+            var candidates = MenuPlacement.SubmenuCandidates(parent, size, offsetPx, areas);
+            var order = MenuPlacement.Rank(candidates, areas, OthersProvider?.Invoke(this) ?? []);
+
+            if (TraceSubmenus)
+            {
+                TraceSubmenuPlacement(item, popup, candidates[order[0]], order[0], parent);
+            }
+
+            // WPF uses the first entry that fits on screen; the list is already ordered by "covers least".
+            return order
+                .Select(i => new CustomPopupPlacement(
+                    new Point((candidates[i].X - offsetPx.X - origin.X) / scale, (candidates[i].Y - offsetPx.Y - origin.Y) / scale), PopupPrimaryAxis.None))
+                .ToArray();
+        }
+        catch (Exception ex)
+        {
+            _log.Warn($"Submenu placement failed ({ex.Message}); using the default spot.");
+            return DefaultSubmenuPlacement(item);
+        }
+    }
+
+    /// <summary>WPF's normal spot for a submenu: right of the item, top-aligned.</summary>
+    private static CustomPopupPlacement[] DefaultSubmenuPlacement(MenuItem item)
+        => [new CustomPopupPlacement(new Point(item.ActualWidth, 0), PopupPrimaryAxis.None)];
+
+    /// <summary>Development diagnostics: the requested rectangle versus where the submenu window really appears (dispatcher passes, no timers).</summary>
+    private void TraceSubmenuPlacement(MenuItem item, Popup popup, RectPx requested, int candidate, RectPx parent)
+    {
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            if (popup.Child is null || PresentationSource.FromVisual(popup.Child) is not HwndSource source)
+            {
+                return;
+            }
+
+            var actual = Monitors.GetWindowRect(source.Handle);
+            Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, () =>
+            {
+                var again = Monitors.GetWindowRect(source.Handle);
+                _log.Info($"Submenu '{item.Header}': candidate #{candidate} requested {requested.X},{requested.Y} {requested.Width}x{requested.Height}; "
+                    + $"actual {actual.X},{actual.Y} {actual.Width}x{actual.Height}; delta=({actual.X - requested.X},{actual.Y - requested.Y}); stable={actual == again}.");
+            });
+        });
+    }
     // ---------- context-menu dismissal ----------
 
     /// <summary>Hidden window (the message window) the menu borrows the foreground on. Set by the manager.</summary>
@@ -939,6 +1048,7 @@ public partial class ZoneWindow : Window
     private MenuItem BuildMoveToZoneMenu(ItemViewModel item)
     {
         var parent = new MenuItem { Header = "Move to Zone" };
+        UseSmartSubmenu(parent); // rebuilt on every menu open: the popup is attached again when this item loads
         var others = (ZoneProvider?.Invoke() ?? []).Where(z => !string.Equals(z.Id, _config.Id, StringComparison.OrdinalIgnoreCase)).ToList();
 
         if (others.Count == 0)

@@ -39,6 +39,10 @@ public static class ZoneGeometry
         return new RectPx(x, y, width, height);
     }
 
+    /// <summary>The work area <paramref name="rect"/> overlaps most (the nearest one when it is entirely off-screen), or null without any area.</summary>
+    public static RectPx? AreaFor(RectPx rect, IReadOnlyList<RectPx> workAreas)
+        => workAreas.Count == 0 ? null : BestArea(rect, workAreas);
+
     /// <summary>The work area <paramref name="rect"/> overlaps most (the nearest one when it is entirely off-screen). Needs at least one area.</summary>
     private static RectPx BestArea(RectPx rect, IReadOnlyList<RectPx> workAreas)
     {

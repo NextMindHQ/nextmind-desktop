@@ -20,6 +20,7 @@
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1           # start the test instance
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stress   # also seed two big zones (600 and 2000 dummy items)
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Reuse    # restart on the PREVIOUS test config (save -> restart checks)
+  powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -ManyZones # also 36 small collapsed zones (a long "Move to Zone" list); do not combine with -Stress
   powershell -ExecutionPolicy Bypass -File tools\test-ui.ps1 -Stop     # stop ONLY the test instance and re-verify production
 #>
 [CmdletBinding()]
@@ -29,6 +30,7 @@ param(
     [switch]$DryRun,
     [switch]$Stress,
     [switch]$Reuse,
+    [switch]$ManyZones,
     [string]$Exe
 )
 
@@ -182,6 +184,13 @@ function NewZone([string]$title, [double]$xDip, [double]$yDip, [bool]$collapsed,
         collapsed = $collapsed; dpi = $dpi; hidden = $false; sortMode = 'custom'; items = (NewItems $items $source)
     }
 }
+function NewBar([string]$title, [double]$xDip, [double]$yDip) {
+    [ordered]@{
+        id = [guid]::NewGuid().ToString('D'); title = $title
+        x = $wa.X + (Px $xDip); y = $wa.Y + (Px $yDip); width = Px 160; height = Px 100
+        collapsed = $true; dpi = $dpi; hidden = $false; sortMode = 'custom'; items = (NewItems 2)
+    }
+}
 $bottomY = ($wa.Height / $s) - 32 - 4 # collapsed title bar hugging the bottom edge of the work area
 $zones = @(
     (NewZone 'TEST A basic' 40 260 $false 8),
@@ -189,8 +198,13 @@ $zones = @(
     (NewZone 'TEST C below B' 400 480 $false 5),
     (NewZone 'TEST D at bottom edge' 40 $bottomY $true 4),
     (NewZone 'TEST E overlap 1' 760 300 $false 6),
-    (NewZone 'TEST F overlap 2' 800 370 $true 4)
+    (NewZone 'TEST F overlap 2' 800 370 $true 4),
+    (NewZone 'TEST R right edge' (($wa.Width / $s) - 330) 650 $false 5)
 )
+if ($ManyZones) {
+    # 6 x 6 grid of small collapsed zones in free desktop space: makes the item menu's "Move to Zone" list very long.
+    foreach ($n in 0..35) { $zones += (NewBar ('TEST Z{0:D2}' -f ($n + 1)) (400 + 164 * ($n % 6)) (720 + 38 * [Math]::Floor($n / 6))) }
+}
 if ($Stress) {
     $zones += (NewZone 'TEST G 600 items' 1100 300 $false 600 $stressFiles)
     $zones += (NewZone 'TEST H 2000 items' 1100 560 $false 2000 $stressFiles)

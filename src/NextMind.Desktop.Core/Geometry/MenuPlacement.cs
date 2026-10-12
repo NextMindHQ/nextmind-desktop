@@ -1,4 +1,4 @@
-namespace NextMind.Desktop.Core.Geometry;
+﻿namespace NextMind.Desktop.Core.Geometry;
 
 public readonly record struct PointPx(int X, int Y);
 
@@ -26,6 +26,36 @@ public static class MenuPlacement
             new RectPx(cursor.X, ownZone.Bottom, w, h),
             new RectPx(cursor.X, ownZone.Y - h, w, h),
         ];
+    }
+
+    /// <summary>
+    /// Candidate rectangles for a submenu, in order of preference: right of the parent item, top-aligned (the normal WPF placement);
+    /// left of it; then the same two aligned to the item's bottom edge. None of them covers the parent item itself.
+    /// <paramref name="offset"/> is the popup offset the template adds AFTER the placement callback (WPF's own overlap with the parent, a few
+    /// pixels): the returned rectangles are where the submenu will really appear, so ranking sees the true cover. With
+    /// <paramref name="workAreas"/> two more candidates (right and left) are added whose vertical position is pulled into the monitor, which
+    /// is what a very long list needs (e.g. "Move to Zone" with many zones).
+    /// </summary>
+    public static IReadOnlyList<RectPx> SubmenuCandidates(RectPx parentItem, SizePx submenu, PointPx offset = default, IReadOnlyList<RectPx>? workAreas = null)
+    {
+        var (w, h) = (submenu.Width, submenu.Height);
+        var (dx, dy) = (offset.X, offset.Y);
+        var list = new List<RectPx>
+        {
+            new(parentItem.Right + dx, parentItem.Y + dy, w, h),
+            new(parentItem.X - w + dx, parentItem.Y + dy, w, h),
+            new(parentItem.Right + dx, parentItem.Bottom - h + dy, w, h),
+            new(parentItem.X - w + dx, parentItem.Bottom - h + dy, w, h),
+        };
+
+        if (ZoneGeometry.AreaFor(parentItem, workAreas ?? []) is { } area)
+        {
+            var y = h >= area.Height ? area.Y : Math.Clamp(parentItem.Y + dy, area.Y, area.Bottom - h);
+            list.Add(new RectPx(parentItem.Right + dx, y, w, h));
+            list.Add(new RectPx(parentItem.X - w + dx, y, w, h));
+        }
+
+        return list;
     }
 
     /// <summary>
