@@ -29,6 +29,10 @@ public partial class ZoneWindow : Window
     private const double MinHeightDip = 80;
     private const double IconDip = 32;
     private const uint WM_WINDOWPOSCHANGING = 0x0046;
+    private const int WM_MOVING = 0x0216;
+    private const int WM_EXITSIZEMOVE = 0x0232;
+    private const double SnapThresholdDip = 10;
+    private const double SnapGapDip = 12;
 
     private readonly ZoneConfig _config;
     private readonly DesktopLayer _layer;
@@ -42,6 +46,9 @@ public partial class ZoneWindow : Window
     private Point? _dragStart;
     private ItemViewModel? _dragCandidate;
     private ListBoxItem? _indicatorTarget;
+    private IReadOnlyList<RectPx>? _snapOthers;
+    private IReadOnlyList<RectPx>? _snapAreas;
+    private (int CollapsedY, int ExpandedY)? _autoShift;
 
     public ZoneWindow(ZoneConfig config, DesktopLayer layer, ILog log, IconService icons)
     {
@@ -63,6 +70,10 @@ public partial class ZoneWindow : Window
         _items.CollectionChanged += (_, _) => UpdateEmptyHint();
         UpdateEmptyHint();
 
+        // The title-bar menu is declared in XAML; give it the same neighbour-aware placement as the item menus.
+        ContextMenuService.SetPlacement(TitleBar, PlacementMode.Custom);
+        TitleBar.ContextMenu.CustomPopupPlacementCallback = (popup, _, _) => PlaceMenu(TitleBar.ContextMenu, popup);
+
         // Showing a hidden zone again must re-assert the desktop-level slot.
         IsVisibleChanged += (_, _) =>
         {
@@ -82,6 +93,12 @@ public partial class ZoneWindow : Window
 
     /// <summary>Lists all zones (for "Move to Zone"). Set by the manager.</summary>
     public Func<IReadOnlyList<ZoneConfig>>? ZoneProvider { get; set; }
+
+    /// <summary>Rectangles (physical pixels) of the other zones currently on screen; used for snapping, expand direction and menu placement.</summary>
+    public Func<ZoneWindow, IReadOnlyList<RectPx>>? OthersProvider { get; set; }
+
+    /// <summary>Live window rectangle in physical pixels.</summary>
+    public RectPx CurrentRect => _hwnd == IntPtr.Zero ? new RectPx(_config.X, _config.Y, _config.Width, _config.Height) : Monitors.GetWindowRect(_hwnd);
 
     /// <summary>Raised after any user-visible geometry/collapse/item change; the manager debounces persistence.</summary>
     public event Action<ZoneWindow>? ZoneChanged;
@@ -178,8 +195,76 @@ public partial class ZoneWindow : Window
             // Let the message continue with a corrected z-order so WPF still sees the move/resize.
             _layer.EnforceOnWindowPosChanging(hwnd, lParam);
         }
+        else if (msg == WM_MOVING)
+        {
+            // Magnetic edges while dragging the title bar. Alt switches it off; only the proposed position is adjusted.
+            if (!Monitors.IsAltDown() && TrySnap(lParam))
+            {
+                handled = true;
+                return (IntPtr)1; // TRUE: the rectangle was modified
+            }
+        }
+        else if (msg == WM_EXITSIZEMOVE)
+        {
+            _snapOthers = null;
+            _snapAreas = null;
+        }
 
         return IntPtr.Zero;
+    }
+
+    private bool TrySnap(IntPtr rectPointer)
+    {
+        if (OthersProvider is null)
+        {
+            return false;
+        }
+
+        // Neighbours and work areas cannot change during one drag: read them once per drag, not per mouse move.
+        _snapOthers ??= OthersProvider(this);
+        _snapAreas ??= Monitors.GetWorkAreas();
+
+        var dpi = CurrentDpi();
+        var proposed = Monitors.ReadRect(rectPointer);
+        var snapped = ZoneLayout.Snap(proposed, _snapOthers, _snapAreas, ZoneGeometry.DipToPx(SnapThresholdDip, dpi), ZoneGeometry.DipToPx(SnapGapDip, dpi));
+        if (snapped == proposed)
+        {
+            return false;
+        }
+
+        Monitors.WriteRect(rectPointer, snapped);
+        return true;
+    }
+
+    // ---------- context-menu placement ----------
+
+    /// <summary>Applies neighbour-aware placement to a menu that opens at the cursor (see <see cref="MenuPlacement"/>).</summary>
+    private void UseSmartPlacement(ContextMenu menu)
+    {
+        menu.Placement = PlacementMode.Custom;
+        menu.CustomPopupPlacementCallback = (popup, _, _) => PlaceMenu(menu, popup);
+    }
+
+    private CustomPopupPlacement[] PlaceMenu(ContextMenu menu, Size popupSize)
+    {
+        if (menu.PlacementTarget is not FrameworkElement target || PresentationSource.FromVisual(target) is not { } source)
+        {
+            return [new CustomPopupPlacement(new Point(0, 0), PopupPrimaryAxis.None)];
+        }
+
+        var scale = source.CompositionTarget.TransformToDevice.M11;
+        var origin = target.PointToScreen(new Point(0, 0)); // physical pixels
+        var size = new SizePx((int)Math.Ceiling(popupSize.Width * scale), (int)Math.Ceiling(popupSize.Height * scale));
+
+        var candidates = MenuPlacement.Candidates(Monitors.GetCursor(), size, CurrentRect);
+        var others = OthersProvider?.Invoke(this) ?? [];
+        var order = MenuPlacement.Rank(candidates, Monitors.GetWorkAreas(), others);
+
+        // WPF uses the first entry that fits on screen; the list is already ordered by "covers least".
+        return order
+            .Select(i => new CustomPopupPlacement(
+                new Point((candidates[i].X - origin.X) / scale, (candidates[i].Y - origin.Y) / scale), PopupPrimaryAxis.None))
+            .ToArray();
     }
 
     /// <summary>Re-asserts the desktop-level z-order slot. Returns false while the desktop host is not available.</summary>
@@ -240,15 +325,56 @@ public partial class ZoneWindow : Window
         }
     }
 
+    /// <summary>
+    /// Collapse keeps the zone where it is. Expand opens downward from the title bar unless that would cover other zones (or leave
+    /// the screen) and opening upward is better — see <see cref="ZoneLayout.PlanExpand"/>. Other zones are never moved. If the zone
+    /// opened upward, collapsing it again returns it to where its title bar was, unless the user moved it in the meantime.
+    /// </summary>
     public void ToggleCollapsed()
     {
-        if (!IsCollapsed && _hwnd != IntPtr.Zero)
+        if (_hwnd == IntPtr.Zero)
         {
-            _expandedHeightPx = Monitors.GetWindowRect(_hwnd).Height;
+            SetCollapsedCore(!IsCollapsed);
+            ZoneChanged?.Invoke(this);
+            return;
         }
 
-        SetCollapsedCore(!IsCollapsed);
+        var current = Monitors.GetWindowRect(_hwnd);
+        if (IsCollapsed)
+        {
+            Expand(current);
+        }
+        else
+        {
+            Collapse(current);
+        }
+
         ZoneChanged?.Invoke(this);
+    }
+
+    private void Expand(RectPx collapsed)
+    {
+        var height = Math.Max(_expandedHeightPx, ZoneGeometry.DipToPx(MinHeightDip, CurrentDpi()));
+        var plan = ZoneLayout.PlanExpand(collapsed, height, OthersProvider?.Invoke(this) ?? [], Monitors.GetWorkAreas());
+
+        SetCollapsedCore(collapsed: false, applyHeight: false);
+        Monitors.SetWindowBounds(_hwnd, plan);
+        _autoShift = plan.Y != collapsed.Y ? (collapsed.Y, plan.Y) : null;
+    }
+
+    private void Collapse(RectPx expanded)
+    {
+        _expandedHeightPx = expanded.Height;
+        var shift = _autoShift;
+        _autoShift = null;
+
+        SetCollapsedCore(collapsed: true);
+
+        if (shift is { } s && expanded.Y == s.ExpandedY)
+        {
+            var collapsedHeight = ZoneGeometry.CollapsedHeightPx(CollapsedHeightDip, CurrentDpi());
+            Monitors.SetWindowBounds(_hwnd, new RectPx(expanded.X, s.CollapsedY, expanded.Width, collapsedHeight));
+        }
     }
 
     private void SetCollapsedCore(bool collapsed, bool applyHeight = true)
@@ -473,7 +599,7 @@ public partial class ZoneWindow : Window
 
         // Setting ContextMenu from inside ContextMenuOpening is too late for WPF to show it: open it explicitly.
         menu.PlacementTarget = container;
-        menu.Placement = PlacementMode.MousePoint;
+        UseSmartPlacement(menu);
         menu.IsOpen = true;
         e.Handled = true;
     }

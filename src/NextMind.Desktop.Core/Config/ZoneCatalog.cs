@@ -23,10 +23,27 @@ public static class ZoneNames
 /// </summary>
 public static class ZoneCatalog
 {
-    public static ZoneConfig AddZone(AppConfig config, string? name, RectPx workArea, int dpi)
+    /// <param name="occupied">
+    /// Rectangles of the zones currently on screen. When given, the new zone opens in the first free spot; with no room (or no list)
+    /// it falls back to the legacy cascade, so it is always placed somewhere visible.
+    /// </param>
+    public static ZoneConfig AddZone(AppConfig config, string? name, RectPx workArea, int dpi, IReadOnlyList<RectPx>? occupied = null)
     {
         var title = ZoneNames.Normalize(name) ?? ZoneLimits.DefaultTitle;
         var zone = ZoneFactory.Create(title, workArea, dpi, config.Zones.Count);
+
+        if (occupied is { Count: > 0 })
+        {
+            var slot = ZoneLayout.FindFreeSlot(
+                zone.Width, zone.Height, workArea, occupied,
+                margin: ZoneGeometry.DipToPx(48, dpi), gap: ZoneGeometry.DipToPx(12, dpi), step: ZoneGeometry.DipToPx(24, dpi));
+            if (slot is { } free)
+            {
+                zone.X = free.X;
+                zone.Y = free.Y;
+            }
+        }
+
         config.Zones.Add(zone);
         config.ZonesVisible = true;
         return zone;

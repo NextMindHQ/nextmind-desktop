@@ -53,5 +53,22 @@ public static class Monitors
             hwnd, IntPtr.Zero, rect.X, rect.Y, rect.Width, rect.Height,
             NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_NOOWNERZORDER);
 
+    private const int VK_MENU = 0x12;
+
+    /// <summary>True while Alt is held (used to switch drag snapping off temporarily).</summary>
+    public static bool IsAltDown() => (NativeMethods.GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+
+    public static PointPx GetCursor()
+        => NativeMethods.GetCursorPos(out var p) ? new PointPx(p.X, p.Y) : default;
+
+    /// <summary>Reads the proposed rectangle of a WM_MOVING message (lParam points to a RECT).</summary>
+    public static RectPx ReadRect(IntPtr rectPointer)
+        => ToRect(System.Runtime.InteropServices.Marshal.PtrToStructure<NativeMethods.RECT>(rectPointer));
+
+    /// <summary>Overwrites the proposed rectangle of a WM_MOVING message.</summary>
+    public static void WriteRect(IntPtr rectPointer, RectPx rect)
+        => System.Runtime.InteropServices.Marshal.StructureToPtr(
+            new NativeMethods.RECT { Left = rect.X, Top = rect.Y, Right = rect.Right, Bottom = rect.Bottom }, rectPointer, fDeleteOld: false);
+
     private static RectPx ToRect(NativeMethods.RECT r) => new(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
 }

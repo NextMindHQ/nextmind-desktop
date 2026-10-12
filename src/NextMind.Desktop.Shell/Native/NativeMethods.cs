@@ -236,6 +236,9 @@ internal static class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetCursorPos(out POINT lpPoint);
 
+    [DllImport("user32.dll")]
+    public static extern short GetAsyncKeyState(int vKey);
+
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     public static extern uint ExtractIconExW(string lpszFile, int nIconIndex, IntPtr[]? phiconLarge, IntPtr[]? phiconSmall, uint nIcons);
 

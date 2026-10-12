@@ -95,7 +95,9 @@ public sealed class ZoneManager
 
     public void CreateZone(string name)
     {
-        var zone = ZoneCatalog.AddZone(_config, name, Monitors.GetPrimaryWorkArea(), Monitors.GetSystemDpi());
+        // A new zone opens in the first free spot instead of on top of existing ones (the user can still drag it anywhere).
+        var occupied = _windows.Where(w => w.IsVisible).Select(w => w.CurrentRect).ToList();
+        var zone = ZoneCatalog.AddZone(_config, name, Monitors.GetPrimaryWorkArea(), Monitors.GetSystemDpi(), occupied);
         ApplyVisibility();
         Open(zone);
         _log.Info($"Created zone '{zone.Title}'.");
@@ -267,7 +269,7 @@ public sealed class ZoneManager
 
     private void Open(ZoneConfig zone)
     {
-        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones };
+        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones, OthersProvider = OtherZoneRects };
         window.ZoneChanged += _ => ScheduleSave();
         window.RenameRequested += OnRename;
         window.HideRequested += OnHide;
@@ -289,6 +291,9 @@ public sealed class ZoneManager
             window.Show();
         }
     }
+
+    private IReadOnlyList<NextMind.Desktop.Core.Geometry.RectPx> OtherZoneRects(ZoneWindow self)
+        => _windows.Where(w => w != self && w.IsVisible).Select(w => w.CurrentRect).ToList();
 
     private void ApplyVisibility()
     {
