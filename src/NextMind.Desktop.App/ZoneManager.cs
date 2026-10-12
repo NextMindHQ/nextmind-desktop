@@ -73,6 +73,9 @@ public sealed class ZoneManager
 
     public bool ManagedMovesEnabled => _managedMovesEnabled();
 
+    /// <summary>The hidden message window; zone menus borrow the foreground on it so they close on an outside click or app switch.</summary>
+    public Func<IntPtr>? ForegroundAnchor { get; set; }
+
     /// <summary>Raised when zones were added/removed/renamed/shown/hidden (the Control Center refreshes on it).</summary>
     public event Action? Changed;
 
@@ -269,7 +272,7 @@ public sealed class ZoneManager
 
     private void Open(ZoneConfig zone)
     {
-        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones, OthersProvider = OtherZoneRects };
+        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones, OthersProvider = OtherZoneRects, ForegroundAnchorProvider = () => ForegroundAnchor?.Invoke() ?? IntPtr.Zero };
         window.ZoneChanged += _ => ScheduleSave();
         window.RenameRequested += OnRename;
         window.HideRequested += OnHide;

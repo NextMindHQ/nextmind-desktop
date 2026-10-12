@@ -9,6 +9,7 @@ using System.Windows.Media;
 using NextMind.Desktop.Core.Config;
 using NextMind.Desktop.Core.Geometry;
 using NextMind.Desktop.Core.Logging;
+using NextMind.Desktop.Core.Ui;
 using NextMind.Desktop.Shell;
 
 namespace NextMind.Desktop.App;
@@ -73,6 +74,7 @@ public partial class ZoneWindow : Window
         // The title-bar menu is declared in XAML; give it the same neighbour-aware placement as the item menus.
         ContextMenuService.SetPlacement(TitleBar, PlacementMode.Custom);
         TitleBar.ContextMenu.CustomPopupPlacementCallback = (popup, _, _) => PlaceMenu(TitleBar.ContextMenu, popup);
+        TitleBar.ContextMenuOpening += (_, _) => PrepareMenuForDismissal(TitleBar.ContextMenu);
 
         // Showing a hidden zone again must re-assert the desktop-level slot.
         IsVisibleChanged += (_, _) =>
@@ -234,6 +236,51 @@ public partial class ZoneWindow : Window
 
         Monitors.WriteRect(rectPointer, snapped);
         return true;
+    }
+
+    // ---------- context-menu dismissal ----------
+
+    /// <summary>Hidden window (the message window) the menu borrows the foreground on. Set by the manager.</summary>
+    public Func<IntPtr>? ForegroundAnchorProvider { get; set; }
+
+    private ContextMenu? _preparedMenu;
+    private RoutedEventHandler? _restoreForeground;
+
+    /// <summary>
+    /// A zone is never the foreground window, and WPF dismisses a menu through mouse capture and keyboard focus, which only work for the
+    /// foreground window — so a menu opened here stayed up after a click elsewhere or Alt+Tab (submenus included: they share the same menu mode).
+    /// While the menu is open the hidden message window holds the foreground (the tray menu uses the same technique); when it closes, the
+    /// previous window gets the foreground back only if nobody has taken it since. Zones themselves are never activated or re-ordered.
+    /// If Windows refuses the foreground change, nothing is forced and the menu behaves as before.
+    /// </summary>
+    private void PrepareMenuForDismissal(ContextMenu menu)
+    {
+        if (_preparedMenu is not null && _restoreForeground is not null)
+        {
+            _preparedMenu.Closed -= _restoreForeground; // a previous menu that never opened must not restore a stale window
+            _preparedMenu = null;
+            _restoreForeground = null;
+        }
+
+        var anchor = ForegroundAnchorProvider?.Invoke().ToInt64() ?? 0;
+        var previous = ForegroundWindow.Current();
+        if (anchor == 0 || previous == anchor || !ForegroundWindow.TrySet(anchor))
+        {
+            return;
+        }
+
+        _preparedMenu = menu;
+        _restoreForeground = (_, _) =>
+        {
+            menu.Closed -= _restoreForeground;
+            _preparedMenu = null;
+            _restoreForeground = null;
+            if (MenuForeground.ShouldRestore(previous, anchor, ForegroundWindow.Current()))
+            {
+                ForegroundWindow.TrySet(previous);
+            }
+        };
+        menu.Closed += _restoreForeground;
     }
 
     // ---------- context-menu placement ----------
@@ -600,6 +647,7 @@ public partial class ZoneWindow : Window
         // Setting ContextMenu from inside ContextMenuOpening is too late for WPF to show it: open it explicitly.
         menu.PlacementTarget = container;
         UseSmartPlacement(menu);
+        PrepareMenuForDismissal(menu);
         menu.IsOpen = true;
         e.Handled = true;
     }

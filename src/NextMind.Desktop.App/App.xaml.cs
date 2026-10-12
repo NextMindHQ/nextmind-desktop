@@ -115,6 +115,7 @@ public partial class App : Application
         _messageWindow.TaskbarCreated += OnTaskbarCreated;
         _messageWindow.DisplayChanged += () => _zones!.ClampAll();
         _messageWindow.ActivateRequested += () => _zones!.ShowAll();
+        _zones.ForegroundAnchor = () => _messageWindow?.Handle ?? IntPtr.Zero;
         _messageWindow.TrayMouse += OnTrayMouse;
 
         _tray = new TrayIcon(_messageWindow, IsDevelopmentRun ? "NextMind Desktop (TEST)" : "NextMind Desktop", Environment.ProcessPath);
