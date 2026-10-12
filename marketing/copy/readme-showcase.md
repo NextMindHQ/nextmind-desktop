@@ -1,7 +1,8 @@
-# README showcase section: proposal
+# README showcase section: proposal (superseded)
 
-Not applied to the public README. If approved, this block replaces the current hero image and intro at the top of `README.md`
-(the rest of the README stays). Publish it together with the v0.2.0 release, because the images show the v0.2 interface.
+Status: **a v0.1.0-aware version of this idea was applied to `README.md`** (hero and search images, separate *Available now* and *Coming in v0.2.0* sections).
+The block below is the original, simpler proposal for the release day, when v0.2.0 is published and the two sections can be merged. Publish it together with
+the v0.2.0 release, because the images show the v0.2 interface.
 
 ---
 

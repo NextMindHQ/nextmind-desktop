@@ -1,32 +1,74 @@
-# NextMind Desktop
+<p align="center">
+  <img src="marketing/images/hero.png" alt="NextMind Desktop: zones with files, folders and shortcuts on a dark background; headline: Your desktop. Your rules." width="900">
+</p>
 
-**A lightweight, local-first desktop organizer for Windows.**
+<h1 align="center">NextMind Desktop</h1>
 
-[![Latest release](https://img.shields.io/github/v/release/NextMindHQ/nextmind-desktop?label=release)](https://github.com/NextMindHQ/nextmind-desktop/releases/latest)
-[![Platform: Windows x64](https://img.shields.io/badge/platform-Windows%20x64-0078D6)](#requirements)
-[![License: Apache-2.0](https://img.shields.io/github/license/NextMindHQ/nextmind-desktop)](LICENSE)
-[![CI](https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml/badge.svg)](https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml)
+<p align="center">
+  <b>Your desktop. Your rules.</b><br>
+  A free, open-source desktop organizer for Windows.
+</p>
 
-NextMind Desktop puts collapsible **Zones** directly on your Windows desktop — above the wallpaper and icons, below every
-application — so you can group shortcuts, files and folders without opening another window. It is a small tray application:
-no account, no cloud, no telemetry.
+<p align="center">
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/NextMindHQ/nextmind-desktop?label=release"></a>
+  <a href="#requirements"><img alt="Platform: Windows x64" src="https://img.shields.io/badge/platform-Windows%20x64-0078D6"></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/NextMindHQ/nextmind-desktop"></a>
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml/badge.svg"></a>
+</p>
 
-**[⬇ Download the latest release](https://github.com/NextMindHQ/nextmind-desktop/releases/latest)**
+<p align="center">
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/latest"><b>⬇ Download v0.1.0</b></a> &nbsp;·&nbsp;
+  <a href="#coming-in-v020">What is coming in v0.2.0</a> &nbsp;·&nbsp;
+  <a href="docs/USER-GUIDE.md">User guide</a> &nbsp;·&nbsp;
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
 
-![NextMind Desktop: expanded and collapsed zones](docs/images/hero.png)
+<p align="center"><sub>The screenshot shows the interface being prepared for v0.2.0 — note the magnifier in each title bar: search is <b>not</b> in the published v0.1.0.<br>
+Synthetic sample data; screenshots never show a real desktop (<a href="docs/SCREENSHOT-PLAN.md">how they are made</a>).</sub></p>
 
-<sub>Zones on a neutral backdrop with synthetic sample data (screenshots never show a real desktop — see [docs/SCREENSHOT-PLAN.md](docs/SCREENSHOT-PLAN.md)).</sub>
+## Why NextMind Desktop
 
-## Download / Quick Start
+The Windows desktop quickly turns into a pile of icons. NextMind Desktop gives it structure: you create named **zones** right on the desktop — above the wallpaper
+and icons, below your applications — drop files, folders and shortcuts into them, collapse the ones you do not need, and carry on.
+
+You decide the layout: no grid, no automatic arranging. It is a small, quiet tray application with **no account, no cloud and no telemetry**.
+
+## Available now: v0.1.0
+
+The current public release ([download](https://github.com/NextMindHQ/nextmind-desktop/releases/latest)) includes:
+
+* **Desktop Zones** — named panels that live on the desktop itself, under your windows and over the icons
+* **Collapse / expand** a zone to just its title (double-click the title bar); **move and resize** it freely, it stays within the visible monitor area
+* **Drag & drop** files, folders and shortcuts from Explorer or the Desktop; the original is never touched
+* **Sorting and manual ordering** — drag to reorder, or sort per zone by name, date added or type
+* **Native Windows icons**, a **tray icon and Control Center**, and **Start with Windows**
+* **Show desktop (Win+D)** reveals your zones; application windows cover them
+* **Persistence** — positions, sizes, collapsed state, items and sort order survive restarts
+* **Managed Desktop Moves** — *opt-in, off by default*; see [Safety](#managed-desktop-moves--safety)
+
+## Coming in v0.2.0
+
+> **In preparation, not released.** v0.2.0 is being prepared and is not published yet. Everything in this section is **not** in the download above.
+> See the [changelog](CHANGELOG.md) for the full list.
+
+<p align="center">
+  <img src="marketing/images/search.png" alt="Search in a zone: the word list typed in a zone leaves two matching items; keys: arrows select, Enter opens, Esc clears" width="760">
+</p>
+
+* **Search in every zone** — a magnifier in each title bar filters that zone's items as you type (names of files, folders and shortcuts; ignores case and Polish letters).
+  **↓ / ↑** select, **Enter** opens, **Esc** clears. Searching never changes your zone or your files.
+* **A layout that is yours, with some help** — new zones appear in a free spot; edges snap to neighbours while you drag (hold **Alt** to move freely); overlapping on purpose still works.
+* **Smarter expanding** — a zone opens downward, or upward when that covers fewer other zones or would leave the screen. Other zones are never moved.
+* **Menus that stay out of the way** — context menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones, and they close when you click elsewhere.
+* **Fix:** a zone collapsed near the bottom edge of the screen no longer creeps upward at every start.
+
+## Quick start & install (v0.1.0)
 
 1. Download **`NextMind-Desktop-v0.1.0-win-x64.zip`** from the [latest release](https://github.com/NextMindHQ/nextmind-desktop/releases/latest).
 2. Extract it to a folder you want to keep (the app registers that location for *Start with Windows*).
 3. Run **`NextMindDesktop.exe`**.
 
-A first Zone appears on your desktop and a tray icon is added. Drop files, folders or shortcuts onto the Zone.
-
-> **Note:** features marked **(v0.2)** below are in development and will ship with the next release. The download linked above is v0.1.0
-> and does not include them yet. See the [changelog](CHANGELOG.md).
+A first Zone appears on your desktop and a tray icon is added. Drop files, folders or shortcuts onto the Zone. More in the [user guide](docs/USER-GUIDE.md).
 
 * **Self-contained:** v0.1.0 includes everything it needs. **You do not need to install .NET.**
 * **Not code-signed yet:** Windows SmartScreen may warn about an unrecognized app. If you trust the download, choose *More info* → *Run anyway*.
@@ -41,91 +83,6 @@ A first Zone appears on your desktop and a tray icon is added. Drop files, folde
 > Give them back first: use *Return to Desktop* in each item's menu, or *Delete Zone* → *Return items to Desktop and delete Zone*. Then open `ManagedItems` and make sure it is
 > empty or holds nothing you need. Only then delete the data folder (settings, logs and the journal). If you never enabled Managed Desktop Moves (the default), the folder holds only
 > settings and logs and can be removed after you exit the app.
-
-## Features
-
-* **Desktop Zones** — named panels that live on the desktop itself, under your windows and over the icons
-* **You decide the layout** — no grid and no automatic arranging: drag zones anywhere, overlap them if you like. New zones appear in a free spot **(v0.2)**
-  and edges snap to neighbours while you drag (hold **Alt** to move freely) **(v0.2)**
-* **Collapse / expand** — double-click the title bar (a collapsed zone is just its title). A zone opens downward, or upward when that covers fewer
-  other zones or would leave the screen; other zones are never moved **(v0.2)**
-* **Move and resize** — drag the title bar, resize from the edges and corner grip; zones stay within the visible monitor area
-* **Search in a zone** — a magnifier in every zone filters its items as you type (names of files, folders and shortcuts; ignores case and Polish letters) **(v0.2)**
-* **Drag & drop** — drop files, folders and shortcuts from Explorer or the Desktop onto a Zone
-* **Sorting and manual ordering** — drag to reorder, or sort per zone by name, date added or type
-* **Show desktop (Win+D)** — zones are part of the desktop layer, so *Show desktop* reveals them; application windows cover them
-* **Tidy menus** — context menus and their submenus open where they cover the least of neighbouring zones, and close when you click elsewhere **(v0.2)**
-* **Native Windows icons** — the same icons Explorer shows
-* **Start with Windows** — toggled from the tray menu
-* **Tray icon and Control Center** — create, show/hide and manage zones
-* **Persistence** — positions, sizes, collapsed state, items and sort order survive restarts
-* **Local-first** — no account, no cloud, no telemetry; the source contains no networking code
-* **Managed Desktop Moves** — *opt-in, off by default*; see [below](#managed-desktop-moves--safety)
-
-## Using Zones
-
-### Create and arrange zones
-
-* **Create a zone:** right-click the tray icon → **Create Zone**, or use the Control Center (double-click the tray icon). Give it any name, emoji included.
-  A new zone appears in a free spot on the desktop **(v0.2)**.
-* **Place it where you want:** drag the title bar. There is no grid and nothing is arranged for you. While you drag, edges snap to neighbouring zones and to
-  the screen edge **(v0.2)**; hold **Alt** to move without snapping. You may overlap zones on purpose. Positions are saved automatically and come back after a restart.
-* **Resize** from the right and bottom edges or the corner grip.
-* **Rename, hide or delete:** right-click the title bar (*Rename Zone*, *Hide Zone*, *Delete Zone*). Deleting a zone never deletes your files.
-
-### Collapse and expand
-
-Double-click the title bar, click the ▼ / ▶ arrow, or use the **—** button to collapse a zone to its title; it stays exactly where you left it, also after a restart.
-Expanding opens the zone downward — or upward when that would cover other zones or leave the screen **(v0.2)**. Other zones are never moved, and collapsing a zone
-that opened upward puts its title bar back where it was.
-
-![An expanded zone with its items](docs/images/expanded.png)
-
-![Collapsed zones: just the title bar, the magnifier and the close button](docs/images/collapsed.png)
-
-### Add items
-
-Drag files, folders and shortcuts onto a zone from Explorer or the Desktop (see [How it works](#how-it-works)). Double-click an item to open it; right-click it for
-*Open*, *Show in Explorer*, *Move to Zone* and *Remove from Zone* (which only forgets the path).
-Drag items inside a zone to reorder them, drag them onto another zone to move them there, or sort a zone from its title-bar menu (*Sort by* name, date added or type).
-
-### Search in a zone **(v0.2)**
-
-Click the magnifier in the zone's title bar (on a collapsed zone it expands first). Type to filter **that zone's** items as you type; clear the box to see them all again.
-
-![Search in a zone: typing "list" leaves the two matching items](docs/images/search.png)
-
-* Matches the names of files, folders and shortcuts, **ignoring case and diacritics** (`lodz` finds *Łódź*); with several words, every word must match.
-* The zone's own order is kept. Searching never changes the zone, your files or their order.
-* If nothing matches you see *No matches for …*.
-
-| Key | Action |
-|---|---|
-| **↓ / ↑** | Select the next / previous result |
-| **Enter** | Open the selected result (or the first match) |
-| **Esc** | Clear the text; press again to close the search bar |
-| **✕** in the field | Clear the text |
-| Click the magnifier again | Close the search bar |
-
-While a filter is active, dragging items to reorder them is switched off; dropping something on the zone shows the whole list again first.
-Zones are normally not "active" windows, so they never take the keyboard from your applications — the search box takes it only while you are typing and
-gives it back when you close the bar, collapse the zone or switch to another window.
-
-### Show desktop (Win+D)
-
-Zones are part of the desktop layer: they sit above the wallpaper and icons but **below every application window**. *Show desktop* (**Win+D**) or minimizing windows
-reveals them; opening an application covers them again. They never float over your applications.
-
-### Menus
-
-Right-click a title bar or an item. Menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones and stay on screen **(v0.2)**;
-they close when you click elsewhere, switch to another application or press Alt+Tab **(v0.2)**.
-
-### Tray icon and Control Center
-
-The tray icon (right-click) offers **Open NextMind Desktop** (the Control Center), **Show / Hide Zones**, **Create Zone**, **Start with Windows** and **Exit**.
-Double-click the icon to open the Control Center: it lists all zones with **Hide / Show** and **Rename** for each, **Create Zone**, the *Start with Windows* checkbox,
-**Hide All Zones** / **Show All Zones**, and the current state of the Managed Desktop Moves safety gate. *Exit* closes the app now; it does not change *Start with Windows*.
 
 ## How it works
 
@@ -170,9 +127,9 @@ Full details: [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md).
 * Managed storage lives under `%LOCALAPPDATA%`; a tool that cleans AppData could remove it. Keep this in mind before enabling managed moves.
 * Keeping a Zone above the desktop icons relies on undocumented Windows behaviour. There is a visible fallback, but a future Windows update could change it.
 * Scanning very large folders for reparse points is bounded; when a scan is truncated the app always asks.
-* Search matches names only (not file contents or parent folders) and works inside one zone at a time; there is no global search yet.
 * Very large zones (hundreds to 2000 items) take a few seconds to load at start and use noticeably more memory.
 * Managing many zones (for example 30 or more) is not comfortable yet; a zone list with find-and-jump in the Control Center is planned.
+* Search (v0.2.0) matches names only — not file contents or parent folders — and works inside one zone at a time; there is no global search yet.
 * No Settings window yet. Windows x64 only. The executable is not code-signed.
 
 ## Requirements
@@ -214,11 +171,12 @@ src/NextMind.Desktop.Core    config (versioned, atomic save, recovery), guarded 
 src/NextMind.Desktop.Shell   Win32 interop: desktop layer, tray, message window, single instance, monitors, known folders, icons
 src/NextMind.Desktop.App     WPF app: zone windows, zone manager, Control Center
 tests/NextMind.Desktop.Tests xUnit; filesystem tests run only inside guarded temp directories
-docs/                        architecture, safety model, manual test scenarios
-tools/                       start / stop / autostart helper scripts, icon generator
+docs/                        architecture, safety model, user guide, manual test scenarios
+tools/                       start / stop / autostart helper scripts, isolated test instance, icon generator
+marketing/                   presentation graphics and copy (not part of the app)
 ```
 
-Further reading: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md),
+Further reading: [docs/USER-GUIDE.md](docs/USER-GUIDE.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md),
 [docs/MANUAL-TEST.md](docs/MANUAL-TEST.md), [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md), [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md),
 [CHANGELOG.md](CHANGELOG.md).
 
