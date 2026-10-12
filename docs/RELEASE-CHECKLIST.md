@@ -28,10 +28,10 @@ Run them with `tools\test-ui.ps1`; never against an installed copy or real files
 - [ ] Screenshots: only synthetic demo content, no wallpaper, desktop icons, taskbar, other applications or personal names; PNGs carry no text/metadata chunks
 
 ## 4. Documentation
-- [ ] README: the *Available now* / *Coming in v0.2.0* sections become one feature list; replace the "download v0.1.0" links, file names and checksum text with the new version; update the hero caption (it says the screenshot shows an upcoming interface)
-- [ ] [User guide](USER-GUIDE.md): remove the "(v0.2)" markers and the introductory note; keep it in step with the release
+- [x] README: the *Available now* / *Coming in v0.2.0* sections become one feature list; replace the "download v0.1.0" links, file names and checksum text with the new version; update the hero caption (it says the screenshot shows an upcoming interface)
+- [x] [User guide](USER-GUIDE.md): remove the "(v0.2)" markers and the introductory note; keep it in step with the release
 - [ ] [marketing/](../marketing/README.md): graphics and copy match the release; announcement posts are sent only after the release is published
-- [ ] CHANGELOG: move the *Unreleased* entries under the new version heading with its date; update the compare links
+- [x] CHANGELOG: move the *Unreleased* entries under the new version heading with its date; update the compare links
 - [ ] Screenshots current ([SCREENSHOT-PLAN.md](SCREENSHOT-PLAN.md))
 - [ ] Known limitations updated; contributing and development guides still accurate
 

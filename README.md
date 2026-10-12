@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/latest"><b>⬇ Download v0.1.0</b></a> &nbsp;·&nbsp;
-  <a href="#coming-in-v020">What is coming in v0.2.0</a> &nbsp;·&nbsp;
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0"><b>⬇ Download v0.2.0 Beta</b></a> &nbsp;·&nbsp;
+  <a href="#whats-inside">What is inside</a> &nbsp;·&nbsp;
   <a href="docs/USER-GUIDE.md">User guide</a> &nbsp;·&nbsp;
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-<p align="center"><sub>The screenshot shows the interface being prepared for v0.2.0 — note the magnifier in each title bar: search is <b>not</b> in the published v0.1.0.<br>
-Synthetic sample data; screenshots never show a real desktop (<a href="docs/SCREENSHOT-PLAN.md">how they are made</a>).</sub></p>
+<p align="center"><b>Free &amp; Open Source</b> · Apache-2.0 · No account · No cloud · No telemetry<br>
+<sub>v0.2.0 is a <b>Beta</b> (pre-release). Screenshots use synthetic sample data (<a href="docs/SCREENSHOT-PLAN.md">how they are made</a>).</sub></p>
 
 ## Why NextMind Desktop
 
@@ -33,47 +33,42 @@ and icons, below your applications — drop files, folders and shortcuts into th
 
 You decide the layout: no grid, no automatic arranging. It is a small, quiet tray application with **no account, no cloud and no telemetry**.
 
-## Available now: v0.1.0
-
-The current public release ([download](https://github.com/NextMindHQ/nextmind-desktop/releases/latest)) includes:
-
-* **Desktop Zones** — named panels that live on the desktop itself, under your windows and over the icons
-* **Collapse / expand** a zone to just its title (double-click the title bar); **move and resize** it freely, it stays within the visible monitor area
-* **Drag & drop** files, folders and shortcuts from Explorer or the Desktop; the original is never touched
-* **Sorting and manual ordering** — drag to reorder, or sort per zone by name, date added or type
-* **Native Windows icons**, a **tray icon and Control Center**, and **Start with Windows**
-* **Show desktop (Win+D)** reveals your zones; application windows cover them
-* **Persistence** — positions, sizes, collapsed state, items and sort order survive restarts
-* **Managed Desktop Moves** — *opt-in, off by default*; see [Safety](#managed-desktop-moves--safety)
-
-## Coming in v0.2.0
-
-> **In preparation, not released.** v0.2.0 is being prepared and is not published yet. Everything in this section is **not** in the download above.
-> See the [changelog](CHANGELOG.md) for the full list.
+## What is inside
 
 <p align="center">
   <img src="marketing/images/search.png" alt="Search in a zone: the word list typed in a zone leaves two matching items; keys: arrows select, Enter opens, Esc clears" width="760">
 </p>
 
+* **Desktop Zones** — named panels that live on the desktop itself, under your windows and over the icons
 * **Search in every zone** — a magnifier in each title bar filters that zone's items as you type (names of files, folders and shortcuts; ignores case and Polish letters).
   **↓ / ↑** select, **Enter** opens, **Esc** clears. Searching never changes your zone or your files.
 * **A layout that is yours, with some help** — new zones appear in a free spot; edges snap to neighbours while you drag (hold **Alt** to move freely); overlapping on purpose still works.
 * **Smarter expanding** — a zone opens downward, or upward when that covers fewer other zones or would leave the screen. Other zones are never moved.
 * **Menus that stay out of the way** — context menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones, and they close when you click elsewhere.
-* **Fix:** a zone collapsed near the bottom edge of the screen no longer creeps upward at every start.
+* **Collapse / expand** a zone to just its title; it keeps its position across restarts. **Move and resize** freely within the visible monitor area
+* **Drag & drop** files, folders and shortcuts from Explorer or the Desktop; the original is never touched
+* **Sorting and manual ordering** — drag to reorder, or sort per zone by name, date added or type
+* **Native Windows icons**, a **tray icon and Control Center**, and **Start with Windows**
+* **Show desktop (Win+D)** reveals your zones; application windows cover them
+* **Managed Desktop Moves** — *opt-in, off by default*; see [Safety](#managed-desktop-moves--safety)
 
-## Quick start & install (v0.1.0)
+> **v0.2.0 is a Beta.** It is a pre-release: it passes the full automated test suite, but a clean-Windows install test and an in-place upgrade from v0.1.0 have not been verified yet.
+> Back up what matters and report problems in [Issues](https://github.com/NextMindHQ/nextmind-desktop/issues).
 
-1. Download **`NextMind-Desktop-v0.1.0-win-x64.zip`** from the [latest release](https://github.com/NextMindHQ/nextmind-desktop/releases/latest).
+**Like the project?** Give it a ⭐ on GitHub and follow [NextMindHQ](https://github.com/NextMindHQ) for future updates.
+
+## Quick start & install
+
+1. Download **`NextMind-Desktop-v0.2.0-win-x64.zip`** from the [v0.2.0 Beta release](https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0).
 2. Extract it to a folder you want to keep (the app registers that location for *Start with Windows*).
 3. Run **`NextMindDesktop.exe`**.
 
 A first Zone appears on your desktop and a tray icon is added. Drop files, folders or shortcuts onto the Zone. More in the [user guide](docs/USER-GUIDE.md).
 
-* **Self-contained:** v0.1.0 includes everything it needs. **You do not need to install .NET.**
+* **Self-contained:** v0.2.0 includes everything it needs. **You do not need to install .NET.**
 * **Not code-signed yet:** Windows SmartScreen may warn about an unrecognized app. If you trust the download, choose *More info* → *Run anyway*.
   You can check the file first: the release includes a `.sha256` file, or run
-  `Get-FileHash .\NextMind-Desktop-v0.1.0-win-x64.zip -Algorithm SHA256` in PowerShell and compare it with the value on the release page.
+  `Get-FileHash .\NextMind-Desktop-v0.2.0-win-x64.zip -Algorithm SHA256` in PowerShell and compare it with the value on the release page.
 * **Start with Windows is on by default** on the first run. Untick it in the tray menu if you don't want it.
 * **Uninstall:** untick *Start with Windows* in the tray menu, choose *Exit*, then delete the folder you extracted the program to.
   Your data folder `%LOCALAPPDATA%\NextMind\Desktop` needs one more step first — see the warning below.
@@ -99,7 +94,7 @@ files you drop onto a Zone — review it before attaching it to a bug report.
 
 ## Managed Desktop Moves / Safety
 
-**Managed Desktop Moves are an opt-in, safety-gated feature in v0.1.0, and they are OFF by default.**
+**Managed Desktop Moves are an opt-in, safety-gated feature, and they are OFF by default.**
 The setting is `managedDesktopMovesEnabled` in `%LOCALAPPDATA%\NextMind\Desktop\config.json` (`false` by default). The Control Center shows its
 current state. There is no Settings window yet, so enabling it means editing the file while the app is closed.
 
@@ -129,7 +124,7 @@ Full details: [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md).
 * Scanning very large folders for reparse points is bounded; when a scan is truncated the app always asks.
 * Very large zones (hundreds to 2000 items) take a few seconds to load at start and use noticeably more memory.
 * Managing many zones (for example 30 or more) is not comfortable yet; a zone list with find-and-jump in the Control Center is planned.
-* Search (v0.2.0) matches names only — not file contents or parent folders — and works inside one zone at a time; there is no global search yet.
+* Search matches names only — not file contents or parent folders — and works inside one zone at a time; there is no global search yet.
 * No Settings window yet. Windows x64 only. The executable is not code-signed.
 
 ## Requirements
@@ -137,7 +132,7 @@ Full details: [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md).
 **Using NextMind Desktop**
 
 * Windows 10 version 2004 (build 19041) or later, or Windows 11 — **x64**
-* Nothing else: the v0.1.0 release ZIP is self-contained (no .NET installation needed)
+* Nothing else: the release ZIP is self-contained (no .NET installation needed)
 
 **Building from source**
 

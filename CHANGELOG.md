@@ -6,8 +6,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
-Changes since v0.1.0. They are in development on the `feature/zones-collision` branch and are **not on `main` yet**. They will ship with the next release
-(planned as v0.2.0); the version number is not changed yet.
+## [0.2.0] — 2026-10-12 (Beta)
+
+Pre-release. The Windows clean-install test and an in-place upgrade from v0.1.0 have **not** been verified yet; see the release notes.
 
 ### Added
 
@@ -46,5 +47,6 @@ First public release (Windows x64).
 * Start with Windows, single instance, Explorer-restart recovery, per-monitor DPI, positions and layout persisted.
 * No account, no cloud, no telemetry.
 
-[Unreleased]: https://github.com/NextMindHQ/nextmind-desktop/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/NextMindHQ/nextmind-desktop/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0
 [0.1.0]: https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.1.0

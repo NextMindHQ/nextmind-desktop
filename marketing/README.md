@@ -10,7 +10,7 @@ Presentation material for NextMind Desktop (draft, **not published**). Direction
 - Every screenshot in these graphics is a **real screenshot** from `docs/images/` (taken from the running app with synthetic sample data). They are placed and scaled, never redrawn or edited, and the originals are untouched.
 - Backgrounds, typography and decoration are generated; no fictional interface, no features the product does not have.
 - No real desktop, wallpaper, private files or personal data appear anywhere. Every graphic except the 1280 × 640 GitHub social preview (no room) carries a small "synthetic sample data" note; the screenshots themselves are documented in `docs/SCREENSHOT-PLAN.md`.
-- Features that are new in the next release are marked **(v0.2)** in the copy; publish this kit together with that release.
+- v0.2.0 Beta is published; the "(v0.2)" markers in the copy only mark features that are new since v0.1.0.
 
 ## Graphics (`marketing/images/`)
 | File | Size | Use | Headline | Alt text |

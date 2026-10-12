@@ -2,21 +2,19 @@
 
 How to use zones, search, menus, the tray icon and the Control Center. For installation, safety and uninstalling, see the [README](../README.md).
 
-> Features marked **(v0.2)** are in preparation for the next release and are **not** in the published v0.1.0. See the [changelog](../CHANGELOG.md).
-
 ## Create and arrange zones
 
 * **Create a zone:** right-click the tray icon → **Create Zone**, or use the Control Center (double-click the tray icon). Give it any name, emoji included.
-  A new zone appears in a free spot on the desktop **(v0.2)**.
+  A new zone appears in a free spot on the desktop.
 * **Place it where you want:** drag the title bar. There is no grid and nothing is arranged for you. While you drag, edges snap to neighbouring zones and to
-  the screen edge **(v0.2)**; hold **Alt** to move without snapping. You may overlap zones on purpose. Positions are saved automatically and come back after a restart.
+  the screen edge; hold **Alt** to move without snapping. You may overlap zones on purpose. Positions are saved automatically and come back after a restart.
 * **Resize** from the right and bottom edges or the corner grip.
 * **Rename, hide or delete:** right-click the title bar (*Rename Zone*, *Hide Zone*, *Delete Zone*). Deleting a zone never deletes your files.
 
 ## Collapse and expand
 
-Double-click the title bar, click the ▼ / ▶ arrow, or use the **—** button to collapse a zone to its title; it stays exactly where you left it, also after a restart **(v0.2)**.
-Expanding opens the zone downward — or upward when that would cover other zones or leave the screen **(v0.2)**. Other zones are never moved, and collapsing a zone
+Double-click the title bar, click the ▼ / ▶ arrow, or use the **—** button to collapse a zone to its title; it stays exactly where you left it, also after a restart.
+Expanding opens the zone downward — or upward when that would cover other zones or leave the screen. Other zones are never moved, and collapsing a zone
 that opened upward puts its title bar back where it was.
 
 ![An expanded zone with its items](images/expanded.png)
@@ -29,7 +27,7 @@ Drag files, folders and shortcuts onto a zone from Explorer or the Desktop (see 
 *Open*, *Show in Explorer*, *Move to Zone* and *Remove from Zone* (which only forgets the path).
 Drag items inside a zone to reorder them, drag them onto another zone to move them there, or sort a zone from its title-bar menu (*Sort by* name, date added or type).
 
-## Search in a zone **(v0.2)**
+## Search in a zone
 
 Click the magnifier in the zone's title bar (on a collapsed zone it expands first). Type to filter **that zone's** items as you type; clear the box to see them all again.
 
@@ -58,8 +56,8 @@ reveals them; opening an application covers them again. They never float over yo
 
 ## Menus
 
-Right-click a title bar or an item. Menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones and stay on screen **(v0.2)**;
-they close when you click elsewhere, switch to another application or press Alt+Tab **(v0.2)**.
+Right-click a title bar or an item. Menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones and stay on screen;
+they close when you click elsewhere, switch to another application or press Alt+Tab.
 
 ## Tray icon and Control Center
 
@@ -72,4 +70,4 @@ Double-click the icon to open the Control Center: it lists all zones with **Hide
 * Search matches names only (not file contents or parent folders) and works inside one zone at a time; there is no global search yet.
 * Very large zones (hundreds to 2000 items) take a few seconds to load at start and use noticeably more memory.
 * Managing many zones (for example 30 or more) is not comfortable yet; a zone list with find-and-jump in the Control Center is planned.
-* Before you uninstall, read the warning about `ManagedItems` in the [README](../README.md#quick-start--install-v010).
+* Before you uninstall, read the warning about `ManagedItems` in the [README](../README.md#quick-start--install).

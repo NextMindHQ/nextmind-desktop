@@ -8,7 +8,7 @@
     <Company>NextMind</Company>
     <Copyright>Copyright 2026 NextMind</Copyright>
     <Product>NextMind Desktop</Product>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
 </Project>

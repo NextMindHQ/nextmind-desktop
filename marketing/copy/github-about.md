@@ -6,7 +6,7 @@ Not applied. These are suggested values for the repository settings (Settings â†
 ```
 A lightweight, local-first desktop organizer for Windows. Collapsible zones on your desktop, below your windows and above your icons: drag & drop, sort, search in every zone. Free and open source (Apache-2.0). No account, no cloud, no telemetry.
 ```
-(about 240 characters). Until v0.2.0 is published, drop "search in every zone".
+(about 240 characters). v0.2.0 is published, so "search in every zone" is accurate.
 
 ## Website
 Leave empty for now (or the latest release page once published).

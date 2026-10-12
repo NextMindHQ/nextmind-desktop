@@ -1,8 +1,6 @@
 # README showcase section: proposal (superseded)
 
-Status: **a v0.1.0-aware version of this idea was applied to `README.md`** (hero and search images, separate *Available now* and *Coming in v0.2.0* sections).
-The block below is the original, simpler proposal for the release day, when v0.2.0 is published and the two sections can be merged. Publish it together with
-the v0.2.0 release, because the images show the v0.2 interface.
+Status: **applied to `README.md` at the v0.2.0 release** (the two sections were merged into one feature list). The block below is the original simpler proposal, kept for reference.
 
 ---
 

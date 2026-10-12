@@ -1,6 +1,6 @@
-# First announcement posts (draft: do not publish before v0.2.0 is released)
+# First announcement posts (v0.2.0 Beta is published; replace `[link]` with the release URL)
 
-All images show the v0.2 interface (magnifier in the title bar, search). Publish these together with the v0.2.0 release and replace `[link]` with the release URL.
+All images show the v0.2 interface (magnifier in the title bar, search). Replace `[link]` with the v0.2.0 release URL before posting. Mention that it is a Beta.
 Nothing here has been posted. Check the claims in [messaging.md](messaging.md) before editing.
 
 ---
