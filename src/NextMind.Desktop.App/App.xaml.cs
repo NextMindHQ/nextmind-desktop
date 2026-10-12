@@ -43,6 +43,12 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // A development/test run (redirected config) is fully isolated from a production instance: own mutex, own activate message.
+        if (IsDevelopmentRun)
+        {
+            SingleInstance.UseIsolation(".dev");
+        }
+
         _instance = SingleInstance.TryAcquire();
         if (_instance is null)
         {
@@ -94,7 +100,8 @@ public partial class App : Application
 
         // SAFETY GATE. Off by default: Desktop items are then only referenced, never moved. The environment override works ONLY with a fake desktop.
         var envEnable = Environment.GetEnvironmentVariable("NEXTMIND_ENABLE_MANAGED_MOVES") == "1";
-        bool Gate() => _config!.ManagedDesktopMovesEnabled || (fakeDesktop && envEnable);
+        // A development run against the REAL Desktop never moves anything, whatever the (redirected) config says.
+        bool Gate() => !(IsDevelopmentRun && !fakeDesktop) && (_config!.ManagedDesktopMovesEnabled || (fakeDesktop && envEnable));
         _log.Info($"Managed Desktop Moves: {(Gate() ? "ENABLED" : "DISABLED")}{(fakeDesktop ? " (development: FAKE Desktop " + desktops.UserDesktop + ")" : string.Empty)}.");
 
         _zones = new ZoneManager(_config, store, layer, _log, Dispatcher, _icons, service, assessor, desktops, Gate);
@@ -110,7 +117,7 @@ public partial class App : Application
         _messageWindow.ActivateRequested += () => _zones!.ShowAll();
         _messageWindow.TrayMouse += OnTrayMouse;
 
-        _tray = new TrayIcon(_messageWindow, "NextMind Desktop", Environment.ProcessPath);
+        _tray = new TrayIcon(_messageWindow, IsDevelopmentRun ? "NextMind Desktop (TEST)" : "NextMind Desktop", Environment.ProcessPath);
         EnsureTray();
 
         // Finish or roll back anything a crash left half-done (decided only from what is on disk), BEFORE the zones show their items.
@@ -172,13 +179,14 @@ public partial class App : Application
             return;
         }
 
-        _startup = new StartupManager(new RegistryStartupStore(), new RealPathProbe());
-
         if (IsDevelopmentRun)
         {
-            _log.Info("Development run (config redirected): autostart is not touched automatically.");
+            // No StartupManager at all: the tray/Control Center entries are disabled, so nothing can write the real Run key.
+            _log.Info("Development run (config redirected): autostart is disabled; the registry is never read or written.");
             return;
         }
+
+        _startup = new StartupManager(new RegistryStartupStore(), new RealPathProbe());
 
         try
         {

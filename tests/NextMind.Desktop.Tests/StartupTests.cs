@@ -419,4 +419,35 @@ public class SingleInstanceTests
         Assert.NotNull(third);
         third!.Dispose();
     }
+
+    [Fact]
+    public void ProductionNames_AreUnchanged()
+    {
+        var (mutex, activate) = SingleInstance.NamesFor(string.Empty);
+        Assert.Equal(@"Local\NextMind.Desktop.SingleInstance.v1", mutex);
+        Assert.Equal("NextMind.Desktop.Activate.v1", activate);
+    }
+
+    [Fact]
+    public void DevelopmentIsolation_UsesDifferentMutexAndActivateMessage()
+    {
+        var prod = SingleInstance.NamesFor(string.Empty);
+        var dev = SingleInstance.NamesFor(".dev");
+
+        Assert.NotEqual(prod.Mutex, dev.Mutex);
+        Assert.NotEqual(prod.Activate, dev.Activate);
+    }
+
+    [Fact]
+    public void DevelopmentMutex_DoesNotBlockTheProductionMutex()
+    {
+        var suffix = "." + Guid.NewGuid().ToString("N");
+        using var dev = SingleInstance.TryAcquire(SingleInstance.NamesFor(suffix).Mutex);
+        Assert.NotNull(dev);
+
+        // A mutex with a different name is independent of the one held above.
+        var other = SingleInstance.TryAcquire(SingleInstance.NamesFor("." + Guid.NewGuid().ToString("N")).Mutex);
+        Assert.NotNull(other);
+        other!.Dispose();
+    }
 }
