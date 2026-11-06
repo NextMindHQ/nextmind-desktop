@@ -37,10 +37,16 @@ public partial class App : Application
     private ILog _log = NullLog.Instance;
     private bool _exiting;
 
-    /// <summary>Set when config is redirected for development/smoke tests: never touch the real autostart entry then.</summary>
+    private static AppRunModeState CurrentRunMode
+        => AppRunMode.Resolve(
+            AppPaths.IsPortableMode(),
+            Environment.GetEnvironmentVariable(AppPaths.ConfigDirectoryOverrideVariable));
+
+    private static bool IsDevelopmentRun => CurrentRunMode.IsDevelopment;
+
+    /// <summary>Set for redirected development/smoke tests and the Portable edition: never touch the real autostart entry then.</summary>
     private static bool IsIsolatedRun
-        => AppPaths.IsPortableMode()
-            || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppPaths.ConfigDirectoryOverrideVariable));
+        => CurrentRunMode.IsIsolated;
 
     protected override void OnStartup(StartupEventArgs e)
     {
