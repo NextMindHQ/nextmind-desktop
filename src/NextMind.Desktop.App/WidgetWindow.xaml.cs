@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -14,6 +13,7 @@ public partial class WidgetWindow : Window
 {
     private const double MinWidthDip = 160;
     private const double MinHeightDip = 80;
+    private const double ClockMinHeightDip = 110;
     private const double CollapsedHeightDip = 32;
     private const uint WM_WINDOWPOSCHANGING = 0x0046;
     private readonly WidgetConfig _config;
@@ -34,6 +34,8 @@ public partial class WidgetWindow : Window
         NotePanel.Visibility = config.Kind == WidgetKind.QuickNote ? Visibility.Visible : Visibility.Collapsed;
         NoteText.Text = config.NoteText;
         _expandedHeightPx = config.Height;
+        MinWidth = MinWidthDip;
+        MinHeight = config.Kind == WidgetKind.Clock ? ClockMinHeightDip : MinHeightDip;
     }
 
     public WidgetConfig Config => _config;
@@ -73,10 +75,7 @@ public partial class WidgetWindow : Window
     }
 
     public void UpdateClock(DateTime now)
-    {
-        ClockTime.Text = now.ToString("HH:mm", CultureInfo.CurrentCulture);
-        ClockDate.Text = now.ToString("dddd, d MMMM yyyy", CultureInfo.CurrentCulture);
-    }
+        => ClockPanel.UpdateClock(now);
 
     public void SetNote(string text)
     {
@@ -174,12 +173,13 @@ public partial class WidgetWindow : Window
         }
 
         _config.Collapsed = collapsed;
+        MinHeight = collapsed ? CollapsedHeightDip : ExpandedMinHeightDip;
         ContentArea.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
         RightGrip.Visibility = BottomGrip.Visibility = CornerGrip.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
         CollapseButton.Content = collapsed ? "□" : "—";
         if (applyHeight)
         {
-            Height = collapsed ? CollapsedHeightDip : Math.Max(MinHeightDip, ZoneGeometry.PxToDip(_expandedHeightPx, _config.Dpi));
+            Height = collapsed ? CollapsedHeightDip : Math.Max(ExpandedMinHeightDip, ZoneGeometry.PxToDip(_expandedHeightPx, _config.Dpi));
         }
     }
 
@@ -189,12 +189,14 @@ public partial class WidgetWindow : Window
 
     private void RightGrip_DragDelta(object sender, DragDeltaEventArgs e) => Width = Math.Max(MinWidthDip, Width + e.HorizontalChange);
 
-    private void BottomGrip_DragDelta(object sender, DragDeltaEventArgs e) => Height = Math.Max(MinHeightDip, Height + e.VerticalChange);
+    private double ExpandedMinHeightDip => _config.Kind == WidgetKind.Clock ? ClockMinHeightDip : MinHeightDip;
+
+    private void BottomGrip_DragDelta(object sender, DragDeltaEventArgs e) => Height = Math.Max(ExpandedMinHeightDip, Height + e.VerticalChange);
 
     private void CornerGrip_DragDelta(object sender, DragDeltaEventArgs e)
     {
         Width = Math.Max(MinWidthDip, Width + e.HorizontalChange);
-        Height = Math.Max(MinHeightDip, Height + e.VerticalChange);
+        Height = Math.Max(ExpandedMinHeightDip, Height + e.VerticalChange);
     }
 
     private void Grip_DragCompleted(object sender, DragCompletedEventArgs e) => Changed?.Invoke(this);

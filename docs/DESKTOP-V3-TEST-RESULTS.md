@@ -15,17 +15,18 @@ Data: 2026-11-01. Gałąź: `forge/desktop-v3-future-workspace`.
 - Regresja Live Preview na rzeczywistym `DynamicResource` WPF: PASS — zasób tła, glow i accent zmieniają się przed Apply; zapis nie jest wywoływany; rollback przywraca bazę.
 - Izolacja procesu testowego: PASS — `TEST-V3.cmd` używa osobnego mutexu tylko przy przekierowanej konfiguracji, więc stary proces nie przejmie nowego testu.
 - Identyfikacja runtime: PASS — skompilowany marker i tytuł `V3 Live Preview 2`.
-- Pełny zestaw: PASS, 317/317 testów, 0 pominiętych.
+- Responsywny Clock & Date: PASS automatyczny — typografia rośnie dla rozmiarów compact/default/large, zachowuje budżet wysokości, reaguje natychmiast w prawdziwym komponencie WPF i daje identyczne metryki dla równoważnej geometrii przy 96/144/192 DPI.
+- Pełny zestaw: PASS, 326/326 testów, 0 pominiętych.
 - Release build: PASS, 0 błędów i 0 ostrzeżeń.
 - Launcher `--verify-only`, świeże unikalne katalogi buildu i konfiguracji oraz wymuszony błąd builda: PASS bez startowania V3.
 
 ## NOT TESTED
 
-- Rzeczywisty test UI potwierdził uruchomienie `V3 Live Preview 2` oraz kontrolkę `ListBox` z opcjami Electric Blue, Cyan, Violet i Amber. Nie ogłaszamy wizualnego PASS: dalszą interakcję przerwało wejście użytkownika.
-- Manualne potwierdzenie natychmiastowej zmiany widgetów/stref suwakiem i pełna wizualna ocena selektora nadal są wymagane.
+- V3 Live Preview 2 przeszło wstępny test manualny użytkownika: suwaki reagują natychmiast, selektor Accent jest czytelny, a ogólny wygląd został oceniony pozytywnie.
+- Responsywne skalowanie Clock & Date nie zostało jeszcze ocenione wizualnie na uruchomionej V3; automatyczne testy nie zastępują tego testu manualnego.
 - Drag-and-drop, wielomonitor/DPI i restart z V3 nadal wymagają testu manualnego.
 - CPU, RAM, GPU i płynność interakcji na uruchomionej V3.
 - Pełna seria zrzutów porównawczych przed/po regulacji suwaków nie została wykonana.
 
-Nie należy uznawać hotfixu za ukończony, dopóki oba zgłoszone błędy nie przejdą ponownego testu manualnego przez `TEST-V3.cmd`.
+Aktualny Clock & Date należy uznać za gotowy do testu manualnego, nie za wizualnie zatwierdzony.
 

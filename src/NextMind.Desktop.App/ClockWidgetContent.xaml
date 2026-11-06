@@ -1,0 +1,21 @@
+<UserControl x:Class="NextMind.Desktop.App.ClockWidgetContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             SnapsToDevicePixels="True" UseLayoutRounding="True"
+             SizeChanged="ClockWidgetContent_SizeChanged">
+  <UserControl.Resources>
+    <SolidColorBrush x:Key="ClockTextBrush" Color="#EEF6FF" />
+    <SolidColorBrush x:Key="ClockMutedBrush" Color="#91A4B8" />
+  </UserControl.Resources>
+  <StackPanel x:Name="ClockPanel" VerticalAlignment="Center">
+    <TextBlock x:Name="ClockLabel" Text="LOCAL TIME" Foreground="{DynamicResource WorkspaceAccentBrush}"
+               FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center" />
+    <TextBlock x:Name="ClockTime" Foreground="{StaticResource ClockTextBrush}" FontSize="27" FontWeight="Light"
+               HorizontalAlignment="Center" TextAlignment="Center" />
+    <Viewbox x:Name="DateFit" Stretch="Uniform" StretchDirection="DownOnly"
+             HorizontalAlignment="Stretch" Margin="0,3,0,0">
+      <TextBlock x:Name="ClockDate" Foreground="{StaticResource ClockMutedBrush}" FontSize="11"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="NoWrap" />
+    </Viewbox>
+  </StackPanel>
+</UserControl>
