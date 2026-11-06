@@ -34,3 +34,12 @@ public static class WidgetCatalog
         };
     }
 }
+
+public static class QuickNoteDraft
+{
+    public static string PrepareForSave(string? text)
+    {
+        var value = text ?? string.Empty;
+        return value.Length <= WidgetLimits.MaxNoteLength ? value : value[..WidgetLimits.MaxNoteLength];
+    }
+}

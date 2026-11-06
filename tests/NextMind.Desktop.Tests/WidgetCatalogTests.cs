@@ -76,4 +76,12 @@ public sealed class WidgetCatalogTests
         Assert.Equal("work-note", Assert.Single(config.Widgets).Id);
         Assert.Equal(999, Assert.Single(config.Profiles.Single(profile => profile.Id == homeId).Widgets).X);
     }
+
+    [Fact]
+    public void QuickNoteDraft_PreservesMultilineAndEmptyText_AndBoundsLongInput()
+    {
+        Assert.Equal("first\r\nsecond", QuickNoteDraft.PrepareForSave("first\r\nsecond"));
+        Assert.Equal(string.Empty, QuickNoteDraft.PrepareForSave(string.Empty));
+        Assert.Equal(WidgetLimits.MaxNoteLength, QuickNoteDraft.PrepareForSave(new string('x', 20_000)).Length);
+    }
 }

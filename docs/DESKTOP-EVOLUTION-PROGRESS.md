@@ -21,3 +21,11 @@ Updated: 2026-10-31
 - Keep resource monitoring out of this slice because cyclic sampling conflicts with the repository's hard no-polling constraint.
 - Use no new package dependencies.
 
+## Stage verification
+
+- Task 1: 281/281 tests — commit `76c3d16`.
+- Task 2: 287/287 tests — commit `2e2d7bc`.
+- Task 3: 292/292 tests — commit `5ef0e20`.
+- Task 4: 296/296 tests — commit `0ee5624`.
+- Task 5 + final review fix: 297/297 tests; Release build 0 warnings / 0 errors.
+

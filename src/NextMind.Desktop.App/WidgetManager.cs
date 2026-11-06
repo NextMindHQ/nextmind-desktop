@@ -131,14 +131,13 @@ public sealed class WidgetManager : IDisposable
 
     private void EditNote(WidgetWindow window)
     {
-        var text = PromptWindow.AskText("Quick Note", "Note:", window.Config.NoteText, "Save");
+        var text = NoteEditorWindow.Ask(window.Config.NoteText);
         if (text is null)
         {
             return;
         }
 
-        var bounded = text.Length > WidgetLimits.MaxNoteLength ? text[..WidgetLimits.MaxNoteLength] : text;
-        window.SetNote(bounded);
+        window.SetNote(text);
         _save();
         Changed?.Invoke();
     }
