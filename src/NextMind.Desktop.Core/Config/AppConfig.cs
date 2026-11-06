@@ -7,8 +7,9 @@ public static class ConfigSchema
     /// v1 = zones with geometry. v2 = items (references), Hidden, AutostartDecided.
     /// v3 = item Kind (Reference/Managed), AddedAtUtc, IsFolder, StoredName; zone SortMode; ManagedDesktopMovesEnabled gate.
     /// v4 = workspace profiles and assisted-layout preferences.
+    /// v5 = global Future Workspace appearance preferences.
     /// </remarks>
-    public const int Current = 4;
+    public const int Current = 5;
 }
 
 public static class ZoneLimits
@@ -41,6 +42,27 @@ public enum SortMode
     Type,
 }
 
+public enum AppearanceAccent
+{
+    ElectricBlue,
+    Cyan,
+    Violet,
+    Amber,
+}
+
+public sealed class AppearancePreferencesConfig
+{
+    public double GlowIntensity { get; set; } = 0.55;
+
+    public double PanelOpacity { get; set; } = 0.90;
+
+    public AppearanceAccent Accent { get; set; } = AppearanceAccent.ElectricBlue;
+
+    public bool AnimationsEnabled { get; set; } = true;
+
+    public bool ResourceSaverMode { get; set; }
+}
+
 public sealed class AppConfig
 {
     public int SchemaVersion { get; set; } = ConfigSchema.Current;
@@ -67,6 +89,8 @@ public sealed class AppConfig
     public bool ManagedDesktopMovesEnabled { get; set; }
 
     public LayoutPreferencesConfig Layout { get; set; } = new();
+
+    public AppearancePreferencesConfig Appearance { get; set; } = new();
 
     public string ActiveProfileId { get; set; } = string.Empty;
 

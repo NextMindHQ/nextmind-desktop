@@ -109,7 +109,7 @@ public sealed class WorkspaceProfileTests
         var parsed = ConfigMigrator.Parse(json);
 
         Assert.True(parsed.Migrated);
-        Assert.Equal(4, parsed.Config.SchemaVersion);
+        Assert.Equal(ConfigSchema.Current, parsed.Config.SchemaVersion);
         Assert.Equal("Legacy", Assert.Single(parsed.Config.Zones).Title);
         var profile = Assert.Single(parsed.Config.Profiles);
         Assert.Equal("Default", profile.Name);

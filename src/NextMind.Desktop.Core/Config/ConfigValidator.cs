@@ -5,6 +5,18 @@ public static class ConfigValidator
 {
     public static void Normalize(AppConfig config)
     {
+        config.Appearance ??= new AppearancePreferencesConfig();
+        config.Appearance.GlowIntensity = double.IsFinite(config.Appearance.GlowIntensity)
+            ? Math.Clamp(config.Appearance.GlowIntensity, 0, 1)
+            : 0.55;
+        config.Appearance.PanelOpacity = double.IsFinite(config.Appearance.PanelOpacity)
+            ? Math.Clamp(config.Appearance.PanelOpacity, 0.55, 1)
+            : 0.90;
+        if (!Enum.IsDefined(config.Appearance.Accent))
+        {
+            config.Appearance.Accent = AppearanceAccent.ElectricBlue;
+        }
+
         config.Layout ??= new LayoutPreferencesConfig();
         config.Layout.GridSize = config.Layout.GridSize <= 0 ? 16 : Math.Clamp(config.Layout.GridSize, 4, 128);
         config.Layout.Gap = Math.Clamp(config.Layout.Gap, 0, 64);
