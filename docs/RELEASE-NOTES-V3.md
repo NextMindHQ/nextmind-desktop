@@ -5,6 +5,8 @@
 ## Highlights
 
 - A redesigned Control Center and shared V3 chrome for zones and widgets.
+- Fast per-zone filtering remains available alongside the global `Ctrl+K` search.
+- Public-main placement behavior is retained: free-slot placement, edge snapping, smart expansion and obstruction-aware menus.
 - Profiles let one installation hold multiple independent workspace arrangements.
 - `Ctrl+K` searches commands, zones, widgets and Start-menu applications locally.
 - Clock & Date and Quick Note widgets persist per profile.
@@ -27,4 +29,4 @@ NextMind Desktop remains local-only: no account, cloud service, telemetry or ads
 
 ## Release status
 
-These notes are a publication draft. The current candidate packages are audit inputs only and must be regenerated from the final integrated public-main commit before release; their final hashes will therefore be different.
+These notes are a publication draft. The local integration candidate is based on public `main` and includes the V3 feature line. Publication still requires the user's explicit approval, a merge to `main`, green GitHub CI and packages regenerated from the exact release commit.

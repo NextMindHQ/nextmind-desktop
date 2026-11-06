@@ -1,6 +1,6 @@
 # NextMind Desktop V3 — Test Results
 
-Data ostatniej pełnej weryfikacji: 2026-11-05. Gałąź: `forge/desktop-v3-future-workspace`.
+Data ostatniej pełnej weryfikacji: 2026-11-06. Gałąź: `codex/v3-public-integration`, utworzona z publicznego `main` `22eef168`.
 
 ## Automatyczne
 
@@ -20,8 +20,11 @@ Data ostatniej pełnej weryfikacji: 2026-11-05. Gałąź: `forge/desktop-v3-futu
 - Future Window Chrome: PASS automatyczny — Control Center używa borderless `WindowChrome`, zachowuje `CanResize`, 44 DIP caption i 7 DIP natywną ramkę resize; maximize/restore przełącza stan okna.
 - Ciemne przewijanie: PASS automatyczny — pionowe i poziome offsety działają, thumb pozostaje interaktywny, komendy stron odpowiadają orientacji, a narożnik `ScrollViewer` nie używa bieli systemowej.
 - Resize grips: PASS automatyczny — widgety i strefy używają jawnego przezroczystego szablonu `Thumb`; istniejące handlery drag/resize pozostały podłączone.
-- Pełny zestaw: PASS, 333/333 testów, 0 pominiętych.
+- Publiczny punkt bazowy: PASS, 364/364 testy.
+- Pełny zestaw integracyjny: PASS, 430/430 testów, 0 pominiętych.
 - Release build: PASS, 0 błędów i 0 ostrzeżeń.
+- Regresje odzyskane z publicznego `main`: PASS — wyszukiwanie w strefie, wolne miejsce i snapping, smart expand, pozycjonowanie i zamykanie menu oraz przywracanie układu.
+- Koegzystencja funkcji V3: PASS — profile, globalne wyszukiwanie, widgety, Quick Note, personalizacja, schemat V5 i izolacja pojedynczej instancji.
 - Launcher `--verify-only`, świeże unikalne katalogi buildu i konfiguracji oraz wymuszony błąd builda: PASS bez startowania V3.
 - Setup ZIP w izolowanym katalogu: PASS — manifest i payload zweryfikowane, poprzednia aplikacja przeniesiona do backupu, receipt i backup manifest utworzone, syntetyczne `config.json`, `ManagedItems` i log zachowały identyczne SHA-256.
 - Portable ZIP: PASS — obecne EXE, marker i self-contained `coreclr.dll`; brak spakowanej konfiguracji i logów; test ścieżek potwierdza odrębność `Desktop-Portable` od `Desktop`.
@@ -33,5 +36,5 @@ Data ostatniej pełnej weryfikacji: 2026-11-05. Gałąź: `forge/desktop-v3-futu
 - Użytkownik zaakceptował responsywny Clock & Date oraz kierunek wizualny Future Workspace.
 - W izolowanej instancji demonstracyjnej sprawdzono wizualnie Control Center, pasek tytułowy, ciemne scrollbary, widgety i personalizację.
 - Pełny test wielomonitor/DPI, długotrwały profil CPU/RAM/GPU i każda kombinacja drag-and-drop pozostają poza zakresem audytu prezentacji.
-- Paczki audytowe powstały przed końcową integracją z publicznym `main`; przed publikacją muszą zostać zbudowane ponownie z dokładnego commita wydania.
+- Finalne lokalne paczki kandydujące są odtwarzane skryptem `release/BUILD-V3.ps1` z bieżącego commita integracyjnego. Przed publikacją należy odtworzyć je ponownie z dokładnego commita na `main` i potwierdzić publiczne CI.
 

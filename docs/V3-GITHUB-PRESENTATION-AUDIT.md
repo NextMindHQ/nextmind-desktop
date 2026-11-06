@@ -1,5 +1,7 @@
 # NextMind Desktop V3 — GitHub Presentation Audit
 
+> Historical pre-integration audit. The completed public-main integration is documented in `V3-INTEGRATION-REPORT.md`.
+
 Date: 2026-11-05. Scope: local presentation branch only. No merge, push, tag or GitHub Release was performed.
 
 ## Result summary
