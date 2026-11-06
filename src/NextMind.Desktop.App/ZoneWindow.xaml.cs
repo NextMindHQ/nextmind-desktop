@@ -33,7 +33,6 @@ public partial class ZoneWindow : Window
     private const double MinWidthDip = 160;
     private const double MinHeightDip = 80;
     private const double IconDip = 32;
-    private const string EmptyDropText = "Drop files, folders or shortcuts here";
     private const uint WM_WINDOWPOSCHANGING = 0x0046;
     private const int WM_MOVING = 0x0216;
     private const int WM_EXITSIZEMOVE = 0x0232;
@@ -889,15 +888,11 @@ public partial class ZoneWindow : Window
 
     private void UpdateEmptyHint()
     {
-        if (_filterActive)
-        {
-            EmptyHint.Text = $"No matches for “{SearchBox.Text.Trim()}”";
-            EmptyHint.Visibility = _visibleMatches == 0 ? Visibility.Visible : Visibility.Collapsed;
-            return;
-        }
-
-        EmptyHint.Text = EmptyDropText;
-        EmptyHint.Visibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        var state = ZoneEmptyState.Resolve(_filterActive, SearchBox.Text, _visibleMatches, _items.Count);
+        EmptyMessage.Text = state.Message;
+        EmptyHint.Visibility = state.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+        EmptyGlyph.Visibility = state.ShowDropAffordance ? Visibility.Visible : Visibility.Collapsed;
+        EmptyDetails.Visibility = state.ShowDropAffordance ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>
