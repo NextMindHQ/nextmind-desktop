@@ -1,194 +1,155 @@
-<p align="center">
-  <img src="marketing/images/hero.png" alt="NextMind Desktop: zones with files, folders and shortcuts on a dark background; headline: Your desktop. Your rules." width="900">
-</p>
-
-<h1 align="center">NextMind Desktop</h1>
+# NextMind Desktop
 
 <p align="center">
-  <b>Your desktop. Your rules.</b><br>
-  A free, open-source desktop organizer for Windows.
+  <img src="marketing/images/hero-v3.png" alt="NextMind Desktop V3 Future Workspace — Your desktop. Your rules." width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/NextMindHQ/nextmind-desktop?label=release"></a>
-  <a href="#requirements"><img alt="Platform: Windows x64" src="https://img.shields.io/badge/platform-Windows%20x64-0078D6"></a>
-  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/github/license/NextMindHQ/nextmind-desktop"></a>
-  <a href="https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/NextMindHQ/nextmind-desktop/actions/workflows/ci.yml/badge.svg"></a>
+  <strong>Your desktop. Your rules.</strong><br>
+  A local-first workspace for Windows that turns desktop clutter into calm, configurable zones.
 </p>
 
 <p align="center">
-  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0"><b>⬇ Download v0.2.0 Beta</b></a> &nbsp;·&nbsp;
-  <a href="#whats-inside">What is inside</a> &nbsp;·&nbsp;
-  <a href="docs/USER-GUIDE.md">User guide</a> &nbsp;·&nbsp;
-  <a href="CHANGELOG.md">Changelog</a>
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/releases"><img alt="GitHub Releases" src="https://img.shields.io/github/v/release/NextMindHQ/nextmind-desktop?include_prereleases&style=flat-square"></a>
+  <img alt="Windows 10 and 11 x64" src="https://img.shields.io/badge/Windows-10%20%7C%2011-38bdf8?style=flat-square&logo=windows">
+  <a href="LICENSE"><img alt="Apache-2.0 license" src="https://img.shields.io/badge/license-Apache--2.0-0f172a?style=flat-square"></a>
+  <a href="https://github.com/NextMindHQ/nextmind-desktop/actions"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/NextMindHQ/nextmind-desktop/ci.yml?branch=main&style=flat-square&label=CI"></a>
 </p>
 
-<p align="center"><b>Free &amp; Open Source</b> · Apache-2.0 · No account · No cloud · No telemetry<br>
-<sub>v0.2.0 is a <b>Beta</b> (pre-release). Screenshots use synthetic sample data (<a href="docs/SCREENSHOT-PLAN.md">how they are made</a>).</sub></p>
+NextMind Desktop lives between your wallpaper and your applications. It provides collapsible zones, local search, workspace profiles and lightweight widgets without an account, cloud service, telemetry or ads. Your configuration stays on your computer, and the guarded file model never deletes or overwrites your files.
 
-## Why NextMind Desktop
+> **V3.0.0 release candidate.** The presentation below documents the completed V3 build. Download links will become active when the audited release is published.
 
-The Windows desktop quickly turns into a pile of icons. NextMind Desktop gives it structure: you create named **zones** right on the desktop — above the wallpaper
-and icons, below your applications — drop files, folders and shortcuts into them, collapse the ones you do not need, and carry on.
+## Future Workspace in V3
 
-You decide the layout: no grid, no automatic arranging. It is a small, quiet tray application with **no account, no cloud and no telemetry**.
+- **A cohesive new interface** — custom window chrome, holographic surfaces and a restrained accent system across the desktop and Control Center.
+- **Zones that stay useful** — expand, collapse, reorder and calibrate work areas while keeping applications above them.
+- **Search inside every zone** — filter names live with case- and diacritic-insensitive matching, keyboard selection and a non-destructive empty state.
+- **Placement that helps without taking over** — new zones seek free space, snap to neighbouring edges, and can still overlap intentionally.
+- **Smarter expanding and menus** — zones choose the less obstructive expand direction; context menus and submenus stay on-screen and close on focus loss.
+- **Profiles for every context** — switch between focused layouts without losing zone, widget or note state.
+- **Local command search** — find NextMind commands, zones, widgets and Start-menu applications with `Ctrl+K`.
+- **Useful, quiet widgets** — responsive Clock & Date and Quick Note widgets, persisted per profile.
+- **Live personalization** — preview opacity, glow and accent changes immediately; Apply commits them and closing rolls back unapplied changes.
+- **Safety by design** — managed desktop moves remain opt-in, journalled and recoverable; referenced files stay where they are.
 
-## What is inside
+## Gallery
 
-<p align="center">
-  <img src="marketing/images/search.png" alt="Search in a zone: the word list typed in a zone leaves two matching items; keys: arrows select, Enter opens, Esc clears" width="760">
-</p>
+### One workspace, arranged around you
 
-* **Desktop Zones** — named panels that live on the desktop itself, under your windows and over the icons
-* **Search in every zone** — a magnifier in each title bar filters that zone's items as you type (names of files, folders and shortcuts; ignores case and Polish letters).
-  **↓ / ↑** select, **Enter** opens, **Esc** clears. Searching never changes your zone or your files.
-* **A layout that is yours, with some help** — new zones appear in a free spot; edges snap to neighbours while you drag (hold **Alt** to move freely); overlapping on purpose still works.
-* **Smarter expanding** — a zone opens downward, or upward when that covers fewer other zones or would leave the screen. Other zones are never moved.
-* **Menus that stay out of the way** — context menus and the *Sort by* / *Move to Zone* submenus open where they cover the least of neighbouring zones, and they close when you click elsewhere.
-* **Collapse / expand** a zone to just its title; it keeps its position across restarts. **Move and resize** freely within the visible monitor area
-* **Drag & drop** files, folders and shortcuts from Explorer or the Desktop; the original is never touched
-* **Sorting and manual ordering** — drag to reorder, or sort per zone by name, date added or type
-* **Native Windows icons**, a **tray icon and Control Center**, and **Start with Windows**
-* **Show desktop (Win+D)** reveals your zones; application windows cover them
-* **Managed Desktop Moves** — *opt-in, off by default*; see [Safety](#managed-desktop-moves--safety)
+![NextMind Desktop V3 workspace with three zones and two widgets](marketing/images/workspace-v3.png)
 
-> **v0.2.0 is a Beta.** It is a pre-release: it passes the full automated test suite, but a clean-Windows install test and an in-place upgrade from v0.1.0 have not been verified yet.
-> Back up what matters and report problems in [Issues](https://github.com/NextMindHQ/nextmind-desktop/issues).
+<table>
+  <tr>
+    <td width="50%"><img src="marketing/images/control-center-v3.png" alt="NextMind Desktop V3 Control Center showing profiles, search, zones and widgets"></td>
+    <td width="50%"><img src="marketing/images/personalization-v3.png" alt="NextMind Desktop V3 appearance controls with opacity, glow and accent choices"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Control Center</strong><br>Profiles, zones, widgets and local search in one place.</td>
+    <td align="center"><strong>Personalization</strong><br>Immediate preview with explicit Apply and rollback semantics.</td>
+  </tr>
+</table>
 
-**Like the project?** Give it a ⭐ on GitHub and follow [NextMindHQ](https://github.com/NextMindHQ) for future updates.
+All product views above come from an isolated V3 demonstration profile with synthetic data. No personal desktop, path, filename or user configuration is shown.
 
-## Quick start & install
+## Install or update
 
-1. Download **`NextMind-Desktop-v0.2.0-win-x64.zip`** from the [v0.2.0 Beta release](https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0).
-2. Extract it to a folder you want to keep (the app registers that location for *Start with Windows*).
-3. Run **`NextMindDesktop.exe`**.
+1. Open [GitHub Releases](https://github.com/NextMindHQ/nextmind-desktop/releases) and choose **NextMind Desktop V3.0.0**.
+2. Download `NextMindDesktop-3.0.0-Setup.zip` and extract it to a temporary folder.
+3. Exit NextMind Desktop normally from its tray menu. The installer never terminates the app for you.
+4. Run `INSTALL-V3.cmd` and follow the prompts.
+5. Start NextMind Desktop from the Start menu.
 
-A first Zone appears on your desktop and a tray icon is added. Drop files, folders or shortcuts onto the Zone. More in the [user guide](docs/USER-GUIDE.md).
+The setup package validates every payload file before installation, makes a verified pre-upgrade backup, and replaces only the application directory at `%LOCALAPPDATA%\NextMind\Desktop\app`. Configuration, profiles, notes, managed items, logs and the existing autostart preference remain in place. A rollback script is included; see [Update guide](docs/UPDATE-V3.md) and [Rollback guide](docs/ROLLBACK-V3.md).
 
-* **Self-contained:** v0.2.0 includes everything it needs. **You do not need to install .NET.**
-* **Not code-signed yet:** Windows SmartScreen may warn about an unrecognized app. If you trust the download, choose *More info* → *Run anyway*.
-  You can check the file first: the release includes a `.sha256` file, or run
-  `Get-FileHash .\NextMind-Desktop-v0.2.0-win-x64.zip -Algorithm SHA256` in PowerShell and compare it with the value on the release page.
-* **Start with Windows is on by default** on the first run. Untick it in the tray menu if you don't want it.
-* **Uninstall:** untick *Start with Windows* in the tray menu, choose *Exit*, then delete the folder you extracted the program to.
-  Your data folder `%LOCALAPPDATA%\NextMind\Desktop` needs one more step first — see the warning below.
+> Setup is a script bundle inside a ZIP, not an MSI. The installed build requires the [.NET 8 Desktop Runtime for Windows x64](https://dotnet.microsoft.com/download/dotnet/8.0).
 
-> **Warning — check before you delete `%LOCALAPPDATA%\NextMind\Desktop`.** If you ever turned on *Managed Desktop Moves*, the Desktop items you dropped onto a Zone were
-> **moved** into `%LOCALAPPDATA%\NextMind\Desktop\ManagedItems`, so that folder can hold **your own files**, and the Desktop no longer has them.
-> Give them back first: use *Return to Desktop* in each item's menu, or *Delete Zone* → *Return items to Desktop and delete Zone*. Then open `ManagedItems` and make sure it is
-> empty or holds nothing you need. Only then delete the data folder (settings, logs and the journal). If you never enabled Managed Desktop Moves (the default), the folder holds only
-> settings and logs and can be removed after you exit the app.
+## Portable edition
 
-## How it works
+Download `NextMindDesktop-3.0.0-Portable-win-x64.zip`, extract the complete archive, and run `NextMindDesktop.exe`. The portable build is self-contained and does not require a separate .NET runtime.
 
-Every item in a Zone is one of two kinds, decided by where it comes from:
+Portable mode is deliberately isolated from the installed edition:
 
-| You drop… | Result |
-|---|---|
-| **Anything that is not directly on your Desktop** (other folders, drives, the Public Desktop, Desktop subfolders) | **Reference.** The Zone remembers the path; the original is never touched. "Remove from Zone" only forgets the path. |
-| **A loose item from your Desktop** | Depends on the Managed Desktop Moves setting: **reference** while it is OFF (default), **moved** into managed storage when it is ON. |
-| **Return to Desktop** (item menu) | Safely moves a managed item back to the Desktop. |
-
-Your settings and the log live in `%LOCALAPPDATA%\NextMind\Desktop\` (`config.json`, `logs\desktop.log`). The log can contain the names of
-files you drop onto a Zone — review it before attaching it to a bug report.
-
-## Managed Desktop Moves / Safety
-
-**Managed Desktop Moves are an opt-in, safety-gated feature, and they are OFF by default.**
-The setting is `managedDesktopMovesEnabled` in `%LOCALAPPDATA%\NextMind\Desktop\config.json` (`false` by default). The Control Center shows its
-current state. There is no Settings window yet, so enabling it means editing the file while the app is closed.
-
-* **OFF (default):** a Desktop item dropped on a Zone is added as a **reference only**. Nothing is moved; the item stays on the Desktop.
-* **ON:** a Desktop item can be **moved into managed storage** (`%LOCALAPPDATA%\NextMind\Desktop\ManagedItems`), so the Desktop icon really disappears.
-  A safety assessment runs first. Ordinary shortcuts and small files and folders move directly; riskier items (programs, large files or folders,
-  project-like folders, folders that could not be fully scanned) ask first, defaulting to *Add as Reference*; unsafe items (symlinks, junctions, cloud
-  placeholders, system or hidden items) are refused and can only be added as references.
-
-Safeguards, whether or not the feature is on:
-
-* **Write-ahead journal and recovery** — every managed move is journaled first and recovered on the next start if the app stopped midway.
-* **Atomic, same-volume moves only** — a single rename; never copy-and-delete, never overwrite.
-* **Collision handling** — a taken name gets a new one such as `NAME (2).lnk`; nothing is silently overwritten.
-* **Delete Zone returns managed items** — the dialog offers *Return items to Desktop and delete Zone* or *Cancel*; no option deletes your files.
-* **No delete APIs on user data** — a test fails the build if product code gains a file-delete call.
-* **Drops use link semantics** — Explorer is never told to "move" the source, so it cannot delete anything by itself.
-* **Fail closed** — if an operation cannot be shown to be safe, it is refused with a message.
-
-Full details: [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md).
-
-**Known limitations**
-
-* Dragging a managed item *out* to the Desktop is not implemented yet — use **Return to Desktop**.
-* Managed storage lives under `%LOCALAPPDATA%`; a tool that cleans AppData could remove it. Keep this in mind before enabling managed moves.
-* Keeping a Zone above the desktop icons relies on undocumented Windows behaviour. There is a visible fallback, but a future Windows update could change it.
-* Scanning very large folders for reparse points is bounded; when a scan is truncated the app always asks.
-* Very large zones (hundreds to 2000 items) take a few seconds to load at start and use noticeably more memory.
-* Managing many zones (for example 30 or more) is not comfortable yet; a zone list with find-and-jump in the Control Center is planned.
-* Search matches names only — not file contents or parent folders — and works inside one zone at a time; there is no global search yet.
-* No Settings window yet. Windows x64 only. The executable is not code-signed.
+- it stores configuration in `%LOCALAPPDATA%\NextMind\Desktop-Portable`;
+- it never registers autostart or an uninstaller;
+- it does not read or change `%LOCALAPPDATA%\NextMind\Desktop`;
+- moving the executable without its `NextMindDesktop.portable` marker disables portable detection, so keep the archive contents together.
 
 ## Requirements
 
-**Using NextMind Desktop**
+- Windows 10 version 2004 or newer, or Windows 11
+- x64 processor
+- .NET 8 Desktop Runtime for the Setup edition; no separate runtime for Portable
+- Standard user account; administrator rights are not required
 
-* Windows 10 version 2004 (build 19041) or later, or Windows 11 — **x64**
-* Nothing else: the release ZIP is self-contained (no .NET installation needed)
+To build from source, install the .NET 8 SDK selected by `global.json`.
 
-**Building from source**
-
-* The .NET 8 SDK (`global.json` pins an 8.0.4xx SDK and allows roll-forward to newer 8.0 feature bands)
-* Git. Visual Studio 2022, Rider or VS Code are optional.
-
-## Build from Source / Development
+## Build and test
 
 ```powershell
-git clone https://github.com/NextMindHQ/nextmind-desktop.git
-cd nextmind-desktop
 dotnet restore
 dotnet build -c Release
 dotnet test -c Release
 ```
 
-To run your build as **your installed app**, from a stable per-user folder (the "Start with Windows" entry stores the path of the running executable):
+The test suite uses guarded temporary directories and must never target Desktop, Documents, Pictures, OneDrive or live application data.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File tools\start.ps1   # publishes to %LOCALAPPDATA%\NextMind\Desktop\app and starts it
-powershell -ExecutionPolicy Bypass -File tools\stop.ps1    # stops it (or use tray -> Exit)
+## Data and privacy
+
+- No account, network service, telemetry or advertising.
+- Configuration and logs remain under the selected local data root.
+- Files outside NextMind's guarded storage are referenced, not relocated.
+- Optional managed moves accept only loose user-Desktop items, use write-ahead journalling and never overwrite an existing destination.
+- Uninstalling the application does not delete user data automatically.
+
+Read the detailed model in [Threat and data safety](docs/THREAT-AND-DATA-SAFETY.md).
+
+## FAQ
+
+<details>
+<summary><strong>Does NextMind replace Windows Explorer or the desktop?</strong></summary>
+
+No. It adds a local workspace layer above the wallpaper and desktop icons but below normal application windows.
+</details>
+
+<details>
+<summary><strong>Can it delete or overwrite my files?</strong></summary>
+
+No. References never move files. The optional managed-move feature is off by default, accepts only eligible Desktop items, journals the operation and refuses destination collisions.
+</details>
+
+<details>
+<summary><strong>Will an update erase my layout or notes?</strong></summary>
+
+The V3 installer preserves the complete data area and replaces only the versioned application payload. It also creates and verifies a backup before switching versions.
+</details>
+
+<details>
+<summary><strong>Can installed and Portable editions coexist?</strong></summary>
+
+Yes. They have separate data roots. Do not run two instances at the same time unless you are using the project's explicitly isolated test mode.
+</details>
+
+<details>
+<summary><strong>Where can I report a problem?</strong></summary>
+
+Use [GitHub Issues](https://github.com/NextMindHQ/nextmind-desktop/issues) and include the Windows version, package type and reproduction steps. Never attach private configuration or personal files.
+</details>
+
+## Project layout
+
+```text
+src/NextMind.Desktop.Core    Configuration, profiles, search, widgets and guarded filesystem logic
+src/NextMind.Desktop.Shell   Windows desktop integration and single-instance infrastructure
+src/NextMind.Desktop.App     WPF zones, widgets and Control Center
+tests/                       xUnit and release-package verification
+tools/                       Build, launch, packaging and recovery tools
+docs/                        Architecture, safety, update and release documentation
+marketing/                   Public presentation assets and reproducible visual sources
 ```
 
-**To try changes without touching an installed copy**, use the isolated test instance instead — see [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
-Do not use `start.ps1` / `stop.ps1` for experiments: they act on the installed app.
-
-Project layout:
-
-```
-src/NextMind.Desktop.Core    config (versioned, atomic save, recovery), guarded filesystem, journal, managed items, geometry — no Windows API
-src/NextMind.Desktop.Shell   Win32 interop: desktop layer, tray, message window, single instance, monitors, known folders, icons
-src/NextMind.Desktop.App     WPF app: zone windows, zone manager, Control Center
-tests/NextMind.Desktop.Tests xUnit; filesystem tests run only inside guarded temp directories
-docs/                        architecture, safety model, user guide, manual test scenarios
-tools/                       start / stop / autostart helper scripts, isolated test instance, icon generator
-marketing/                   presentation graphics and copy (not part of the app)
-```
-
-Further reading: [docs/USER-GUIDE.md](docs/USER-GUIDE.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/THREAT-AND-DATA-SAFETY.md](docs/THREAT-AND-DATA-SAFETY.md),
-[docs/MANUAL-TEST.md](docs/MANUAL-TEST.md), [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md), [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md),
-[CHANGELOG.md](CHANGELOG.md).
-
-**Roadmap** — ideas, no dates and no promises: a zone list with find-and-jump in the Control Center, a Settings window, DPI-aware restore of saved sizes,
-faster loading of very large zones, an installer and update path, accessibility, additional Shell integration.
-
-## Contributing
-
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first — especially the filesystem safety rules (never test destructive
-operations against a real Desktop) — and the [Code of Conduct](CODE_OF_CONDUCT.md).
-
-## Security
-
-Please report vulnerabilities privately through GitHub (**Security** tab → **Report a vulnerability**). See [SECURITY.md](SECURITY.md).
+See the [changelog](CHANGELOG.md), [V3 release notes](docs/RELEASE-NOTES-V3.md), [security policy](https://github.com/NextMindHQ/nextmind-desktop/blob/main/SECURITY.md) and [contributing guide](https://github.com/NextMindHQ/nextmind-desktop/blob/main/CONTRIBUTING.md).
 
 ## License
 
-NextMind Desktop is licensed under the [Apache License 2.0](LICENSE). Copyright 2026 NextMind.
-
-It is original work. Other desktop-organization tools were studied only as general inspiration for the problem space; no code was copied from them.
+NextMind Desktop is licensed under [Apache License 2.0](LICENSE). Third-party projects mentioned in the research documents were studied for ideas only; no source code was copied. The license does not grant rights to the NextMind name or branding.

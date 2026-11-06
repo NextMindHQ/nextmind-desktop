@@ -10,8 +10,9 @@
   --text: #f0f4f8;
   --muted: #8c98a8;
   --soft: #c9d3e0;
-  --accent: #5aa9ff;
-  --accent-soft: #9ccbff;
+  --accent: #38bdf8;
+  --accent-soft: #a9e7ff;
+  --cyan: #22d3c5;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -100,3 +101,30 @@ h1 { font-weight: 600; letter-spacing: -0.022em; line-height: 1.04; }
 }
 
 .note { color: rgba(140, 152, 168, 0.8); }
+
+.v3-grid {
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.capture {
+  position: absolute;
+  display: block;
+  filter: drop-shadow(0 24px 38px rgba(0, 0, 0, 0.46));
+}
+
+.micro {
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.rule {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.55), transparent);
+}

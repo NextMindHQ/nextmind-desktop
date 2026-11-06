@@ -1,15 +1,29 @@
 # Marketing kit: NextMind Desktop
 
-Presentation material for NextMind Desktop (draft, **not published**). Direction: premium technology: deep navy, graphite, a restrained blue accent (taken from the app's own palette), clean typography, plenty of space.
+Presentation material for NextMind Desktop (draft, **not published**). Direction: premium technology: deep navy, graphite, a restrained blue accent taken from V3, clean typography and authentic product UI.
 
 - **Name:** NextMind Desktop (no new logo: the product uses its name as a wordmark)
 - **Headline:** Your desktop. Your rules.
 - **Signature:** Free. Open source. Made for Windows.
 
+## V3 Hybrid presentation
+
+The five approved V3 assets are:
+
+| File | Size | Purpose |
+|---|---:|---|
+| `images/hero-v3.png` | 1920 × 1080 | README hero and product presentation |
+| `images/workspace-v3.png` | 1600 × 900 | Zones and widgets overview |
+| `images/control-center-v3.png` | 760 × 780 | Authentic Control Center view |
+| `images/personalization-v3.png` | 760 × 780 | Authentic appearance view |
+| `images/social-preview-v3.png` | 1280 × 640 | GitHub Social Preview |
+
+`control-center-v3.png` and `personalization-v3.png` are direct captures of the running V3 app. `workspace-v3.png` is composed from the real V3 zone and widget classes rendered by an isolated WPF harness. The hero and social preview place those authentic pixels in a branded frame; they do not invent product screens.
+
 ## Authenticity rules
-- Every screenshot in these graphics is a **real screenshot** from `docs/images/` (taken from the running app with synthetic sample data). They are placed and scaled, never redrawn or edited, and the originals are untouched.
+- Every V3 product surface comes from the running application or its real WPF classes, using a synthetic isolated configuration. The UI pixels are placed and scaled, not redrawn.
 - Backgrounds, typography and decoration are generated; no fictional interface, no features the product does not have.
-- No real desktop, wallpaper, private files or personal data appear anywhere. Every graphic except the 1280 × 640 GitHub social preview (no room) carries a small "synthetic sample data" note; the screenshots themselves are documented in `docs/SCREENSHOT-PLAN.md`.
+- No real desktop, wallpaper, private file, user path or installed configuration appears anywhere.
 - v0.2.0 Beta is published; the "(v0.2)" markers in the copy only mark features that are new since v0.1.0.
 
 ## Graphics (`marketing/images/`)

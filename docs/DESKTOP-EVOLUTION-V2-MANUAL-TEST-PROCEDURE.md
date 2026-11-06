@@ -33,7 +33,7 @@ The normal Exit path closes the search/control windows, flushes zone/profile/wid
 Open a new PowerShell window and run:
 
 ```powershell
-$repo = 'C:\Users\zoltk\Documents\ChatGPT\NextMind Desktop'
+$repo = '<repository>'
 $testRoot = Join-Path $env:TEMP ("NextMindDesktop-V2-Manual-" + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $testRoot | Out-Null
 

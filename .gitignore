@@ -6,4 +6,5 @@ obj/
 TestResults/
 artifacts/
 publish/
+.tmp/
 *.log

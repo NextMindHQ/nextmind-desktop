@@ -3,8 +3,10 @@ $repo = Split-Path $PSScriptRoot -Parent
 $stage = Join-Path $repo 'artifacts\release-v3\staging'
 $setup = Join-Path $stage 'setup-package'
 $portable = Join-Path $stage 'portable'
+$controlCenter = Join-Path $repo 'src\NextMind.Desktop.App\ControlCenterWindow.xaml'
 function Require([bool]$condition, [string]$message) { if (-not $condition) { throw $message } }
 
+Require (-not (Select-String -LiteralPath $controlCenter -SimpleMatch 'Live Preview' -Quiet)) 'Production Control Center contains a preview-only label.'
 Require (Test-Path -LiteralPath (Join-Path $setup 'RELEASE-MANIFEST.json')) 'Setup manifest is missing.'
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $setup 'RELEASE-MANIFEST.json') | ConvertFrom-Json
 Require ($manifest.Version -eq '3.0.0') 'Setup version is not 3.0.0.'

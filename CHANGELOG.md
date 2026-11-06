@@ -6,6 +6,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [3.0.0] — draft
+
+### Added
+
+* **Future Workspace V3:** cohesive custom chrome, holographic workspace surfaces, dark scrollbars and accessible resize handles.
+* **Workspace profiles:** create, rename, duplicate, switch and safely delete independent layouts.
+* **Global local search:** `Ctrl+K` finds NextMind commands, zones, widgets and Start-menu applications.
+* **Widgets:** responsive Clock & Date and per-profile Quick Note.
+* **Live personalization:** preview opacity, glow and accent changes; Apply commits and closing rolls back unapplied changes.
+* **Assisted layout:** optional grid and zone-edge snapping, collision feedback, auto-arrange and one-step move undo.
+* **Setup and Portable editions:** verified backup/rollback installation and a self-contained portable package with a separate data root.
+
+### Preserved from 0.2.0
+
+* Search inside each zone, free-slot placement, edge snapping, smart expand direction, obstruction-aware menus and reliable menu dismissal.
+* Collapsed-zone positioning across restarts and the isolated `tools/test-ui.ps1` development workflow.
+
+### Changed
+
+* Configuration advances to schema V5 while preserving zones, items, geometry, profiles, notes, managed data and autostart preference.
+* Product version is 3.0.0 and production UI no longer exposes preview-build labels.
+
 ## [0.2.0] — 2026-10-12 (Beta)
 
 Pre-release. The Windows clean-install test and an in-place upgrade from v0.1.0 have **not** been verified yet; see the release notes.
@@ -47,6 +69,7 @@ First public release (Windows x64).
 * Start with Windows, single instance, Explorer-restart recovery, per-monitor DPI, positions and layout persisted.
 * No account, no cloud, no telemetry.
 
-[Unreleased]: https://github.com/NextMindHQ/nextmind-desktop/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/NextMindHQ/nextmind-desktop/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v3.0.0
 [0.2.0]: https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.2.0
 [0.1.0]: https://github.com/NextMindHQ/nextmind-desktop/releases/tag/v0.1.0

@@ -24,7 +24,7 @@
     </Border>
     <Border Grid.Row="1" Style="{StaticResource FuturisticWindowHeaderStyle}">
       <Grid>
-        <StackPanel><TextBlock Text="NEXTMIND // FUTURE WORKSPACE" Style="{StaticResource FutureSectionLabelStyle}"/><TextBlock Text="Control Center" FontSize="26" FontWeight="Light"/><TextBlock Text="Local modular desktop · V3 · Live Preview 2" Style="{StaticResource FutureMutedTextStyle}"/></StackPanel>
+        <StackPanel><TextBlock Text="NEXTMIND // FUTURE WORKSPACE" Style="{StaticResource FutureSectionLabelStyle}"/><TextBlock Text="Control Center" FontSize="26" FontWeight="Light"/><TextBlock Text="Local modular desktop · V3" Style="{StaticResource FutureMutedTextStyle}"/></StackPanel>
         <Button Content="⌕  COMMAND SEARCH" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource FuturisticPrimaryButtonStyle}" Click="Search_Click" ToolTip="Search (Ctrl+K)"/>
       </Grid>
     </Border>
