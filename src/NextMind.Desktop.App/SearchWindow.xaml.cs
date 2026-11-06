@@ -55,7 +55,7 @@ public partial class SearchWindow : Window
         }
     }
 
-    private void Results_DoubleClick(object sender, MouseButtonEventArgs e) => ExecuteSelected();
+    private void Result_DoubleClick(object sender, MouseButtonEventArgs e) => ExecuteSelected();
 
     private void ExecuteSelected()
     {

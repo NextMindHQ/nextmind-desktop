@@ -18,6 +18,7 @@
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="Margin" Value="0,2" />
       <Setter Property="Padding" Value="0" />
+      <EventSetter Event="MouseDoubleClick" Handler="Result_DoubleClick" />
     </Style>
   </Window.Resources>
   <Grid Margin="18">
@@ -29,8 +30,7 @@
     <TextBox x:Name="QueryBox" FontSize="18" Padding="12,9" TextChanged="Query_TextChanged"
              ToolTip="Search applications, zones, widgets and NextMind Desktop commands" />
     <Grid Grid.Row="1" Margin="0,12,0,0">
-      <ListBox x:Name="ResultsList" ItemTemplate="{StaticResource SearchResultTemplate}"
-               MouseDoubleClick="Results_DoubleClick" />
+      <ListBox x:Name="ResultsList" ItemTemplate="{StaticResource SearchResultTemplate}" />
       <TextBlock x:Name="EmptyText" Text="Type to search" HorizontalAlignment="Center" VerticalAlignment="Center"
                  Foreground="#FF8C98A8" FontSize="14" IsHitTestVisible="False" />
     </Grid>

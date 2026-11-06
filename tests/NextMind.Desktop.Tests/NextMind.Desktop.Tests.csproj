@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\NextMind.Desktop.App\NextMind.Desktop.App.csproj" />
     <ProjectReference Include="..\..\src\NextMind.Desktop.Core\NextMind.Desktop.Core.csproj" />
     <ProjectReference Include="..\..\src\NextMind.Desktop.Shell\NextMind.Desktop.Shell.csproj" />
   </ItemGroup>
