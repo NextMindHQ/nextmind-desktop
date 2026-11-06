@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
-## [3.0.0] — draft
+## [3.0.0] — 2026-11-06
 
 ### Added
 
@@ -16,7 +16,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 * **Widgets:** responsive Clock & Date and per-profile Quick Note.
 * **Live personalization:** preview opacity, glow and accent changes; Apply commits and closing rolls back unapplied changes.
 * **Assisted layout:** optional grid and zone-edge snapping, collision feedback, auto-arrange and one-step move undo.
-* **Setup and Portable editions:** verified backup/rollback installation and a self-contained portable package with a separate data root.
+* **Verified Setup:** manifest validation, complete pre-upgrade backup, rollback and preservation of existing user data.
 
 ### Preserved from 0.2.0
 

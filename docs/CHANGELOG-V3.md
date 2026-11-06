@@ -8,7 +8,6 @@
 - Clock & Date and Quick Note widgets with per-profile state.
 - Immediate appearance preview with explicit Apply, Reset and close-to-rollback semantics.
 - Setup ZIP with verified backup and rollback support.
-- Self-contained Portable ZIP with a separate data root and no autostart registration.
 
 ## Changed
 

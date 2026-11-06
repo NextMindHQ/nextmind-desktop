@@ -64,22 +64,11 @@ The setup package validates every payload file before installation, makes a veri
 
 > Setup is a script bundle inside a ZIP, not an MSI. The installed build requires the [.NET 8 Desktop Runtime for Windows x64](https://dotnet.microsoft.com/download/dotnet/8.0).
 
-## Portable edition
-
-Download `NextMindDesktop-3.0.0-Portable-win-x64.zip`, extract the complete archive, and run `NextMindDesktop.exe`. The portable build is self-contained and does not require a separate .NET runtime.
-
-Portable mode is deliberately isolated from the installed edition:
-
-- it stores configuration in `%LOCALAPPDATA%\NextMind\Desktop-Portable`;
-- it never registers autostart or an uninstaller;
-- it does not read or change `%LOCALAPPDATA%\NextMind\Desktop`;
-- moving the executable without its `NextMindDesktop.portable` marker disables portable detection, so keep the archive contents together.
-
 ## Requirements
 
 - Windows 10 version 2004 or newer, or Windows 11
 - x64 processor
-- .NET 8 Desktop Runtime for the Setup edition; no separate runtime for Portable
+- .NET 8 Desktop Runtime for Windows x64
 - Standard user account; administrator rights are not required
 
 To build from source, install the .NET 8 SDK selected by `global.json`.
@@ -125,15 +114,9 @@ The V3 installer preserves the complete data area and replaces only the versione
 </details>
 
 <details>
-<summary><strong>Can installed and Portable editions coexist?</strong></summary>
-
-Yes. They have separate data roots. Do not run two instances at the same time unless you are using the project's explicitly isolated test mode.
-</details>
-
-<details>
 <summary><strong>Where can I report a problem?</strong></summary>
 
-Use [GitHub Issues](https://github.com/NextMindHQ/nextmind-desktop/issues) and include the Windows version, package type and reproduction steps. Never attach private configuration or personal files.
+Use [GitHub Issues](https://github.com/NextMindHQ/nextmind-desktop/issues) and include the Windows version and reproduction steps. Never attach private configuration or personal files.
 </details>
 
 ## Project layout

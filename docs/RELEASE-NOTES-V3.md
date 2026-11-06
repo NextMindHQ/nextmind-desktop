@@ -1,4 +1,4 @@
-# NextMind Desktop 3.0.0 — Release Notes (draft)
+# NextMind Desktop 3.0.0 — Release Notes
 
 **Your desktop. Your rules.** V3 brings the Future Workspace experience to NextMind Desktop: a cohesive visual system, workspace profiles, local command search, widgets and live personalization while retaining the project's local-first safety model.
 
@@ -19,14 +19,6 @@ Download and extract `NextMindDesktop-3.0.0-Setup.zip`, exit NextMind Desktop no
 
 Configuration, profiles, zones, widget content, geometry, managed items, logs and the existing autostart preference remain in place. Rollback and uninstall scripts are included. The installed build requires the .NET 8 Desktop Runtime for Windows x64.
 
-## Portable
-
-`NextMindDesktop-3.0.0-Portable-win-x64.zip` is self-contained. Extract the complete archive and run `NextMindDesktop.exe`. Its marker selects `%LOCALAPPDATA%\NextMind\Desktop-Portable`; it does not use the installed edition's data root, create an uninstall entry or register autostart.
-
 ## Safety
 
 NextMind Desktop remains local-only: no account, cloud service, telemetry or ads. File references stay in place. Managed Desktop Moves remain off by default, journalled and recoverable, and never overwrite an existing destination.
-
-## Release status
-
-These notes are a publication draft. The local integration candidate is based on public `main` and includes the V3 feature line. Publication still requires the user's explicit approval, a merge to `main`, green GitHub CI and packages regenerated from the exact release commit.
