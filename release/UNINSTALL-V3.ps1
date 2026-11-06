@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$InstallRoot = $PSScriptRoot,
+    [string]$InstallRoot,
     [switch]$TestMode,
     [switch]$SkipProcessCheck
 )
@@ -9,7 +9,8 @@ if ($SkipProcessCheck -and -not $TestMode) { throw '-SkipProcessCheck is allowed
 if (-not $SkipProcessCheck -and (Get-Process -Name NextMindDesktop -ErrorAction SilentlyContinue)) {
     throw 'NextMind Desktop is running. Close it normally from the tray (Exit), then retry.'
 }
-$root = [IO.Path]::GetFullPath($InstallRoot)
+$resolvedInstallRoot = if ([string]::IsNullOrWhiteSpace($InstallRoot)) { $PSScriptRoot } else { $InstallRoot }
+$root = [IO.Path]::GetFullPath($resolvedInstallRoot)
 $receipt = Join-Path $root 'install-v3-receipt.json'
 if (-not $TestMode -and -not (Test-Path -LiteralPath $receipt)) {
     throw "Refusing to uninstall without an installation receipt: $receipt"
