@@ -9,13 +9,25 @@ public static class AppPaths
     /// <c>%LOCALAPPDATA%\NextMind\Desktop</c>, resolved through the known-folder API.
     /// Product config, logs and (later) journals live here — never on the Desktop.
     /// </summary>
-    public static string ConfigDirectory()
-        => Environment.GetEnvironmentVariable(ConfigDirectoryOverrideVariable) is { Length: > 0 } overridePath
+    public const string PortableMarkerFileName = "NextMindDesktop.portable";
+
+    public static bool IsPortableMode()
+        => File.Exists(Path.Combine(AppContext.BaseDirectory, PortableMarkerFileName));
+
+    public static string ResolveConfigDirectory(string localApplicationData, string? overridePath, bool portableMode)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(localApplicationData);
+
+        return !string.IsNullOrWhiteSpace(overridePath)
             ? Path.GetFullPath(overridePath)
-            : Path.Combine(
+            : Path.Combine(localApplicationData, "NextMind", portableMode ? "Desktop-Portable" : "Desktop");
+    }
+
+    public static string ConfigDirectory()
+        => ResolveConfigDirectory(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify),
-            "NextMind",
-            "Desktop");
+            Environment.GetEnvironmentVariable(ConfigDirectoryOverrideVariable),
+            IsPortableMode());
 
     public static string LogDirectory() => Path.Combine(ConfigDirectory(), "logs");
 }

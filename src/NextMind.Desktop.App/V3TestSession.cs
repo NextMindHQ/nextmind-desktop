@@ -4,7 +4,7 @@ namespace NextMind.Desktop.App;
 
 public static class V3TestSession
 {
-    public const string RuntimeMarker = "NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2";
+    public const string RuntimeMarker = "NEXTMIND-DESKTOP-V3";
     public const string OpenControlCenterVariable = "NEXTMIND_V3_TEST_OPEN_CONTROL_CENTER";
     public const string IsolatedInstanceVariable = "NEXTMIND_V3_TEST_INSTANCE";
     public const string IsolatedMutexName = @"Local\NextMind.Desktop.SingleInstance.v1.V3Test";

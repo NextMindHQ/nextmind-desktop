@@ -20,8 +20,12 @@
     <ProjectReference Include="..\NextMind.Desktop.Shell\NextMind.Desktop.Shell.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(NextMindV3TestBuild)' == 'true'">
     <Content Include="V3-RUNTIME-MARKER.txt" CopyToOutputDirectory="Always" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(NextMindV3TestBuild)' == 'true'">
+    <DefineConstants>$(DefineConstants);NEXTMIND_V3_TEST_BUILD</DefineConstants>
+  </PropertyGroup>
 
 </Project>

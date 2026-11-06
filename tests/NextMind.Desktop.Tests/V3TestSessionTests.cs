@@ -16,7 +16,7 @@ public sealed class V3TestSessionTests
     [Fact]
     public void RuntimeMarker_IdentifiesLivePreviewBuild()
     {
-        Assert.Equal("NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2", V3TestSession.RuntimeMarker);
+        Assert.Equal("NEXTMIND-DESKTOP-V3", V3TestSession.RuntimeMarker);
     }
 
     [Fact]

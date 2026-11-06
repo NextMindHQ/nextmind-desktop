@@ -27,7 +27,7 @@ try {
     Require ($first.NewIds.Count -eq 0) 'Verify-only started V3.'
     Require ($first.Output -match 'V3 VERIFICATION PASSED - application was not started\.') 'V3 success marker missing.'
     Require ($first.Output -match 'FutureTheme\.xaml') 'Current V3 theme marker was not reported.'
-    Require ($first.Output -match 'V3 runtime marker: NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2') 'Compiled V3 runtime marker missing.'
+    Require ($first.Output -match 'V3 runtime marker: NEXTMIND-DESKTOP-V3') 'Compiled V3 runtime marker missing.'
     $m1 = [regex]::Match($first.Output, '(?m)^Isolated config: (.+)\r?$'); Require $m1.Success 'Config path missing.'
     $configs += [IO.Path]::GetFullPath($m1.Groups[1].Value.Trim())
     $b1 = [regex]::Match($first.Output, '(?m)^Build V3: (.+)\r?$'); Require $b1.Success 'Build path missing.'

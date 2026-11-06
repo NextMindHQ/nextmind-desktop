@@ -38,8 +38,9 @@ public partial class App : Application
     private bool _exiting;
 
     /// <summary>Set when config is redirected for development/smoke tests: never touch the real autostart entry then.</summary>
-    private static bool IsDevelopmentRun
-        => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppPaths.ConfigDirectoryOverrideVariable));
+    private static bool IsIsolatedRun
+        => AppPaths.IsPortableMode()
+            || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AppPaths.ConfigDirectoryOverrideVariable));
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -62,7 +63,7 @@ public partial class App : Application
 
         _log = new FileLog(AppPaths.LogDirectory());
         _log.Info("---- NextMind Desktop starting ----");
-        _log.Info($"Runtime marker: {V3TestSession.RuntimeMarker}; executable: {Environment.ProcessPath}");
+        _log.Info($"NextMind Desktop {typeof(App).Assembly.GetName().Version}; edition: {(AppPaths.IsPortableMode() ? "Portable" : "Installed")}; executable: {Environment.ProcessPath}");
         DispatcherUnhandledException += (_, args) =>
         {
             _log.Error("Unhandled UI exception (continuing).", args.Exception);
@@ -146,10 +147,12 @@ public partial class App : Application
 
         _widgets.OpenConfiguredWidgets();
 
+#if NEXTMIND_V3_TEST_BUILD
         if (V3TestSession.ShouldOpenControlCenterFromEnvironment())
         {
             Dispatcher.BeginInvoke(OpenControlCenter, DispatcherPriority.ApplicationIdle);
         }
+#endif
 
         ConfigureAutostart(loaded.IsReadOnly);
 
@@ -170,7 +173,7 @@ public partial class App : Application
     {
         fake = false;
         var fakePath = Environment.GetEnvironmentVariable("NEXTMIND_FAKE_USER_DESKTOP");
-        if (!string.IsNullOrEmpty(fakePath) && IsDevelopmentRun)
+        if (!string.IsNullOrEmpty(fakePath) && IsIsolatedRun)
         {
             var full = Path.GetFullPath(fakePath);
             if (ProtectedPaths.FromEnvironment().Any(p => PathUtil.IsSameOrUnder(full, p)))
@@ -198,10 +201,10 @@ public partial class App : Application
             return;
         }
 
-        if (IsDevelopmentRun)
+        if (IsIsolatedRun)
         {
-            // No StartupManager at all: the tray/Control Center entries are disabled, so nothing can write the real Run key.
-            _log.Info("Development run (config redirected): autostart is disabled; the registry is never read or written.");
+            // No StartupManager at all: isolated test and Portable editions never read or write the Run key.
+            _log.Info("Isolated run (test or Portable): autostart is disabled; the registry is never read or written.");
             return;
         }
 

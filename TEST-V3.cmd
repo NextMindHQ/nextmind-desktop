@@ -46,11 +46,11 @@ if errorlevel 1 goto :missing_dotnet
 
 echo Building current V3 Release source...
 echo V3 marker: %THEME%
-call dotnet build "%PROJECT%" -c Release --nologo -v minimal -m:1 -p:BuildInParallel=false "-p:OutDir=%BUILD_DIR%"
+call dotnet build "%PROJECT%" -c Release --nologo -v minimal -m:1 -p:BuildInParallel=false -p:NextMindV3TestBuild=true "-p:OutDir=%BUILD_DIR%"
 if errorlevel 1 goto :build_failed
 if not exist "%V3_EXE%" goto :missing_output
 if not exist "%RUNTIME_MARKER_FILE%" goto :missing_runtime_marker
-findstr /C:"NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2" "%RUNTIME_MARKER_FILE%" >nul 2>&1
+findstr /C:"NEXTMIND-DESKTOP-V3" "%RUNTIME_MARKER_FILE%" >nul 2>&1
 if errorlevel 1 goto :missing_runtime_marker
 
 set "CONFIG_BASE=%TEMP%\NextMindDesktop-V3-Test"
@@ -70,7 +70,7 @@ set "NEXTMIND_V3_TEST_INSTANCE=1"
 echo Build V3: %V3_EXE%
 echo Isolated config: %TEST_CONFIG%
 echo FutureTheme.xaml validated.
-echo V3 runtime marker: NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2
+echo V3 runtime marker: NEXTMIND-DESKTOP-V3
 if "%VERIFY_ONLY%"=="1" (
   echo V3 VERIFICATION PASSED - application was not started.
   exit /b 0
@@ -113,7 +113,7 @@ goto :failed
 echo ERROR: Current build did not create %V3_EXE%. V3 was not started.
 goto :failed
 :missing_runtime_marker
-echo ERROR: Built output is not the V3 Live Preview 2 runtime. V3 was not started.
+echo ERROR: Built output is not the current V3 runtime. V3 was not started.
 goto :failed
 :config_failed
 echo ERROR: Isolated config directory could not be created. V3 was not started.
