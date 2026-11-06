@@ -417,6 +417,7 @@ public partial class App : Application
             OpenSearch,
             ExitApp,
             () => _config!.Appearance,
+            FutureTheme.Apply,
             ApplyAppearance);
         _controlCenter.Closed += (_, _) => _controlCenter = null;
         _controlCenter.Show();

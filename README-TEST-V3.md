@@ -6,7 +6,7 @@ Launcher sam:
 
 1. Wykryje działający NextMind Desktop i poprosi o normalne zamknięcie przez ikonę przy zegarze → **Exit** lub Control Center → **Exit NextMind Desktop**.
 2. Poczeka — nigdy nie używa `taskkill`, `Stop-Process` ani End task.
-3. Skompiluje aktualny kod V3 do `artifacts\NextMindDesktop-v3-current`. Przy błędzie zatrzyma się i nie uruchomi starszego pliku.
+3. Skompiluje aktualny kod V3 do nowego podkatalogu `artifacts\NextMindDesktop-v3-current\build-*`. Każdy test dostaje świeży build; przy błędzie launcher zatrzyma się i nie uruchomi starszego pliku.
 4. Utworzy nową konfigurację w `%TEMP%\NextMindDesktop-V3-Test`.
 5. Uruchomi V3 bez nadpisywania `%LOCALAPPDATA%\NextMind\Desktop` i bez automatycznej zmiany autostartu.
 
@@ -15,4 +15,15 @@ Podczas testu nie przełączaj ręcznie **Start with Windows**. Po zakończeniu 
 `%LOCALAPPDATA%\NextMind\Desktop\app\NextMindDesktop.exe`
 
 Nie uruchamiaj do tego testu `tools\start.ps1` ani starego ZIP-a.
+
+## Hotfix Visual Calibration — szybka checklista
+
+Po uruchomieniu otwórz **Visual Calibration** w Control Center:
+
+1. Przesuń **Glow intensity** i **Panel opacity** — efekt powinien być natychmiastowy na otwartych widgetach i strefach.
+2. Sprawdź, że nagłówki, tekst, przyciski i samo Control Center nie zmieniają przezroczystości ani intensywności glow.
+3. Wybierz próbki **Electric Blue**, **Cyan**, **Violet** i **Amber** myszą oraz klawiaturą; aktywna próbka ma wyraźną ramkę.
+4. Kliknij **Reset Style** — ma pokazać ustawienia domyślne bez zapisu.
+5. Zamknij Control Center bez **Apply Appearance** — ostatnio zapisany wygląd powinien wrócić.
+6. Otwórz Control Center ponownie, ustaw wygląd i kliknij **Apply Appearance**; po ponownym otwarciu wartości powinny zostać zachowane.
 

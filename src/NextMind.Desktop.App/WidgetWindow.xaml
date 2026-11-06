@@ -19,9 +19,9 @@
       <Setter Property="Margin" Value="4,0,0,0" />
     </Style>
   </Window.Resources>
-  <Border x:Name="Root" CornerRadius="10" Background="{DynamicResource FuturePanelBrush}"
-          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True"
-          Effect="{DynamicResource FuturePanelEffect}">
+  <Border x:Name="Root" CornerRadius="10" Background="Transparent"
+          BorderBrush="{DynamicResource WorkspaceAccentSoftBrush}" BorderThickness="1" ClipToBounds="True"
+          Effect="{DynamicResource WorkspacePanelEffect}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30" />
@@ -37,9 +37,10 @@
           </StackPanel>
         </Grid>
       </Border>
-      <Grid x:Name="ContentArea" Grid.Row="1" Margin="12,8,12,12">
+      <Border x:Name="ContentSurface" Grid.Row="1" Background="{DynamicResource WorkspaceContentBrush}" CornerRadius="0,0,9,9">
+      <Grid x:Name="ContentArea" Margin="12,8,12,12">
         <StackPanel x:Name="ClockPanel" VerticalAlignment="Center">
-          <TextBlock Text="LOCAL TIME" Foreground="{DynamicResource FutureAccentBrush}" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center" />
+          <TextBlock Text="LOCAL TIME" Foreground="{DynamicResource WorkspaceAccentBrush}" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center" />
           <TextBlock x:Name="ClockTime" Foreground="{StaticResource TextBrush}" FontSize="38" FontWeight="Light"
                      HorizontalAlignment="Center" />
           <TextBlock x:Name="ClockDate" Foreground="{StaticResource MutedBrush}" FontSize="13"
@@ -53,6 +54,7 @@
           <Button Grid.Row="1" Content="Edit Note" HorizontalAlignment="Right" Margin="0,8,0,0" Click="EditNote_Click" />
         </Grid>
       </Grid>
+      </Border>
       <Thumb x:Name="RightGrip" Grid.Row="1" HorizontalAlignment="Right" Width="6" Cursor="SizeWE"
              DragDelta="RightGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
       <Thumb x:Name="BottomGrip" Grid.Row="1" VerticalAlignment="Bottom" Height="6" Cursor="SizeNS"

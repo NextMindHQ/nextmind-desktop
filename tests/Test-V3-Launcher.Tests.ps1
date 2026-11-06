@@ -20,7 +20,7 @@ function Invoke-Launcher([string] $pathOverride = $env:PATH) {
 function Require([bool] $condition, [string] $message) { if (-not $condition) { throw $message } }
 
 if (-not (Test-Path -LiteralPath $launcher -PathType Leaf)) { throw "Launcher does not exist: $launcher" }
-$configs = @(); $fakeBin = $null
+$configs = @(); $builds = @(); $fakeBin = $null
 try {
     $first = Invoke-Launcher
     Require ($first.ExitCode -eq 0) "Verify-only failed:`n$($first.Output)"
@@ -29,11 +29,17 @@ try {
     Require ($first.Output -match 'FutureTheme\.xaml') 'Current V3 theme marker was not reported.'
     $m1 = [regex]::Match($first.Output, '(?m)^Isolated config: (.+)\r?$'); Require $m1.Success 'Config path missing.'
     $configs += [IO.Path]::GetFullPath($m1.Groups[1].Value.Trim())
+    $b1 = [regex]::Match($first.Output, '(?m)^Build V3: (.+)\r?$'); Require $b1.Success 'Build path missing.'
+    $builds += [IO.Path]::GetFullPath($b1.Groups[1].Value.Trim())
 
     $second = Invoke-Launcher
+    Require ($second.ExitCode -eq 0) "Second verify-only failed:`n$($second.Output)"
     $m2 = [regex]::Match($second.Output, '(?m)^Isolated config: (.+)\r?$'); Require $m2.Success 'Second config path missing.'
     $configs += [IO.Path]::GetFullPath($m2.Groups[1].Value.Trim())
+    $b2 = [regex]::Match($second.Output, '(?m)^Build V3: (.+)\r?$'); Require $b2.Success 'Second build path missing.'
+    $builds += [IO.Path]::GetFullPath($b2.Groups[1].Value.Trim())
     Require (-not $configs[0].Equals($configs[1], [StringComparison]::OrdinalIgnoreCase)) 'V3 runs reused config.'
+    Require (-not $builds[0].Equals($builds[1], [StringComparison]::OrdinalIgnoreCase)) 'V3 runs reused a build directory.'
 
     $fakeBin = Join-Path $env:TEMP ('NextMind-V3-FakeDotnet-' + [guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $fakeBin | Out-Null

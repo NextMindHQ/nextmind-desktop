@@ -21,7 +21,8 @@ public partial class ControlCenterWindow : Window
     private readonly Action _openSearch;
     private readonly Action _exit;
     private readonly Func<AppearancePreferencesConfig> _appearance;
-    private readonly Action<AppearancePreferencesConfig> _applyAppearance;
+    private readonly AppearancePreviewSession _appearanceSession;
+    private bool _loadingAppearance;
 
     public ControlCenterWindow(
         ZoneManager zones,
@@ -33,6 +34,7 @@ public partial class ControlCenterWindow : Window
         Action openSearch,
         Action exit,
         Func<AppearancePreferencesConfig> appearance,
+        Action<AppearancePreferencesConfig> previewAppearance,
         Action<AppearancePreferencesConfig> applyAppearance)
     {
         _zones = zones;
@@ -44,19 +46,24 @@ public partial class ControlCenterWindow : Window
         _openSearch = openSearch;
         _exit = exit;
         _appearance = appearance;
-        _applyAppearance = applyAppearance;
+        _appearanceSession = new AppearancePreviewSession(_appearance(), previewAppearance, applyAppearance);
 
         InitializeComponent();
         _zones.Changed += OnZonesChanged;
         _widgets.Changed += OnZonesChanged;
         Closed += (_, _) =>
         {
+            _appearanceSession.Rollback();
             _zones.Changed -= OnZonesChanged;
             _widgets.Changed -= OnZonesChanged;
         };
         Refresh();
-        GlowSlider.ValueChanged += (_, _) => GlowValue.Text = $"{GlowSlider.Value:F0}%";
-        OpacitySlider.ValueChanged += (_, _) => OpacityValue.Text = $"{OpacitySlider.Value:F0}%";
+        LoadAppearanceControls(_appearance());
+        GlowSlider.ValueChanged += AppearanceControl_Changed;
+        OpacitySlider.ValueChanged += AppearanceControl_Changed;
+        AccentBox.SelectionChanged += AppearanceControl_Changed;
+        AnimationsBox.Click += AppearanceControl_Changed;
+        ResourceSaverBox.Click += AppearanceControl_Changed;
     }
 
     private void OnZonesChanged() => Dispatcher.BeginInvoke(Refresh);
@@ -108,12 +115,53 @@ public partial class ControlCenterWindow : Window
             ? "Managed Desktop Moves: ENABLED. Items you drop from your Desktop are moved into the zone."
             : "Managed Desktop Moves: DISABLED (safety gate). Items dropped from your Desktop are added as references and stay on the Desktop.";
 
-        var appearance = _appearance();
-        GlowSlider.Value = appearance.GlowIntensity * 100;
-        OpacitySlider.Value = appearance.PanelOpacity * 100;
-        AnimationsBox.IsChecked = appearance.AnimationsEnabled;
-        ResourceSaverBox.IsChecked = appearance.ResourceSaverMode;
-        AccentBox.SelectedIndex = (int)appearance.Accent;
+    }
+
+    private void LoadAppearanceControls(AppearancePreferencesConfig appearance)
+    {
+        _loadingAppearance = true;
+        try
+        {
+            GlowSlider.Value = appearance.GlowIntensity * 100;
+            OpacitySlider.Value = appearance.PanelOpacity * 100;
+            AnimationsBox.IsChecked = appearance.AnimationsEnabled;
+            ResourceSaverBox.IsChecked = appearance.ResourceSaverMode;
+            AccentBox.SelectedIndex = (int)appearance.Accent;
+            UpdateAppearanceLabels();
+        }
+        finally
+        {
+            _loadingAppearance = false;
+        }
+    }
+
+    private void AppearanceControl_Changed(object sender, RoutedEventArgs e)
+    {
+        UpdateAppearanceLabels();
+        if (!_loadingAppearance)
+        {
+            _appearanceSession.Preview(CurrentAppearance());
+        }
+    }
+
+    private void UpdateAppearanceLabels()
+    {
+        GlowValue.Text = $"{GlowSlider.Value:F0}%";
+        OpacityValue.Text = $"{OpacitySlider.Value:F0}%";
+    }
+
+    private AppearancePreferencesConfig CurrentAppearance()
+    {
+        var accent = AccentBox.SelectedItem is ListBoxItem { Tag: string tag }
+            && Enum.TryParse<AppearanceAccent>(tag, out var parsed)
+            ? parsed
+            : AppearanceAccent.ElectricBlue;
+        return AppearanceEditor.FromUi(
+            GlowSlider.Value,
+            OpacitySlider.Value,
+            accent,
+            AnimationsBox.IsChecked == true,
+            ResourceSaverBox.IsChecked == true);
     }
 
     private UIElement BuildRow(ZoneConfig zone)
@@ -301,23 +349,14 @@ public partial class ControlCenterWindow : Window
 
     private void ApplyAppearance_Click(object sender, RoutedEventArgs e)
     {
-        var accent = AccentBox.SelectedItem is ComboBoxItem { Tag: string tag }
-            && Enum.TryParse<AppearanceAccent>(tag, out var parsed)
-            ? parsed
-            : AppearanceAccent.ElectricBlue;
-        _applyAppearance(AppearanceEditor.FromUi(
-            GlowSlider.Value,
-            OpacitySlider.Value,
-            accent,
-            AnimationsBox.IsChecked == true,
-            ResourceSaverBox.IsChecked == true));
-        Refresh();
+        _appearanceSession.Commit(CurrentAppearance());
     }
 
     private void ResetAppearance_Click(object sender, RoutedEventArgs e)
     {
-        _applyAppearance(AppearanceEditor.Reset());
-        Refresh();
+        var reset = AppearanceEditor.Reset();
+        LoadAppearanceControls(reset);
+        _appearanceSession.Preview(reset);
     }
 
     private void Exit_Click(object sender, RoutedEventArgs e) => _exit();

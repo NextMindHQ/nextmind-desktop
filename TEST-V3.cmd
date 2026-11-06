@@ -10,7 +10,7 @@ set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
 set "PROJECT=%ROOT%\src\NextMind.Desktop.App\NextMind.Desktop.App.csproj"
 set "THEME=%ROOT%\src\NextMind.Desktop.App\Themes\FutureTheme.xaml"
-set "BUILD_DIR=%ROOT%\artifacts\NextMindDesktop-v3-current"
+set "BUILD_DIR=%ROOT%\artifacts\NextMindDesktop-v3-current\build-%RANDOM%-%RANDOM%"
 set "V3_EXE=%BUILD_DIR%\NextMindDesktop.exe"
 set "NORMAL_EXE=%LOCALAPPDATA%\NextMind\Desktop\app\NextMindDesktop.exe"
 
@@ -45,7 +45,7 @@ if errorlevel 1 goto :missing_dotnet
 
 echo Building current V3 Release source...
 echo V3 marker: %THEME%
-call dotnet build "%PROJECT%" -c Release --nologo -v minimal "-p:OutDir=%BUILD_DIR%"
+call dotnet build "%PROJECT%" -c Release --nologo -v minimal -m:1 -p:BuildInParallel=false "-p:OutDir=%BUILD_DIR%"
 if errorlevel 1 goto :build_failed
 if not exist "%V3_EXE%" goto :missing_output
 

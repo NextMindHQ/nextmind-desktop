@@ -43,17 +43,16 @@ public static class FutureTheme
             ? new Duration(TimeSpan.FromMilliseconds(160))
             : new Duration(TimeSpan.Zero);
 
-        resources["FutureAccentColor"] = accent;
-        resources["FutureAccentBrush"] = Brush(accent);
-        resources["FutureAccentStrongBrush"] = Brush(Color.FromArgb(0xDD, accent.R, accent.G, accent.B));
-        resources["FutureAccentSoftBrush"] = Brush(Color.FromArgb(0x33, accent.R, accent.G, accent.B));
-        resources["FuturePanelOpacity"] = panelOpacity;
-        resources["FuturePanelBrush"] = Brush(Color.FromArgb(Alpha(panelOpacity), 0x10, 0x19, 0x25));
-        resources["FuturePanelAltBrush"] = Brush(Color.FromArgb(Alpha(Math.Max(0.55, panelOpacity - 0.07)), 0x17, 0x22, 0x30));
-        resources["FutureGlowOpacity"] = glowOpacity;
+        resources["WorkspaceAccentColor"] = accent;
+        resources["WorkspaceAccentBrush"] = Brush(accent);
+        resources["WorkspaceAccentStrongBrush"] = Brush(Color.FromArgb(0xDD, accent.R, accent.G, accent.B));
+        resources["WorkspaceAccentSoftBrush"] = Brush(Color.FromArgb(0x4D, accent.R, accent.G, accent.B));
+        resources["WorkspaceContentOpacity"] = panelOpacity;
+        resources["WorkspaceContentBrush"] = Brush(Color.FromArgb(Alpha(panelOpacity), 0x10, 0x19, 0x25));
+        resources["WorkspaceGlowOpacity"] = glowOpacity;
         resources["FutureMotionDuration"] = motion;
-        resources["FutureEffectsEnabled"] = effectsEnabled;
-        resources["FuturePanelEffect"] = new DropShadowEffect
+        resources["WorkspaceEffectsEnabled"] = effectsEnabled;
+        resources["WorkspacePanelEffect"] = new DropShadowEffect
         {
             Color = accent,
             BlurRadius = effectsEnabled ? 18 : 0,

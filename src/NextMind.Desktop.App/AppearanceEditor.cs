@@ -15,4 +15,17 @@ public static class AppearanceEditor
         };
 
     public static AppearancePreferencesConfig Reset() => new();
+
+    public static AppearancePreferencesConfig Copy(AppearancePreferencesConfig source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        return new AppearancePreferencesConfig
+        {
+            GlowIntensity = source.GlowIntensity,
+            PanelOpacity = source.PanelOpacity,
+            Accent = source.Accent,
+            AnimationsEnabled = source.AnimationsEnabled,
+            ResourceSaverMode = source.ResourceSaverMode,
+        };
+    }
 }

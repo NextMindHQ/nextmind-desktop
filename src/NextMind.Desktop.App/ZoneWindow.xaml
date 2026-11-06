@@ -17,9 +17,9 @@
   <Window.Resources>
     <SolidColorBrush x:Key="PanelBrush" Color="#EE101925" />
     <SolidColorBrush x:Key="PanelBorderBrush" Color="#705E7895" />
-    <SolidColorBrush x:Key="DropBorderBrush" Color="{DynamicResource FutureAccentColor}" />
+    <SolidColorBrush x:Key="DropBorderBrush" Color="{DynamicResource WorkspaceAccentColor}" />
     <SolidColorBrush x:Key="CollisionBorderBrush" Color="#D9F2A93B" />
-    <SolidColorBrush x:Key="TitleBarBrush" Color="#CC172230" />
+    <SolidColorBrush x:Key="TitleBarBrush" Color="#F0172230" />
     <SolidColorBrush x:Key="TextBrush" Color="#EEF6FF" />
     <SolidColorBrush x:Key="MutedBrush" Color="#91A4B8" />
 
@@ -43,7 +43,7 @@
       <Setter Property="Cursor" Value="Hand" />
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
-          <Setter Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
+          <Setter Property="Background" Value="{DynamicResource WorkspaceAccentSoftBrush}" />
         </Trigger>
       </Style.Triggers>
     </Style>
@@ -94,10 +94,10 @@
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource WorkspaceAccentSoftBrush}" />
               </Trigger>
               <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource WorkspaceAccentSoftBrush}" />
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -136,9 +136,9 @@
     </DataTemplate>
   </Window.Resources>
 
-  <Border x:Name="Root" CornerRadius="10" Background="{DynamicResource FuturePanelBrush}"
-          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True" AllowDrop="True"
-          Effect="{DynamicResource FuturePanelEffect}">
+  <Border x:Name="Root" CornerRadius="10" Background="Transparent"
+          BorderBrush="{DynamicResource WorkspaceAccentSoftBrush}" BorderThickness="1" ClipToBounds="True" AllowDrop="True"
+          Effect="{DynamicResource WorkspacePanelEffect}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30" />
@@ -232,9 +232,10 @@
         </Grid>
       </Border>
       <!-- Items: wrap grid, left-to-right then down; the column count follows the width; scrolls vertically. -->
-      <Grid x:Name="ContentArea" Grid.Row="2" AllowDrop="True">
+      <Border x:Name="ContentSurface" Grid.Row="2" Background="{DynamicResource WorkspaceContentBrush}" CornerRadius="0,0,9,9">
+      <Grid x:Name="ContentArea" AllowDrop="True">
         <StackPanel x:Name="EmptyHint" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <TextBlock x:Name="EmptyGlyph" Text="＋" FontSize="26" Foreground="{DynamicResource FutureAccentBrush}" HorizontalAlignment="Center" />
+          <TextBlock x:Name="EmptyGlyph" Text="＋" FontSize="26" Foreground="{DynamicResource WorkspaceAccentBrush}" HorizontalAlignment="Center" />
           <TextBlock x:Name="EmptyMessage" Text="DROP MODULES HERE" FontSize="11" FontWeight="SemiBold"
                    Foreground="{StaticResource MutedBrush}" Opacity="0.6" IsHitTestVisible="False"
                    HorizontalAlignment="Center" />
@@ -253,6 +254,7 @@
           </ListBox.ItemsPanel>
         </ListBox>
       </Grid>
+      </Border>
 
       <!-- Resize handles (hidden while collapsed). -->
       <Thumb x:Name="RightGrip" Grid.Row="2" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"

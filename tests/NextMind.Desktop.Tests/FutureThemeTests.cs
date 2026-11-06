@@ -17,6 +17,8 @@ public sealed class FutureThemeTests
         "FuturisticTextBoxStyle",
         "FuturisticToggleStyle",
         "FuturisticSliderStyle",
+        "FuturisticAccentSelectorStyle",
+        "FuturisticAccentItemStyle",
         "FuturisticMenuStyle",
         "FuturisticMenuItemStyle",
         "FuturisticTooltipStyle",
@@ -42,11 +44,20 @@ public sealed class FutureThemeTests
     }
 
     [Fact]
-    public void Apply_MapsAppearanceToBoundedDynamicResources()
+    public void Apply_MapsAppearanceToWorkspaceOnlyDynamicResources()
     {
         RunOnStaThread(() =>
         {
-            var resources = new ResourceDictionary();
+            var fixedControlCenterEffect = new System.Windows.Media.Effects.DropShadowEffect { Opacity = 0.28 };
+            var resources = new ResourceDictionary
+            {
+                ["FutureAccentColor"] = Color.FromRgb(0x38, 0xBD, 0xF8),
+                ["FuturePanelBrush"] = new SolidColorBrush(Color.FromArgb(0xE6, 0x10, 0x19, 0x25)),
+                ["FuturePanelAltBrush"] = new SolidColorBrush(Color.FromArgb(0xD8, 0x17, 0x22, 0x30)),
+                ["FuturePanelRaisedBrush"] = new SolidColorBrush(Color.FromArgb(0xF0, 0x1A, 0x26, 0x35)),
+                ["FutureTextBrush"] = new SolidColorBrush(Color.FromRgb(0xEE, 0xF6, 0xFF)),
+                ["FuturePanelEffect"] = fixedControlCenterEffect,
+            };
             FutureTheme.Apply(resources, new AppearancePreferencesConfig
             {
                 Accent = AppearanceAccent.Violet,
@@ -55,9 +66,16 @@ public sealed class FutureThemeTests
                 AnimationsEnabled = true,
             });
 
-            Assert.Equal(Color.FromRgb(0xA7, 0x78, 0xFF), resources["FutureAccentColor"]);
-            Assert.Equal(0.8, resources["FuturePanelOpacity"]);
-            Assert.Equal(0.35, resources["FutureGlowOpacity"]);
+            Assert.Equal(Color.FromRgb(0xA7, 0x78, 0xFF), resources["WorkspaceAccentColor"]);
+            Assert.Equal(0.8, resources["WorkspaceContentOpacity"]);
+            Assert.Equal(0xCC, Assert.IsType<SolidColorBrush>(resources["WorkspaceContentBrush"]).Color.A);
+            Assert.Equal(0.35, resources["WorkspaceGlowOpacity"]);
+            Assert.Equal(Color.FromRgb(0x38, 0xBD, 0xF8), resources["FutureAccentColor"]);
+            Assert.Equal(0xE6, Assert.IsType<SolidColorBrush>(resources["FuturePanelBrush"]).Color.A);
+            Assert.Equal(0xD8, Assert.IsType<SolidColorBrush>(resources["FuturePanelAltBrush"]).Color.A);
+            Assert.Equal(0xF0, Assert.IsType<SolidColorBrush>(resources["FuturePanelRaisedBrush"]).Color.A);
+            Assert.Equal(0xFF, Assert.IsType<SolidColorBrush>(resources["FutureTextBrush"]).Color.A);
+            Assert.Same(fixedControlCenterEffect, resources["FuturePanelEffect"]);
             Assert.Equal(TimeSpan.FromMilliseconds(160), ((Duration)resources["FutureMotionDuration"]).TimeSpan);
         });
     }
@@ -75,9 +93,9 @@ public sealed class FutureThemeTests
                 ResourceSaverMode = true,
             });
 
-            Assert.Equal(0d, Assert.IsType<double>(resources["FutureGlowOpacity"]));
+            Assert.Equal(0d, Assert.IsType<double>(resources["WorkspaceGlowOpacity"]));
             Assert.Equal(TimeSpan.Zero, ((Duration)resources["FutureMotionDuration"]).TimeSpan);
-            Assert.False((bool)resources["FutureEffectsEnabled"]);
+            Assert.False((bool)resources["WorkspaceEffectsEnabled"]);
         });
     }
 
