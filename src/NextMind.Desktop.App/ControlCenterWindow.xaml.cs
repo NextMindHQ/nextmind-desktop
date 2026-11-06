@@ -43,6 +43,12 @@ public partial class ControlCenterWindow : Window
     /// <summary>Rebuilds the rows from the current configuration.</summary>
     public void Refresh()
     {
+        ProfileRows.Children.Clear();
+        foreach (var profile in _zones.Profiles.ToList())
+        {
+            ProfileRows.Children.Add(BuildProfileRow(profile));
+        }
+
         ZoneRows.Children.Clear();
 
         foreach (var zone in _zones.Zones.ToList())
@@ -99,6 +105,89 @@ public partial class ControlCenterWindow : Window
         grid.Children.Add(toggle);
         grid.Children.Add(rename);
         return grid;
+    }
+
+    private UIElement BuildProfileRow(WorkspaceProfileConfig profile)
+    {
+        var active = string.Equals(profile.Id, _zones.ActiveProfileId, StringComparison.OrdinalIgnoreCase);
+        var grid = new Grid { Margin = new Thickness(0, 3, 0, 3) };
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        for (var i = 0; i < 4; i++)
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        }
+
+        var title = new TextBlock
+        {
+            Text = active ? $"{profile.Name}  • Active" : profile.Name,
+            FontSize = 14,
+            FontWeight = active ? FontWeights.SemiBold : FontWeights.Normal,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+        };
+        Grid.SetColumn(title, 0);
+        grid.Children.Add(title);
+
+        var switchButton = new Button { Content = "Open", IsEnabled = !active };
+        switchButton.Click += (_, _) => _zones.SwitchProfile(profile.Id);
+        Grid.SetColumn(switchButton, 1);
+        grid.Children.Add(switchButton);
+
+        var rename = new Button { Content = "Rename" };
+        rename.Click += (_, _) => RenameProfile(profile);
+        Grid.SetColumn(rename, 2);
+        grid.Children.Add(rename);
+
+        var duplicate = new Button { Content = "Duplicate" };
+        duplicate.Click += (_, _) => DuplicateProfile(profile);
+        Grid.SetColumn(duplicate, 3);
+        grid.Children.Add(duplicate);
+
+        var delete = new Button { Content = "Delete", IsEnabled = _zones.Profiles.Count > 1 };
+        delete.Click += (_, _) => DeleteProfile(profile);
+        Grid.SetColumn(delete, 4);
+        grid.Children.Add(delete);
+        return grid;
+    }
+
+    private void CreateProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var name = PromptWindow.AskText("New Workspace Profile", "Profile name:", "Work", "Create");
+        if (name is not null)
+        {
+            _zones.CreateProfile(name);
+        }
+    }
+
+    private void RenameProfile(WorkspaceProfileConfig profile)
+    {
+        var name = PromptWindow.AskText("Rename Workspace Profile", "Profile name:", profile.Name, "Rename");
+        if (name is not null)
+        {
+            _zones.RenameProfile(profile.Id, name);
+        }
+    }
+
+    private void DuplicateProfile(WorkspaceProfileConfig profile)
+    {
+        var name = PromptWindow.AskText("Duplicate Workspace Profile", "Copy name:", profile.Name + " Copy", "Duplicate");
+        if (name is not null)
+        {
+            _zones.DuplicateProfile(profile.Id, name);
+        }
+    }
+
+    private void DeleteProfile(WorkspaceProfileConfig profile)
+    {
+        if (!PromptWindow.Confirm("Delete Workspace Profile", $"Delete profile \"{profile.Name}\"?\nManaged items are never deleted.", "Delete Profile"))
+        {
+            return;
+        }
+
+        if (!_zones.DeleteProfile(profile.Id))
+        {
+            ChoiceWindow.Inform("Profile not deleted", "Keep at least one profile. Profiles containing managed Desktop items cannot be deleted; return those items first.");
+        }
     }
 
     private void Create_Click(object sender, RoutedEventArgs e) => _createZone();

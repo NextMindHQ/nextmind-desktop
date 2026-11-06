@@ -6,8 +6,9 @@ public static class ConfigSchema
     /// <remarks>
     /// v1 = zones with geometry. v2 = items (references), Hidden, AutostartDecided.
     /// v3 = item Kind (Reference/Managed), AddedAtUtc, IsFolder, StoredName; zone SortMode; ManagedDesktopMovesEnabled gate.
+    /// v4 = workspace profiles and assisted-layout preferences.
     /// </remarks>
-    public const int Current = 3;
+    public const int Current = 4;
 }
 
 public static class ZoneLimits
@@ -67,6 +68,10 @@ public sealed class AppConfig
 
     public LayoutPreferencesConfig Layout { get; set; } = new();
 
+    public string ActiveProfileId { get; set; } = string.Empty;
+
+    public List<WorkspaceProfileConfig> Profiles { get; set; } = [];
+
     public List<ZoneConfig> Zones { get; set; } = [];
 }
 
@@ -81,6 +86,17 @@ public sealed class LayoutPreferencesConfig
     public int Gap { get; set; } = 8;
 
     public int SnapThreshold { get; set; } = 12;
+}
+
+public sealed class WorkspaceProfileConfig
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("D");
+
+    public string Name { get; set; } = "Default";
+
+    public LayoutPreferencesConfig Layout { get; set; } = new();
+
+    public List<ZoneConfig> Zones { get; set; } = [];
 }
 
 /// <summary>

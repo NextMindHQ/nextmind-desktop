@@ -13,8 +13,21 @@ public static class ConfigValidator
         config.Zones ??= [];
         config.Zones.RemoveAll(z => z is null);
 
+        NormalizeZones(config.Zones);
+        WorkspaceProfiles.EnsureInitialized(config);
+        foreach (var profile in config.Profiles)
+        {
+            profile.Zones ??= [];
+            profile.Zones.RemoveAll(zone => zone is null);
+            NormalizeZones(profile.Zones);
+        }
+    }
+
+    private static void NormalizeZones(List<ZoneConfig> zones)
+    {
+
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var zone in config.Zones)
+        foreach (var zone in zones)
         {
             if (string.IsNullOrWhiteSpace(zone.Id) || !seen.Add(zone.Id))
             {

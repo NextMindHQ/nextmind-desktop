@@ -74,6 +74,10 @@ public sealed class ZoneManager
 
     public IReadOnlyList<ZoneConfig> Zones => _config.Zones;
 
+    public IReadOnlyList<WorkspaceProfileConfig> Profiles => _config.Profiles;
+
+    public string ActiveProfileId => _config.ActiveProfileId;
+
     public bool ManagedMovesEnabled => _managedMovesEnabled();
 
     /// <summary>The hidden message window; zone menus borrow the foreground on it so they close on an outside click or app switch.</summary>
@@ -205,6 +209,75 @@ public sealed class ZoneManager
         }
     }
 
+    public void CreateProfile(string name)
+    {
+        SnapshotAll();
+        WorkspaceProfiles.Create(_config, name);
+        ReloadProfileWindows();
+        Flush();
+    }
+
+    public bool RenameProfile(string profileId, string name)
+    {
+        var changed = WorkspaceProfiles.Rename(_config, profileId, name);
+        if (changed)
+        {
+            Flush();
+        }
+
+        return changed;
+    }
+
+    public bool DuplicateProfile(string profileId, string name)
+    {
+        SnapshotAll();
+        var duplicate = WorkspaceProfiles.Duplicate(_config, profileId, name);
+        if (duplicate is not null)
+        {
+            Flush();
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool SwitchProfile(string profileId)
+    {
+        if (string.Equals(profileId, _config.ActiveProfileId, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        SnapshotAll();
+        if (!WorkspaceProfiles.Switch(_config, profileId))
+        {
+            return false;
+        }
+
+        ReloadProfileWindows();
+        Flush();
+        return true;
+    }
+
+    public bool DeleteProfile(string profileId)
+    {
+        SnapshotAll();
+        WorkspaceProfiles.SnapshotActive(_config);
+        var activeBefore = _config.ActiveProfileId;
+        if (!WorkspaceProfiles.Delete(_config, profileId))
+        {
+            return false;
+        }
+
+        if (!string.Equals(activeBefore, _config.ActiveProfileId, StringComparison.OrdinalIgnoreCase))
+        {
+            ReloadProfileWindows();
+        }
+
+        Flush();
+        return true;
+    }
+
     /// <summary>Explorer restarted or the desktop host changed: forget the cached host and re-pin every zone.</summary>
     public void RepinAll()
     {
@@ -299,6 +372,7 @@ public sealed class ZoneManager
     private bool TrySave()
     {
         SnapshotAll();
+        WorkspaceProfiles.SnapshotActive(_config);
         try
         {
             if (!_store.Save(_config))
@@ -349,6 +423,18 @@ public sealed class ZoneManager
 
     private IReadOnlyList<NextMind.Desktop.Core.Geometry.RectPx> OtherZoneRects(ZoneWindow self)
         => _windows.Where(w => w != self && w.IsVisible).Select(w => w.CurrentRect).ToList();
+
+    private void ReloadProfileWindows()
+    {
+        foreach (var window in _windows.ToList())
+        {
+            window.Close();
+        }
+
+        _windows.Clear();
+        OpenConfiguredZones();
+        Changed?.Invoke();
+    }
 
     private void ApplyVisibility()
     {
