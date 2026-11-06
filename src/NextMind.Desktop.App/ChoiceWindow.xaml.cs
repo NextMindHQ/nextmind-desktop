@@ -29,6 +29,7 @@ public partial class ChoiceWindow : Window
                 IsDefault = i == defaultIndex,
                 IsCancel = i == cancelIndex,
             };
+            button.SetResourceReference(StyleProperty, i == defaultIndex ? "FuturisticPrimaryButtonStyle" : "FuturisticButtonStyle");
             button.Click += (_, _) =>
             {
                 _chosen = index;

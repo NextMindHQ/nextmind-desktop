@@ -4,8 +4,7 @@
         Title="NextMind Desktop"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="420"
         WindowStartupLocation="CenterScreen" Topmost="True"
-        Background="#FF1B1F27" Foreground="#FFF0F4F8"
-        FontFamily="Segoe UI Variable Text, Segoe UI, Segoe UI Emoji">
+        Style="{StaticResource FutureWindowStyle}">
   <StackPanel Margin="22,20,22,18">
     <TextBlock x:Name="MessageText" TextWrapping="Wrap" MaxWidth="500" FontSize="14" LineHeight="21" />
     <StackPanel x:Name="Buttons" Orientation="Vertical" Margin="0,20,0,0" />

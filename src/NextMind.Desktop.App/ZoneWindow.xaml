@@ -15,13 +15,13 @@
         FontFamily="Segoe UI Variable Text, Segoe UI, Segoe UI Emoji">
 
   <Window.Resources>
-    <SolidColorBrush x:Key="PanelBrush" Color="#EE181C24" />
-    <SolidColorBrush x:Key="PanelBorderBrush" Color="#40FFFFFF" />
-    <SolidColorBrush x:Key="DropBorderBrush" Color="#CC5AA9FF" />
+    <SolidColorBrush x:Key="PanelBrush" Color="#EE101925" />
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="#705E7895" />
+    <SolidColorBrush x:Key="DropBorderBrush" Color="{DynamicResource FutureAccentColor}" />
     <SolidColorBrush x:Key="CollisionBorderBrush" Color="#D9F2A93B" />
-    <SolidColorBrush x:Key="TitleBarBrush" Color="#22FFFFFF" />
-    <SolidColorBrush x:Key="TextBrush" Color="#F0F4F8" />
-    <SolidColorBrush x:Key="MutedBrush" Color="#8C98A8" />
+    <SolidColorBrush x:Key="TitleBarBrush" Color="#CC172230" />
+    <SolidColorBrush x:Key="TextBrush" Color="#EEF6FF" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#91A4B8" />
 
     <Style x:Key="GripThumb" TargetType="Thumb">
       <Setter Property="Background" Value="Transparent" />
@@ -43,7 +43,7 @@
       <Setter Property="Cursor" Value="Hand" />
       <Style.Triggers>
         <Trigger Property="IsMouseOver" Value="True">
-          <Setter Property="Background" Value="#33FFFFFF" />
+          <Setter Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
         </Trigger>
       </Style.Triggers>
     </Style>
@@ -94,10 +94,10 @@
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="#22FFFFFF" />
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
               </Trigger>
               <Trigger Property="IsSelected" Value="True">
-                <Setter TargetName="Bd" Property="Background" Value="#4A5AA9FF" />
+                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
               </Trigger>
             </ControlTemplate.Triggers>
           </ControlTemplate>
@@ -137,7 +137,8 @@
   </Window.Resources>
 
   <Border x:Name="Root" CornerRadius="10" Background="{StaticResource PanelBrush}"
-          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True" AllowDrop="True">
+          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True" AllowDrop="True"
+          Effect="{DynamicResource FuturePanelEffect}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30" />
@@ -149,7 +150,8 @@
       <Border x:Name="TitleBar" Grid.Row="0" Background="{StaticResource TitleBarBrush}" CornerRadius="9,9,0,0"
               AllowDrop="True" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
         <Border.ContextMenu>
-          <ContextMenu Opened="ZoneMenu_Opened">
+          <ContextMenu Opened="ZoneMenu_Opened" Style="{StaticResource FuturisticMenuStyle}">
+            <ContextMenu.Resources><Style TargetType="MenuItem" BasedOn="{StaticResource FuturisticMenuItemStyle}" /></ContextMenu.Resources>
             <MenuItem Header="Rename Zone" Click="Rename_Click" />
             <MenuItem x:Name="SortMenu" Header="Sort by">
               <MenuItem Header="Custom" Tag="Custom" Click="Sort_Click" />
@@ -231,9 +233,13 @@
       </Border>
       <!-- Items: wrap grid, left-to-right then down; the column count follows the width; scrolls vertically. -->
       <Grid x:Name="ContentArea" Grid.Row="2" AllowDrop="True">
-        <TextBlock x:Name="EmptyHint" Text="Drop files, folders or shortcuts here" FontSize="12"
-                   Foreground="{StaticResource MutedBrush}" Opacity="0.6" IsHitTestVisible="False" TextTrimming="CharacterEllipsis" Margin="14,0"
-                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <StackPanel x:Name="EmptyHint" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <TextBlock Text="＋" FontSize="26" Foreground="{DynamicResource FutureAccentBrush}" HorizontalAlignment="Center" />
+          <TextBlock Text="DROP MODULES HERE" FontSize="11" FontWeight="SemiBold"
+                   Foreground="{StaticResource MutedBrush}" Opacity="0.6" IsHitTestVisible="False"
+                   HorizontalAlignment="Center" />
+          <TextBlock Text="Files · folders · shortcuts" Foreground="{StaticResource MutedBrush}" FontSize="10" HorizontalAlignment="Center" Margin="0,3,0,0" />
+        </StackPanel>
         <ListBox x:Name="ItemsList" Background="Transparent" BorderThickness="0" Margin="4,2,8,8" AllowDrop="True"
                  SelectionMode="Single" ItemContainerStyle="{StaticResource ItemContainer}"
                  PreviewMouseLeftButtonDown="Items_PreviewMouseLeftButtonDown" PreviewMouseMove="Items_PreviewMouseMove"

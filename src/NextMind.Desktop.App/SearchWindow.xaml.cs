@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using NextMind.Desktop.Core.Search;
 
@@ -25,7 +26,10 @@ public partial class SearchWindow : Window
         var matches = _index.Query(QueryBox.Text);
         ResultsList.ItemsSource = matches.Select(match => _actions[match.Id]).ToList();
         ResultsList.SelectedIndex = matches.Count > 0 ? 0 : -1;
-        EmptyText.Text = string.IsNullOrWhiteSpace(QueryBox.Text) ? "Type to search" : "No results";
+        if (EmptyText.Children.OfType<TextBlock>().LastOrDefault() is { } label)
+        {
+            label.Text = string.IsNullOrWhiteSpace(QueryBox.Text) ? "TYPE TO SEARCH" : "NO SIGNAL // NO RESULTS";
+        }
         EmptyText.Visibility = matches.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 

@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Quick Note" Width="520" Height="390" MinWidth="380" MinHeight="280"
         WindowStartupLocation="CenterScreen" Topmost="True"
-        Background="#FF1B1F27" Foreground="#FFF0F4F8"
-        FontFamily="Segoe UI Variable Text, Segoe UI, Segoe UI Emoji"
+        Style="{StaticResource FutureWindowStyle}"
         PreviewKeyDown="Window_PreviewKeyDown">
   <Grid Margin="20">
     <Grid.RowDefinitions>
@@ -12,14 +11,14 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
-    <TextBlock Text="Note text is stored locally in your active workspace profile." Foreground="#FF8C98A8" />
+    <TextBlock Text="QUICK NOTE // LOCAL PROFILE STORAGE" Style="{StaticResource FutureSectionLabelStyle}" />
     <TextBox x:Name="Input" Grid.Row="1" Margin="0,10,0,12" Padding="9" FontSize="14"
              AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
-             Background="#FF262B35" Foreground="#FFF0F4F8" CaretBrush="White" BorderBrush="#55FFFFFF" />
+             Style="{StaticResource FuturisticTextBoxStyle}" />
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button Content="Save" MinWidth="88" Padding="14,6" Margin="0,0,10,0" Click="Save_Click" />
-      <Button Content="Cancel" MinWidth="88" Padding="14,6" IsCancel="True" />
+      <Button Content="SAVE NOTE" MinWidth="100" Margin="0,0,10,0" Style="{StaticResource FuturisticPrimaryButtonStyle}" Click="Save_Click" />
+      <Button Content="CANCEL" MinWidth="88" Style="{StaticResource FuturisticButtonStyle}" IsCancel="True" />
     </StackPanel>
   </Grid>
 </Window>

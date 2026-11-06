@@ -4,16 +4,14 @@
         Title="NextMind Desktop"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="380"
         WindowStartupLocation="CenterScreen" Topmost="True"
-        Background="#FF1B1F27" Foreground="#FFF0F4F8"
-        FontFamily="Segoe UI Variable Text, Segoe UI, Segoe UI Emoji">
+        Style="{StaticResource FutureWindowStyle}">
   <StackPanel Margin="22,20,22,18">
     <TextBlock x:Name="MessageText" TextWrapping="Wrap" MaxWidth="440" FontSize="14" />
     <TextBox x:Name="Input" Margin="0,12,0,0" Padding="7,6" FontSize="14" MaxLength="80"
-             Background="#FF262B35" Foreground="#FFF0F4F8" CaretBrush="White" BorderBrush="#55FFFFFF"
-             SelectionBrush="#FF3B6FD4" />
+             Style="{StaticResource FuturisticTextBoxStyle}" />
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-      <Button x:Name="OkButton" MinWidth="88" Padding="14,6" Margin="0,0,10,0" Click="Ok_Click" />
-      <Button x:Name="CancelButton" Content="Cancel" MinWidth="88" Padding="14,6" IsCancel="True" />
+      <Button x:Name="OkButton" MinWidth="88" Margin="0,0,10,0" Style="{StaticResource FuturisticPrimaryButtonStyle}" Click="Ok_Click" />
+      <Button x:Name="CancelButton" Content="Cancel" MinWidth="88" Style="{StaticResource FuturisticButtonStyle}" IsCancel="True" />
     </StackPanel>
   </StackPanel>
 </Window>

@@ -7,26 +7,27 @@
         WindowStartupLocation="Manual" SnapsToDevicePixels="True" UseLayoutRounding="True"
         FontFamily="Segoe UI Variable Text, Segoe UI, Segoe UI Emoji">
   <Window.Resources>
-    <SolidColorBrush x:Key="PanelBrush" Color="#F0181C24" />
-    <SolidColorBrush x:Key="PanelBorderBrush" Color="#40FFFFFF" />
-    <SolidColorBrush x:Key="TextBrush" Color="#F0F4F8" />
-    <SolidColorBrush x:Key="MutedBrush" Color="#8C98A8" />
+    <SolidColorBrush x:Key="PanelBrush" Color="#EE101925" />
+    <SolidColorBrush x:Key="PanelBorderBrush" Color="#705E7895" />
+    <SolidColorBrush x:Key="TextBrush" Color="#EEF6FF" />
+    <SolidColorBrush x:Key="MutedBrush" Color="#91A4B8" />
     <Style x:Key="GripThumb" TargetType="Thumb" xmlns:sys="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
       <Setter Property="Background" Value="Transparent" />
     </Style>
-    <Style TargetType="Button">
+    <Style TargetType="Button" BasedOn="{StaticResource FuturisticButtonStyle}">
       <Setter Property="Padding" Value="8,3" />
       <Setter Property="Margin" Value="4,0,0,0" />
     </Style>
   </Window.Resources>
   <Border x:Name="Root" CornerRadius="10" Background="{StaticResource PanelBrush}"
-          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True">
+          BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True"
+          Effect="{DynamicResource FuturePanelEffect}">
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="30" />
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
-      <Border x:Name="TitleBar" Background="#22FFFFFF" CornerRadius="9,9,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+      <Border x:Name="TitleBar" Background="{DynamicResource FuturePanelAltBrush}" CornerRadius="9,9,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
         <Grid Margin="10,0,5,0">
           <TextBlock x:Name="TitleText" Foreground="{StaticResource TextBrush}" FontWeight="SemiBold"
                      FontSize="13" VerticalAlignment="Center" />
@@ -38,7 +39,8 @@
       </Border>
       <Grid x:Name="ContentArea" Grid.Row="1" Margin="12,8,12,12">
         <StackPanel x:Name="ClockPanel" VerticalAlignment="Center">
-          <TextBlock x:Name="ClockTime" Foreground="{StaticResource TextBrush}" FontSize="34" FontWeight="Light"
+          <TextBlock Text="LOCAL TIME" Foreground="{DynamicResource FutureAccentBrush}" FontSize="9" FontWeight="SemiBold" HorizontalAlignment="Center" />
+          <TextBlock x:Name="ClockTime" Foreground="{StaticResource TextBrush}" FontSize="38" FontWeight="Light"
                      HorizontalAlignment="Center" />
           <TextBlock x:Name="ClockDate" Foreground="{StaticResource MutedBrush}" FontSize="13"
                      HorizontalAlignment="Center" Margin="0,4,0,0" />
