@@ -415,7 +415,9 @@ public partial class App : Application
             ToggleAutostart,
             PromptAndCreateZone,
             OpenSearch,
-            ExitApp);
+            ExitApp,
+            () => _config!.Appearance,
+            ApplyAppearance);
         _controlCenter.Closed += (_, _) => _controlCenter = null;
         _controlCenter.Show();
         _controlCenter.Activate();
@@ -439,6 +441,19 @@ public partial class App : Application
         _searchWindow.Closed += (_, _) => _searchWindow = null;
         _searchWindow.Show();
         _searchWindow.Activate();
+    }
+
+    private void ApplyAppearance(AppearancePreferencesConfig appearance)
+    {
+        if (_config is null || _zones is null)
+        {
+            return;
+        }
+
+        _config.Appearance = appearance;
+        ConfigValidator.Normalize(_config);
+        FutureTheme.Apply(_config.Appearance);
+        _zones.Flush();
     }
 
     /// <summary>Exit closes the app NOW. It does not change "Start with Windows".</summary>

@@ -20,6 +20,8 @@ public partial class ControlCenterWindow : Window
     private readonly Action _createZone;
     private readonly Action _openSearch;
     private readonly Action _exit;
+    private readonly Func<AppearancePreferencesConfig> _appearance;
+    private readonly Action<AppearancePreferencesConfig> _applyAppearance;
 
     public ControlCenterWindow(
         ZoneManager zones,
@@ -29,7 +31,9 @@ public partial class ControlCenterWindow : Window
         Action toggleAutostart,
         Action createZone,
         Action openSearch,
-        Action exit)
+        Action exit,
+        Func<AppearancePreferencesConfig> appearance,
+        Action<AppearancePreferencesConfig> applyAppearance)
     {
         _zones = zones;
         _widgets = widgets;
@@ -39,6 +43,8 @@ public partial class ControlCenterWindow : Window
         _createZone = createZone;
         _openSearch = openSearch;
         _exit = exit;
+        _appearance = appearance;
+        _applyAppearance = applyAppearance;
 
         InitializeComponent();
         _zones.Changed += OnZonesChanged;
@@ -49,6 +55,8 @@ public partial class ControlCenterWindow : Window
             _widgets.Changed -= OnZonesChanged;
         };
         Refresh();
+        GlowSlider.ValueChanged += (_, _) => GlowValue.Text = $"{GlowSlider.Value:F0}%";
+        OpacitySlider.ValueChanged += (_, _) => OpacityValue.Text = $"{OpacitySlider.Value:F0}%";
     }
 
     private void OnZonesChanged() => Dispatcher.BeginInvoke(Refresh);
@@ -66,6 +74,7 @@ public partial class ControlCenterWindow : Window
         foreach (var definition in WidgetCatalog.Definitions)
         {
             var button = new Button { Content = "+  " + definition.Title, Margin = new Thickness(0, 0, 8, 6), ToolTip = definition.Description };
+            button.SetResourceReference(StyleProperty, "FuturisticButtonStyle");
             button.Click += (_, _) => _widgets.Add(definition.Kind);
             WidgetCatalogButtons.Children.Add(button);
         }
@@ -98,6 +107,13 @@ public partial class ControlCenterWindow : Window
         GateText.Text = _zones.ManagedMovesEnabled
             ? "Managed Desktop Moves: ENABLED. Items you drop from your Desktop are moved into the zone."
             : "Managed Desktop Moves: DISABLED (safety gate). Items dropped from your Desktop are added as references and stay on the Desktop.";
+
+        var appearance = _appearance();
+        GlowSlider.Value = appearance.GlowIntensity * 100;
+        OpacitySlider.Value = appearance.PanelOpacity * 100;
+        AnimationsBox.IsChecked = appearance.AnimationsEnabled;
+        ResourceSaverBox.IsChecked = appearance.ResourceSaverMode;
+        AccentBox.SelectedIndex = (int)appearance.Accent;
     }
 
     private UIElement BuildRow(ZoneConfig zone)
@@ -120,11 +136,13 @@ public partial class ControlCenterWindow : Window
         Grid.SetColumn(title, 0);
 
         var toggle = new Button { Content = shown ? "Hide" : "Show", MinWidth = 64 };
+        toggle.SetResourceReference(StyleProperty, "FuturisticButtonStyle");
         var id = zone.Id;
         toggle.Click += (_, _) => _zones.ToggleZoneShown(id);
         Grid.SetColumn(toggle, 1);
 
         var rename = new Button { Content = "Rename", MinWidth = 70 };
+        rename.SetResourceReference(StyleProperty, "FuturisticButtonStyle");
         rename.Click += (_, _) => _zones.RenameZoneById(id);
         Grid.SetColumn(rename, 2);
 
@@ -156,21 +174,25 @@ public partial class ControlCenterWindow : Window
         grid.Children.Add(title);
 
         var switchButton = new Button { Content = "Open", IsEnabled = !active };
+        switchButton.SetResourceReference(StyleProperty, active ? "FuturisticButtonStyle" : "FuturisticPrimaryButtonStyle");
         switchButton.Click += (_, _) => _zones.SwitchProfile(profile.Id);
         Grid.SetColumn(switchButton, 1);
         grid.Children.Add(switchButton);
 
         var rename = new Button { Content = "Rename" };
+        rename.SetResourceReference(StyleProperty, "FuturisticButtonStyle");
         rename.Click += (_, _) => RenameProfile(profile);
         Grid.SetColumn(rename, 2);
         grid.Children.Add(rename);
 
         var duplicate = new Button { Content = "Duplicate" };
+        duplicate.SetResourceReference(StyleProperty, "FuturisticButtonStyle");
         duplicate.Click += (_, _) => DuplicateProfile(profile);
         Grid.SetColumn(duplicate, 3);
         grid.Children.Add(duplicate);
 
         var delete = new Button { Content = "Delete", IsEnabled = _zones.Profiles.Count > 1 };
+        delete.SetResourceReference(StyleProperty, "FuturisticDangerButtonStyle");
         delete.Click += (_, _) => DeleteProfile(profile);
         Grid.SetColumn(delete, 4);
         grid.Children.Add(delete);
@@ -193,6 +215,7 @@ public partial class ControlCenterWindow : Window
         if (widget.Hidden)
         {
             var show = new Button { Content = "Show" };
+            show.SetResourceReference(StyleProperty, "FuturisticPrimaryButtonStyle");
             show.Click += (_, _) => _widgets.Show(widget.Id);
             Grid.SetColumn(show, 1);
             grid.Children.Add(show);
@@ -275,6 +298,27 @@ public partial class ControlCenterWindow : Window
     private void AutoArrange_Click(object sender, RoutedEventArgs e) => _zones.AutoArrange();
 
     private void UndoMove_Click(object sender, RoutedEventArgs e) => _zones.UndoLastMove();
+
+    private void ApplyAppearance_Click(object sender, RoutedEventArgs e)
+    {
+        var accent = AccentBox.SelectedItem is ComboBoxItem { Tag: string tag }
+            && Enum.TryParse<AppearanceAccent>(tag, out var parsed)
+            ? parsed
+            : AppearanceAccent.ElectricBlue;
+        _applyAppearance(AppearanceEditor.FromUi(
+            GlowSlider.Value,
+            OpacitySlider.Value,
+            accent,
+            AnimationsBox.IsChecked == true,
+            ResourceSaverBox.IsChecked == true));
+        Refresh();
+    }
+
+    private void ResetAppearance_Click(object sender, RoutedEventArgs e)
+    {
+        _applyAppearance(AppearanceEditor.Reset());
+        Refresh();
+    }
 
     private void Exit_Click(object sender, RoutedEventArgs e) => _exit();
 }
