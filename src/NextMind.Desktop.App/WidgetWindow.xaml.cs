@@ -175,7 +175,8 @@ public partial class WidgetWindow : Window
         _config.Collapsed = collapsed;
         MinHeight = collapsed ? CollapsedHeightDip : ExpandedMinHeightDip;
         ContentArea.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
-        RightGrip.Visibility = BottomGrip.Visibility = CornerGrip.Visibility = collapsed ? Visibility.Collapsed : Visibility.Visible;
+        RightGrip.Visibility = BottomGrip.Visibility = CornerGrip.Visibility = CornerMark.Visibility =
+            collapsed ? Visibility.Collapsed : Visibility.Visible;
         CollapseButton.Content = collapsed ? "□" : "—";
         if (applyHeight)
         {

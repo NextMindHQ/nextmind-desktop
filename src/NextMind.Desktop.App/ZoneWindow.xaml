@@ -23,17 +23,6 @@
     <SolidColorBrush x:Key="TextBrush" Color="#EEF6FF" />
     <SolidColorBrush x:Key="MutedBrush" Color="#91A4B8" />
 
-    <Style x:Key="GripThumb" TargetType="Thumb">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Thumb">
-            <Border Background="{TemplateBinding Background}" />
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-
     <!-- Small title-bar button: transparent, subtle hover. -->
     <Style x:Key="ChromeButton" TargetType="Border">
       <Setter Property="Width" Value="26" />
@@ -247,6 +236,9 @@
                  PreviewMouseLeftButtonDown="Items_PreviewMouseLeftButtonDown" PreviewMouseMove="Items_PreviewMouseMove"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
                  ScrollViewer.CanContentScroll="False">
+          <ListBox.Resources>
+            <Style TargetType="ScrollViewer" BasedOn="{StaticResource FuturisticScrollViewerStyle}" />
+          </ListBox.Resources>
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
               <WrapPanel Orientation="Horizontal" />
@@ -257,11 +249,11 @@
       </Border>
 
       <!-- Resize handles (hidden while collapsed). -->
-      <Thumb x:Name="RightGrip" Grid.Row="2" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
+      <Thumb x:Name="RightGrip" Grid.Row="2" Style="{StaticResource FuturisticResizeThumbStyle}" HorizontalAlignment="Right"
              Width="6" Margin="0,0,0,14" Cursor="SizeWE" DragDelta="RightGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
-      <Thumb x:Name="BottomGrip" Grid.Row="2" Style="{StaticResource GripThumb}" VerticalAlignment="Bottom"
+      <Thumb x:Name="BottomGrip" Grid.Row="2" Style="{StaticResource FuturisticResizeThumbStyle}" VerticalAlignment="Bottom"
              Height="6" Margin="0,0,14,0" Cursor="SizeNS" DragDelta="BottomGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
-      <Thumb x:Name="CornerGrip" Grid.Row="2" Style="{StaticResource GripThumb}" HorizontalAlignment="Right"
+      <Thumb x:Name="CornerGrip" Grid.Row="2" Style="{StaticResource FuturisticResizeThumbStyle}" HorizontalAlignment="Right"
              VerticalAlignment="Bottom" Width="14" Height="14" Cursor="SizeNWSE"
              DragDelta="CornerGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
       <Path x:Name="CornerMark" Grid.Row="2" Data="M10,2 L2,10 M10,6 L6,10" Stroke="{StaticResource MutedBrush}"

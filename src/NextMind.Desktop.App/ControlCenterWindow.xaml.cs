@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shell;
 using NextMind.Desktop.Core.Config;
 using NextMind.Desktop.Core.Widgets;
 
@@ -49,6 +50,9 @@ public partial class ControlCenterWindow : Window
         _appearanceSession = new AppearancePreviewSession(_appearance(), previewAppearance, applyAppearance);
 
         InitializeComponent();
+        FutureWindowChrome.Apply(this);
+        StateChanged += (_, _) => UpdateWindowStateVisual();
+        UpdateWindowStateVisual();
         _zones.Changed += OnZonesChanged;
         _widgets.Changed += OnZonesChanged;
         Closed += (_, _) =>
@@ -315,6 +319,19 @@ public partial class ControlCenterWindow : Window
     private void Create_Click(object sender, RoutedEventArgs e) => _createZone();
 
     private void Search_Click(object sender, RoutedEventArgs e) => _openSearch();
+
+    private void MinimizeWindow_Click(object sender, RoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
+
+    private void MaximizeRestoreWindow_Click(object sender, RoutedEventArgs e) => FutureWindowChrome.ToggleMaximize(this);
+
+    private void CloseWindow_Click(object sender, RoutedEventArgs e) => SystemCommands.CloseWindow(this);
+
+    private void UpdateWindowStateVisual()
+    {
+        var maximized = WindowState == WindowState.Maximized;
+        MaximizeButton.Content = maximized ? "❐" : "□";
+        MaximizeButton.ToolTip = maximized ? "Restore" : "Maximize";
+    }
 
     private void Root_PreviewKeyDown(object sender, KeyEventArgs e)
     {

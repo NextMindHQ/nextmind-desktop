@@ -12,9 +12,6 @@
     <SolidColorBrush x:Key="PanelBorderBrush" Color="#705E7895" />
     <SolidColorBrush x:Key="TextBrush" Color="#EEF6FF" />
     <SolidColorBrush x:Key="MutedBrush" Color="#91A4B8" />
-    <Style x:Key="GripThumb" TargetType="Thumb" xmlns:sys="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
     <Style TargetType="Button" BasedOn="{StaticResource FuturisticButtonStyle}">
       <Setter Property="Padding" Value="8,3" />
       <Setter Property="Margin" Value="4,0,0,0" />
@@ -43,7 +40,7 @@
         <local:ClockWidgetContent x:Name="ClockPanel" />
         <Grid x:Name="NotePanel" Visibility="Collapsed">
           <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-          <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource FuturisticScrollViewerStyle}">
             <TextBlock x:Name="NoteText" Foreground="{StaticResource TextBrush}" TextWrapping="Wrap" FontSize="14" />
           </ScrollViewer>
           <Button Grid.Row="1" Content="Edit Note" HorizontalAlignment="Right" Margin="0,8,0,0" Click="EditNote_Click" />
@@ -51,11 +48,17 @@
       </Grid>
       </Border>
       <Thumb x:Name="RightGrip" Grid.Row="1" HorizontalAlignment="Right" Width="6" Cursor="SizeWE"
+             Style="{StaticResource FuturisticResizeThumbStyle}"
              DragDelta="RightGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
       <Thumb x:Name="BottomGrip" Grid.Row="1" VerticalAlignment="Bottom" Height="6" Cursor="SizeNS"
+             Style="{StaticResource FuturisticResizeThumbStyle}"
              DragDelta="BottomGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
       <Thumb x:Name="CornerGrip" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-             Width="14" Height="14" Cursor="SizeNWSE" DragDelta="CornerGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
+             Width="14" Height="14" Cursor="SizeNWSE" Style="{StaticResource FuturisticResizeThumbStyle}"
+             DragDelta="CornerGrip_DragDelta" DragCompleted="Grip_DragCompleted" />
+      <Path x:Name="CornerMark" Grid.Row="1" Data="M10,2 L2,10 M10,6 L6,10" Stroke="{DynamicResource WorkspaceAccentBrush}"
+            StrokeThickness="1" Opacity="0.65" Width="12" Height="12" HorizontalAlignment="Right"
+            VerticalAlignment="Bottom" Margin="0,0,3,3" IsHitTestVisible="False" />
     </Grid>
   </Border>
 </Window>

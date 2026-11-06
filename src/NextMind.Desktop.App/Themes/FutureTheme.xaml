@@ -47,6 +47,169 @@
     <Setter Property="SnapsToDevicePixels" Value="True" />
   </Style>
 
+  <Style x:Key="FutureChromeButtonStyle" TargetType="Button">
+    <Setter Property="Width" Value="46" />
+    <Setter Property="Height" Value="44" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource FutureMutedTextBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="Focusable" Value="True" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="ChromeShell" Background="{TemplateBinding Background}" CornerRadius="5" Margin="2">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="ChromeShell" Property="Background" Value="{DynamicResource FutureAccentSoftBrush}" />
+              <Setter Property="Foreground" Value="{DynamicResource FutureTextBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="ChromeShell" Property="BorderBrush" Value="{DynamicResource FutureSecondaryAccentBrush}" />
+              <Setter TargetName="ChromeShell" Property="BorderThickness" Value="1" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="ChromeShell" Property="Opacity" Value="0.7" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="FutureChromeCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource FutureChromeButtonStyle}">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="#B8C83D4D" />
+        <Setter Property="Foreground" Value="#FFFFFFFF" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <Style x:Key="FuturisticScrollPageButtonStyle" TargetType="RepeatButton">
+    <Setter Property="Focusable" Value="False" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RepeatButton">
+          <Border Background="{TemplateBinding Background}" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="FuturisticScrollBarStyle" TargetType="ScrollBar">
+    <Setter Property="Width" Value="10" />
+    <Setter Property="Height" Value="Auto" />
+    <Setter Property="Background" Value="{DynamicResource FuturePanelAltBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ScrollBar">
+          <Grid x:Name="ScrollRoot" Background="{TemplateBinding Background}">
+            <Track x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="True" Focusable="False">
+              <Track.DecreaseRepeatButton>
+                <RepeatButton x:Name="DecreaseButton" Command="{x:Static ScrollBar.PageUpCommand}"
+                              Style="{StaticResource FuturisticScrollPageButtonStyle}" />
+              </Track.DecreaseRepeatButton>
+              <Track.Thumb>
+                <Thumb x:Name="ScrollThumb" MinWidth="6" MinHeight="24"
+                       Background="{DynamicResource FutureAccentStrongBrush}">
+                  <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                      <Border Background="{TemplateBinding Background}" CornerRadius="3" Margin="2,1" />
+                    </ControlTemplate>
+                  </Thumb.Template>
+                </Thumb>
+              </Track.Thumb>
+              <Track.IncreaseRepeatButton>
+                <RepeatButton x:Name="IncreaseButton" Command="{x:Static ScrollBar.PageDownCommand}"
+                              Style="{StaticResource FuturisticScrollPageButtonStyle}" />
+              </Track.IncreaseRepeatButton>
+            </Track>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+              <Setter Property="Width" Value="Auto" />
+              <Setter Property="Height" Value="10" />
+              <Setter TargetName="PART_Track" Property="Orientation" Value="Horizontal" />
+              <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
+              <Setter TargetName="ScrollThumb" Property="MinWidth" Value="24" />
+              <Setter TargetName="ScrollThumb" Property="MinHeight" Value="6" />
+              <Setter TargetName="DecreaseButton" Property="Command" Value="{x:Static ScrollBar.PageLeftCommand}" />
+              <Setter TargetName="IncreaseButton" Property="Command" Value="{x:Static ScrollBar.PageRightCommand}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="ScrollThumb" Property="Background" Value="{DynamicResource FutureAccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="ScrollThumb" Property="Opacity" Value="0.35" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="FuturisticScrollViewerStyle" TargetType="ScrollViewer">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="PanningMode" Value="Both" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ScrollViewer">
+          <Grid Background="{TemplateBinding Background}">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                    Margin="{TemplateBinding Padding}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                    CanContentScroll="{TemplateBinding CanContentScroll}" />
+            <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical"
+                       Style="{StaticResource FuturisticScrollBarStyle}"
+                       Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"
+                       Value="{TemplateBinding VerticalOffset}"
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+            <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="1" Orientation="Horizontal"
+                       Style="{StaticResource FuturisticScrollBarStyle}"
+                       Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"
+                       Value="{TemplateBinding HorizontalOffset}"
+                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+            <Border x:Name="ScrollCorner" Grid.Row="1" Grid.Column="1"
+                    Background="{DynamicResource FuturePanelAltBrush}" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="FuturisticResizeThumbStyle" TargetType="Thumb">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Thumb">
+          <Border x:Name="GripShell" Background="{TemplateBinding Background}" />
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="GripShell" Property="Background" Value="{DynamicResource WorkspaceAccentSoftBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <Style x:Key="HolographicPanelStyle" TargetType="Border">
     <Setter Property="Background" Value="{DynamicResource FuturePanelBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource FutureBorderBrush}" />

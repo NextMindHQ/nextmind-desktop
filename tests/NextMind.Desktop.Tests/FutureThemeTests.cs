@@ -1,6 +1,8 @@
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using NextMind.Desktop.App;
 using NextMind.Desktop.Core.Config;
@@ -27,6 +29,11 @@ public sealed class FutureThemeTests
         "FuturisticSearchResultStyle",
         "FuturisticWidgetContainerStyle",
         "FuturisticZoneItemStyle",
+        "FutureChromeButtonStyle",
+        "FutureChromeCloseButtonStyle",
+        "FuturisticScrollBarStyle",
+        "FuturisticScrollViewerStyle",
+        "FuturisticResizeThumbStyle",
     ];
 
     [Fact]
@@ -41,6 +48,66 @@ public sealed class FutureThemeTests
             {
                 Assert.True(dictionary.Contains(key), $"Missing shared V3 style: {key}");
             }
+        });
+    }
+
+    [Fact]
+    public void ScrollViewerTemplateKeepsDarkFunctionalScrollPartsAndCorner()
+    {
+        RunOnStaThread(() =>
+        {
+            var dictionary = Assert.IsType<ResourceDictionary>(Application.LoadComponent(
+                new Uri("/NextMindDesktop;component/Themes/FutureTheme.xaml", UriKind.Relative)));
+            var viewer = new ScrollViewer
+            {
+                Width = 180,
+                Height = 120,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                Content = new Border { Width = 600, Height = 500 },
+                Style = Assert.IsType<Style>(dictionary["FuturisticScrollViewerStyle"]),
+            };
+            viewer.Resources.MergedDictionaries.Add(dictionary);
+            viewer.Measure(new Size(180, 120));
+            viewer.Arrange(new Rect(0, 0, 180, 120));
+            viewer.ApplyTemplate();
+            viewer.UpdateLayout();
+
+            var vertical = Assert.IsType<ScrollBar>(viewer.Template.FindName("PART_VerticalScrollBar", viewer));
+            var horizontal = Assert.IsType<ScrollBar>(viewer.Template.FindName("PART_HorizontalScrollBar", viewer));
+            var corner = Assert.IsType<Border>(viewer.Template.FindName("ScrollCorner", viewer));
+            Assert.Equal(10, vertical.Width);
+            Assert.Equal(10, horizontal.Height);
+            Assert.NotEqual(Colors.White, Assert.IsType<SolidColorBrush>(corner.Background).Color);
+
+            AssertScrollBarParts(vertical, Orientation.Vertical, ScrollBar.PageUpCommand, ScrollBar.PageDownCommand, 24, 6);
+            AssertScrollBarParts(horizontal, Orientation.Horizontal, ScrollBar.PageLeftCommand, ScrollBar.PageRightCommand, 6, 24);
+            Assert.True(viewer.ScrollableHeight > 0);
+            Assert.True(viewer.ScrollableWidth > 0);
+            viewer.ScrollToVerticalOffset(48);
+            viewer.ScrollToHorizontalOffset(36);
+            viewer.UpdateLayout();
+            Assert.Equal(48, viewer.VerticalOffset);
+            Assert.Equal(36, viewer.HorizontalOffset);
+        });
+    }
+
+    [Fact]
+    public void ResizeThumbTemplateDoesNotUseTheSystemThumbChrome()
+    {
+        RunOnStaThread(() =>
+        {
+            var dictionary = Assert.IsType<ResourceDictionary>(Application.LoadComponent(
+                new Uri("/NextMindDesktop;component/Themes/FutureTheme.xaml", UriKind.Relative)));
+            var thumb = new Thumb
+            {
+                Style = Assert.IsType<Style>(dictionary["FuturisticResizeThumbStyle"]),
+            };
+            thumb.Resources.MergedDictionaries.Add(dictionary);
+            thumb.ApplyTemplate();
+
+            var shell = Assert.IsType<Border>(thumb.Template.FindName("GripShell", thumb));
+            Assert.Equal(0, Assert.IsType<SolidColorBrush>(shell.Background).Color.A);
         });
     }
 
@@ -152,5 +219,23 @@ public sealed class FutureThemeTests
         {
             ExceptionDispatchInfo.Capture(failure).Throw();
         }
+    }
+
+    private static void AssertScrollBarParts(
+        ScrollBar scrollBar,
+        Orientation orientation,
+        ICommand decreaseCommand,
+        ICommand increaseCommand,
+        double thumbMinHeight,
+        double thumbMinWidth)
+    {
+        scrollBar.ApplyTemplate();
+        var track = Assert.IsType<Track>(scrollBar.Template.FindName("PART_Track", scrollBar));
+        Assert.Equal(orientation, track.Orientation);
+        Assert.Equal(decreaseCommand, track.DecreaseRepeatButton.Command);
+        Assert.Equal(increaseCommand, track.IncreaseRepeatButton.Command);
+        Assert.Equal(thumbMinHeight, track.Thumb.MinHeight);
+        Assert.Equal(thumbMinWidth, track.Thumb.MinWidth);
+        Assert.True(track.Thumb.IsHitTestVisible);
     }
 }
