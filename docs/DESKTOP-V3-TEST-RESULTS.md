@@ -21,12 +21,14 @@ Data ostatniej pełnej weryfikacji: 2026-11-06. Gałąź: `codex/v3-public-integ
 - Ciemne przewijanie: PASS automatyczny — pionowe i poziome offsety działają, thumb pozostaje interaktywny, komendy stron odpowiadają orientacji, a narożnik `ScrollViewer` nie używa bieli systemowej.
 - Resize grips: PASS automatyczny — widgety i strefy używają jawnego przezroczystego szablonu `Thumb`; istniejące handlery drag/resize pozostały podłączone.
 - Publiczny punkt bazowy: PASS, 364/364 testy.
-- Pełny zestaw integracyjny: PASS, 430/430 testów, 0 pominiętych.
+- Pełny zestaw integracyjny: PASS, 432/432 testy, 0 pominiętych.
 - Release build: PASS, 0 błędów i 0 ostrzeżeń.
 - Regresje odzyskane z publicznego `main`: PASS — wyszukiwanie w strefie, wolne miejsce i snapping, smart expand, pozycjonowanie i zamykanie menu oraz przywracanie układu.
+- Integracja snappingu: PASS — ustawienie V3 steruje natywnym snappingiem publicznego `main`, Alt omija snapping elementów i siatki, a po zakończeniu ruchu element nie jest przyciągany drugi raz.
 - Koegzystencja funkcji V3: PASS — profile, globalne wyszukiwanie, widgety, Quick Note, personalizacja, schemat V5 i izolacja pojedynczej instancji.
 - Launcher `--verify-only`, świeże unikalne katalogi buildu i konfiguracji oraz wymuszony błąd builda: PASS bez startowania V3.
 - Setup ZIP w izolowanym katalogu: PASS — manifest i payload zweryfikowane, poprzednia aplikacja przeniesiona do backupu, receipt i backup manifest utworzone, syntetyczne `config.json`, `ManagedItems` i log zachowały identyczne SHA-256.
+- Instalator i deinstalator: PASS w Windows PowerShell 5.1 — ścieżki względne backupu nie wymagają API z PowerShell 7, a niestandardowy katalog instalacji jest odczytywany z lokalizacji zainstalowanego skryptu/receipt zamiast kierować operację na domyślną instalację.
 - Portable ZIP: PASS — obecne EXE, marker i self-contained `coreclr.dll`; brak spakowanej konfiguracji i logów; test ścieżek potwierdza odrębność `Desktop-Portable` od `Desktop`.
 - README: PASS w lokalnym renderze desktop 1440 px i mobile 390 px; grafiki skalują się bez poziomego przepełnienia.
 

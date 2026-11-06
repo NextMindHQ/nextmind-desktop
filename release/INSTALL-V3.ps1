@@ -30,10 +30,16 @@ $backup = Join-Path $BackupRoot "pre-v3-$stamp"
 New-Item -ItemType Directory -Force -Path $backup | Out-Null
 if (Test-Path -LiteralPath $InstallRoot) {
     Copy-Item -LiteralPath $InstallRoot -Destination (Join-Path $backup 'Desktop') -Recurse -Force
+    $installRootFull = [IO.Path]::GetFullPath($InstallRoot).TrimEnd([IO.Path]::DirectorySeparatorChar)
+    $installRootPrefix = $installRootFull + [IO.Path]::DirectorySeparatorChar
     $sourceFiles = Get-ChildItem -LiteralPath $InstallRoot -File -Recurse
     $backupFiles = @()
     foreach ($source in $sourceFiles) {
-        $relative = [IO.Path]::GetRelativePath($InstallRoot, $source.FullName)
+        $sourceFull = [IO.Path]::GetFullPath($source.FullName)
+        if (-not $sourceFull.StartsWith($installRootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Backup source escaped the installation root: $sourceFull"
+        }
+        $relative = $sourceFull.Substring($installRootPrefix.Length)
         $copy = Join-Path (Join-Path $backup 'Desktop') $relative
         $sourceHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $source.FullName).Hash
         if ($sourceHash -ne (Get-FileHash -Algorithm SHA256 -LiteralPath $copy).Hash) {

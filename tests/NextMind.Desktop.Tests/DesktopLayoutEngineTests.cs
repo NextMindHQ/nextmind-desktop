@@ -6,6 +6,25 @@ namespace NextMind.Desktop.Tests;
 public sealed class DesktopLayoutEngineTests
 {
     [Fact]
+    public void NativeElementSnapFollowsPreferenceAndAltBypass()
+    {
+        var enabled = LayoutOptions.Default with { SnapToElements = true };
+
+        Assert.True(LayoutInteraction.ShouldApplyNativeElementSnap(enabled, altBypass: false));
+        Assert.False(LayoutInteraction.ShouldApplyNativeElementSnap(enabled, altBypass: true));
+        Assert.False(LayoutInteraction.ShouldApplyNativeElementSnap(enabled with { SnapToElements = false }, altBypass: false));
+    }
+
+    [Fact]
+    public void PlacementAfterNativeMoveDoesNotSnapElementsTwice()
+    {
+        var options = LayoutOptions.Default with { SnapToElements = true, SnapToGrid = true };
+
+        Assert.Equal(options with { SnapToElements = false }, LayoutInteraction.AfterNativeMoveOptions(options, altBypass: false));
+        Assert.Equal(options with { SnapToElements = false, SnapToGrid = false }, LayoutInteraction.AfterNativeMoveOptions(options, altBypass: true));
+    }
+
+    [Fact]
     public void Place_SnapsNearestPeerEdges_WithConfiguredGap()
     {
         var proposed = new RectPx(287, 100, 100, 80);

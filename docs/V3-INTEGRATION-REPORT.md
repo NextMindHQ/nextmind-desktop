@@ -35,12 +35,14 @@ The integration branch was created from the public history and the V3 work was i
 ## Verification
 
 - Public baseline: 364/364 tests passed before integration.
-- Integrated suite: 430/430 tests passed, with no skipped tests.
+- Integrated suite: 432/432 tests passed, with no skipped tests.
 - Release build: passed with 0 errors and 0 warnings.
 - V2 and V3 verification launchers: passed without modifying the installed configuration.
 - Setup install and rollback: passed against synthetic application and user-data roots; configuration, managed items and logs retained their SHA-256 values.
 - Portable: passed from the extracted release archive; self-contained runtime present, isolated data written only to the redirected temporary root, live installed configuration and autostart state unchanged.
 - Package hygiene: no PDB, logs, configuration, test marker, backups or user data in either archive.
+- Packaging licenses: both archives contain Apache-2.0; Portable additionally contains the .NET redistribution license and third-party notices.
+- Installer compatibility: the actual Setup scripts pass under Windows PowerShell 5.1, and custom-root uninstall is confined to the root containing its receipt.
 
 The reproducible package builder writes the exact source commit to `RELEASE-MANIFEST.json` and generates `artifacts/release-v3/dist/SHA256SUMS.txt`. Those ignored build outputs must be regenerated from the eventual `main` release commit; hashes are therefore deliberately not committed to this report.
 

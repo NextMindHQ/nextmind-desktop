@@ -12,6 +12,7 @@ using NextMind.Desktop.Core;
 using NextMind.Desktop.Core.Config;
 using NextMind.Desktop.Core.Geometry;
 using NextMind.Desktop.Core.Logging;
+using NextMind.Desktop.Core.Layout;
 using NextMind.Desktop.Core.Search;
 using NextMind.Desktop.Core.Ui;
 using NextMind.Desktop.Shell;
@@ -36,8 +37,6 @@ public partial class ZoneWindow : Window
     private const uint WM_WINDOWPOSCHANGING = 0x0046;
     private const int WM_MOVING = 0x0216;
     private const int WM_EXITSIZEMOVE = 0x0232;
-    private const double SnapThresholdDip = 10;
-    private const double SnapGapDip = 12;
 
     private readonly ZoneConfig _config;
     private readonly DesktopLayer _layer;
@@ -54,6 +53,7 @@ public partial class ZoneWindow : Window
     private IReadOnlyList<RectPx>? _snapOthers;
     private IReadOnlyList<RectPx>? _snapAreas;
     private (int CollapsedY, int ExpandedY)? _autoShift;
+    private bool _moveUsedAltBypass;
 
     public ZoneWindow(ZoneConfig config, DesktopLayer layer, ILog log, IconService icons)
     {
@@ -119,6 +119,9 @@ public partial class ZoneWindow : Window
     /// <summary>Rectangles (physical pixels) of the other zones currently on screen; used for snapping, expand direction and menu placement.</summary>
     public Func<ZoneWindow, IReadOnlyList<RectPx>>? OthersProvider { get; set; }
 
+    /// <summary>Current assisted-layout preferences, read live while a native drag is in progress.</summary>
+    public Func<LayoutOptions>? LayoutOptionsProvider { get; set; }
+
     /// <summary>Live window rectangle in physical pixels.</summary>
     public RectPx CurrentRect => _hwnd == IntPtr.Zero ? new RectPx(_config.X, _config.Y, _config.Width, _config.Height) : Monitors.GetWindowRect(_hwnd);
 
@@ -142,7 +145,7 @@ public partial class ZoneWindow : Window
     public event Action<ZoneWindow, ZoneItemDragPayload, int>? ItemDroppedFromOtherZone;
 
     /// <summary>Raised once after the native title-bar move loop finishes.</summary>
-    public event Action<ZoneWindow, RectPx, RectPx>? MoveCompleted;
+    public event Action<ZoneWindow, RectPx, RectPx, bool>? MoveCompleted;
 
     public void SetTitle(string title) => TitleText.Text = title;
 
@@ -239,8 +242,11 @@ public partial class ZoneWindow : Window
         }
         else if (msg == WM_MOVING)
         {
-            // Magnetic edges while dragging the title bar. Alt switches it off; only the proposed position is adjusted.
-            if (!Monitors.IsAltDown() && TrySnap(lParam))
+            var altBypass = Monitors.IsAltDown();
+            _moveUsedAltBypass |= altBypass;
+            var options = LayoutOptionsProvider?.Invoke() ?? LayoutOptions.Default;
+            // Magnetic edges while dragging the title bar. Alt or the V3 preference switches it off.
+            if (LayoutInteraction.ShouldApplyNativeElementSnap(options, altBypass) && TrySnap(lParam, options))
             {
                 handled = true;
                 return (IntPtr)1; // TRUE: the rectangle was modified
@@ -255,7 +261,7 @@ public partial class ZoneWindow : Window
         return IntPtr.Zero;
     }
 
-    private bool TrySnap(IntPtr rectPointer)
+    private bool TrySnap(IntPtr rectPointer, LayoutOptions options)
     {
         if (OthersProvider is null)
         {
@@ -268,7 +274,12 @@ public partial class ZoneWindow : Window
 
         var dpi = CurrentDpi();
         var proposed = Monitors.ReadRect(rectPointer);
-        var snapped = ZoneLayout.Snap(proposed, _snapOthers, _snapAreas, ZoneGeometry.DipToPx(SnapThresholdDip, dpi), ZoneGeometry.DipToPx(SnapGapDip, dpi));
+        var snapped = ZoneLayout.Snap(
+            proposed,
+            _snapOthers,
+            _snapAreas,
+            ZoneGeometry.DipToPx(options.SnapThreshold, dpi),
+            ZoneGeometry.DipToPx(options.Gap, dpi));
         if (snapped == proposed)
         {
             return false;
@@ -1352,6 +1363,7 @@ public partial class ZoneWindow : Window
         if (e.ButtonState == MouseButtonState.Pressed)
         {
             var before = CurrentBounds();
+            _moveUsedAltBypass = false;
             try
             {
                 DragMove(); // system move loop; returns when the button is released
@@ -1364,7 +1376,7 @@ public partial class ZoneWindow : Window
             var after = CurrentBounds();
             if (after != before)
             {
-                MoveCompleted?.Invoke(this, before, after);
+                MoveCompleted?.Invoke(this, before, after, _moveUsedAltBypass);
             }
         }
     }

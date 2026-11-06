@@ -109,9 +109,9 @@ public sealed class LayoutPreferencesConfig
 
     public int GridSize { get; set; } = 16;
 
-    public int Gap { get; set; } = 8;
+    public int Gap { get; set; } = 12;
 
-    public int SnapThreshold { get; set; } = 12;
+    public int SnapThreshold { get; set; } = 10;
 }
 
 public sealed class WorkspaceProfileConfig

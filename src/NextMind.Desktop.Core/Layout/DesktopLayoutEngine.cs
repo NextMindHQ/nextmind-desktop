@@ -9,7 +9,7 @@ public sealed record LayoutOptions(
     int Gap,
     int SnapThreshold)
 {
-    public static LayoutOptions Default { get; } = new(true, false, 16, 8, 12);
+    public static LayoutOptions Default { get; } = new(true, false, 16, 12, 10);
 }
 
 public readonly record struct LayoutElement(string Id, RectPx Bounds);
@@ -17,6 +17,20 @@ public readonly record struct LayoutElement(string Id, RectPx Bounds);
 public sealed record LayoutResult(RectPx Bounds, IReadOnlyList<string> CollidingIds)
 {
     public bool HasCollision => CollidingIds.Count > 0;
+}
+
+public static class LayoutInteraction
+{
+    public static bool ShouldApplyNativeElementSnap(LayoutOptions options, bool altBypass)
+        => options.SnapToElements && !altBypass;
+
+    public static LayoutOptions AfterNativeMoveOptions(LayoutOptions options, bool altBypass)
+        => options with
+        {
+            // Element snapping is performed once, by the native WM_MOVING path where DPI and work areas are available.
+            SnapToElements = false,
+            SnapToGrid = options.SnapToGrid && !altBypass,
+        };
 }
 
 public static class DesktopLayoutEngine

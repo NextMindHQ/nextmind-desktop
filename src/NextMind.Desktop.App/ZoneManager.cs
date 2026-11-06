@@ -415,7 +415,7 @@ public sealed class ZoneManager
 
     private void Open(ZoneConfig zone)
     {
-        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones, OthersProvider = OtherZoneRects, ForegroundAnchorProvider = () => ForegroundAnchor?.Invoke() ?? IntPtr.Zero };
+        var window = new ZoneWindow(zone, _layer, _log, _icons) { ZoneProvider = () => _config.Zones, OthersProvider = OtherZoneRects, LayoutOptionsProvider = CurrentLayoutOptions, ForegroundAnchorProvider = () => ForegroundAnchor?.Invoke() ?? IntPtr.Zero };
         window.ZoneChanged += _ => ScheduleSave();
         window.RenameRequested += OnRename;
         window.HideRequested += OnHide;
@@ -471,13 +471,14 @@ public sealed class ZoneManager
         }
     }
 
-    private void OnMoveCompleted(ZoneWindow window, RectPx before, RectPx proposed)
+    private void OnMoveCompleted(ZoneWindow window, RectPx before, RectPx proposed, bool altBypass)
     {
         var peers = _windows
             .Where(peer => peer != window && peer.IsVisible)
             .Select(peer => new LayoutElement(peer.Config.Id, peer.CurrentBounds()))
             .ToList();
-        var result = DesktopLayoutEngine.Place(proposed, peers, CurrentLayoutOptions());
+        var options = LayoutInteraction.AfterNativeMoveOptions(CurrentLayoutOptions(), altBypass);
+        var result = DesktopLayoutEngine.Place(proposed, peers, options);
         var placed = ZoneGeometry.ClampToWorkAreas(result.Bounds, Monitors.GetWorkAreas());
         window.SetBounds(placed);
         _layoutUndo.Record(new LayoutMove(window.Config.Id, before, placed));

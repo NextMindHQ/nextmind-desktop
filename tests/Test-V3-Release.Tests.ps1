@@ -8,6 +8,9 @@ function Require([bool]$condition, [string]$message) { if (-not $condition) { th
 
 Require (-not (Select-String -LiteralPath $controlCenter -SimpleMatch 'Live Preview' -Quiet)) 'Production Control Center contains a preview-only label.'
 Require (Test-Path -LiteralPath (Join-Path $setup 'RELEASE-MANIFEST.json')) 'Setup manifest is missing.'
+Require (Test-Path -LiteralPath (Join-Path $setup 'LICENSE')) 'Setup package is missing the Apache-2.0 license.'
+Require (Test-Path -LiteralPath (Join-Path $portable 'LICENSE')) 'Portable package is missing the Apache-2.0 license.'
+Require (-not (Select-String -LiteralPath (Join-Path $setup 'INSTALL-V3.ps1') -SimpleMatch '[IO.Path]::GetRelativePath' -Quiet)) 'Installer uses an API unavailable in Windows PowerShell 5.1.'
 $manifest = Get-Content -Raw -LiteralPath (Join-Path $setup 'RELEASE-MANIFEST.json') | ConvertFrom-Json
 Require ($manifest.Version -eq '3.0.0') 'Setup version is not 3.0.0.'
 foreach ($entry in $manifest.PayloadFiles) {

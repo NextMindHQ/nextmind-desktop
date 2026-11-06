@@ -43,6 +43,17 @@ Copy-Item -LiteralPath (Join-Path $repo 'docs\CHANGELOG-V3.md') -Destination $se
 Copy-Item -LiteralPath (Join-Path $repo 'docs\RELEASE-NOTES-V3.md') -Destination $setup
 Copy-Item -LiteralPath (Join-Path $repo 'docs\ROLLBACK-V3.md') -Destination $setup
 Copy-Item -LiteralPath (Join-Path $repo 'docs\UPDATE-V3.md') -Destination $setup
+Copy-Item -LiteralPath (Join-Path $repo 'LICENSE') -Destination $setup
+Copy-Item -LiteralPath (Join-Path $repo 'LICENSE') -Destination $portable
+
+$dotnetRoot = Split-Path (Get-Command dotnet).Source -Parent
+$dotnetLicense = Join-Path $dotnetRoot 'LICENSE.txt'
+$dotnetNotices = Join-Path $dotnetRoot 'ThirdPartyNotices.txt'
+if (-not (Test-Path -LiteralPath $dotnetLicense) -or -not (Test-Path -LiteralPath $dotnetNotices)) {
+    throw 'The .NET redistribution license or third-party notices could not be found.'
+}
+Copy-Item -LiteralPath $dotnetLicense -Destination (Join-Path $portable 'DOTNET-LICENSE.txt')
+Copy-Item -LiteralPath $dotnetNotices -Destination (Join-Path $portable 'DOTNET-THIRD-PARTY-NOTICES.txt')
 
 $payloadFiles = @(
     Get-ChildItem -LiteralPath $setupPayload -Recurse -File |
