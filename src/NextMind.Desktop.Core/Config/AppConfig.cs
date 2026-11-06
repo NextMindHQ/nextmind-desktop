@@ -65,7 +65,22 @@ public sealed class AppConfig
     /// </summary>
     public bool ManagedDesktopMovesEnabled { get; set; }
 
+    public LayoutPreferencesConfig Layout { get; set; } = new();
+
     public List<ZoneConfig> Zones { get; set; } = [];
+}
+
+public sealed class LayoutPreferencesConfig
+{
+    public bool SnapToElements { get; set; } = true;
+
+    public bool SnapToGrid { get; set; }
+
+    public int GridSize { get; set; } = 16;
+
+    public int Gap { get; set; } = 8;
+
+    public int SnapThreshold { get; set; } = 12;
 }
 
 /// <summary>

@@ -142,7 +142,27 @@ public partial class ZoneWindow : Window
     /// <summary>An item dragged from another zone was dropped here at the given display index.</summary>
     public event Action<ZoneWindow, ZoneItemDragPayload, int>? ItemDroppedFromOtherZone;
 
+    /// <summary>Raised once after the native title-bar move loop finishes.</summary>
+    public event Action<ZoneWindow, RectPx, RectPx>? MoveCompleted;
+
     public void SetTitle(string title) => TitleText.Text = title;
+
+    public RectPx CurrentBounds()
+        => _hwnd == IntPtr.Zero
+            ? new RectPx(_config.X, _config.Y, _config.Width, _config.Height)
+            : Monitors.GetWindowRect(_hwnd);
+
+    public void SetBounds(RectPx bounds)
+    {
+        if (_hwnd != IntPtr.Zero)
+        {
+            Monitors.SetWindowBounds(_hwnd, bounds);
+            ZoneChanged?.Invoke(this);
+        }
+    }
+
+    public void SetCollisionWarning(bool on)
+        => Root.BorderBrush = (Brush)FindResource(on ? "CollisionBorderBrush" : "PanelBorderBrush");
 
     /// <summary>Captures the live geometry into this zone's config (used right before hiding).</summary>
     public void Snapshot() => SnapshotInto(_config);
@@ -1336,6 +1356,7 @@ public partial class ZoneWindow : Window
 
         if (e.ButtonState == MouseButtonState.Pressed)
         {
+            var before = CurrentBounds();
             try
             {
                 DragMove(); // system move loop; returns when the button is released
@@ -1343,6 +1364,12 @@ public partial class ZoneWindow : Window
             catch (InvalidOperationException)
             {
                 // Button was released before the loop started; nothing to do.
+            }
+
+            var after = CurrentBounds();
+            if (after != before)
+            {
+                MoveCompleted?.Invoke(this, before, after);
             }
         }
     }

@@ -57,6 +57,11 @@ public partial class ControlCenterWindow : Window
 
         AutostartBox.IsEnabled = _autostartAvailable();
         AutostartBox.IsChecked = _autostartChecked();
+        SnapElementsBox.IsChecked = _zones.Layout.SnapToElements;
+        SnapGridBox.IsChecked = _zones.Layout.SnapToGrid;
+        GridSizeBox.Text = _zones.Layout.GridSize.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        GapBox.Text = _zones.Layout.Gap.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        UndoMoveButton.IsEnabled = _zones.CanUndoMove;
         GateText.Text = _zones.ManagedMovesEnabled
             ? "Managed Desktop Moves: ENABLED. Items you drop from your Desktop are moved into the zone."
             : "Managed Desktop Moves: DISABLED (safety gate). Items dropped from your Desktop are added as references and stay on the Desktop.";
@@ -107,6 +112,18 @@ public partial class ControlCenterWindow : Window
     private void HideAll_Click(object sender, RoutedEventArgs e) => _zones.HideAll();
 
     private void ShowAll_Click(object sender, RoutedEventArgs e) => _zones.ShowAll();
+
+    private void ApplyLayout_Click(object sender, RoutedEventArgs e)
+    {
+        var grid = int.TryParse(GridSizeBox.Text, out var parsedGrid) ? parsedGrid : _zones.Layout.GridSize;
+        var gap = int.TryParse(GapBox.Text, out var parsedGap) ? parsedGap : _zones.Layout.Gap;
+        _zones.UpdateLayoutPreferences(SnapElementsBox.IsChecked == true, SnapGridBox.IsChecked == true, grid, gap);
+        Refresh();
+    }
+
+    private void AutoArrange_Click(object sender, RoutedEventArgs e) => _zones.AutoArrange();
+
+    private void UndoMove_Click(object sender, RoutedEventArgs e) => _zones.UndoLastMove();
 
     private void Exit_Click(object sender, RoutedEventArgs e) => _exit();
 }

@@ -5,6 +5,11 @@ public static class ConfigValidator
 {
     public static void Normalize(AppConfig config)
     {
+        config.Layout ??= new LayoutPreferencesConfig();
+        config.Layout.GridSize = config.Layout.GridSize <= 0 ? 16 : Math.Clamp(config.Layout.GridSize, 4, 128);
+        config.Layout.Gap = Math.Clamp(config.Layout.Gap, 0, 64);
+        config.Layout.SnapThreshold = Math.Clamp(config.Layout.SnapThreshold, 1, 64);
+
         config.Zones ??= [];
         config.Zones.RemoveAll(z => z is null);
 

@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Windows.Threading;
 using NextMind.Desktop.Core.Config;
+using NextMind.Desktop.Core.Geometry;
 using NextMind.Desktop.Core.Logging;
+using NextMind.Desktop.Core.Layout;
 using NextMind.Desktop.Core.Managed;
 using NextMind.Desktop.Core.Startup;
 using NextMind.Desktop.Shell;
@@ -31,6 +33,7 @@ public sealed class ZoneManager
     private readonly DispatcherTimer _saveTimer;
     private readonly DispatcherTimer _pinTimer;
     private readonly List<ZoneWindow> _windows = [];
+    private readonly LayoutUndoState _layoutUndo = new();
     private int _pinAttempt;
 
     public ZoneManager(
@@ -75,6 +78,10 @@ public sealed class ZoneManager
 
     /// <summary>The hidden message window; zone menus borrow the foreground on it so they close on an outside click or app switch.</summary>
     public Func<IntPtr>? ForegroundAnchor { get; set; }
+
+    public LayoutPreferencesConfig Layout => _config.Layout;
+
+    public bool CanUndoMove => _layoutUndo.CanUndo;
 
     /// <summary>Raised when zones were added/removed/renamed/shown/hidden (the Control Center refreshes on it).</summary>
     public event Action? Changed;
@@ -223,6 +230,50 @@ public sealed class ZoneManager
         ScheduleSave();
     }
 
+    public void UpdateLayoutPreferences(bool snapToElements, bool snapToGrid, int gridSize, int gap)
+    {
+        _config.Layout.SnapToElements = snapToElements;
+        _config.Layout.SnapToGrid = snapToGrid;
+        _config.Layout.GridSize = Math.Clamp(gridSize, 4, 128);
+        _config.Layout.Gap = Math.Clamp(gap, 0, 64);
+        ScheduleSave();
+        Changed?.Invoke();
+    }
+
+    public void AutoArrange()
+    {
+        var visible = _windows.Where(window => window.IsVisible).ToList();
+        var arranged = DesktopLayoutEngine.AutoArrange(
+            visible.Select(window => new LayoutElement(window.Config.Id, window.CurrentBounds())).ToList(),
+            Monitors.GetWorkAreas(),
+            CurrentLayoutOptions());
+
+        foreach (var window in visible)
+        {
+            if (arranged.TryGetValue(window.Config.Id, out var bounds))
+            {
+                window.SetBounds(bounds);
+            }
+        }
+
+        RefreshCollisionWarnings();
+        Flush();
+    }
+
+    public void UndoLastMove()
+    {
+        var move = _layoutUndo.Take();
+        var window = move is null ? null : WindowFor(move.Value.ElementId);
+        if (window is null || move is null)
+        {
+            return;
+        }
+
+        window.SetBounds(ZoneGeometry.ClampToWorkAreas(move.Value.Before, Monitors.GetWorkAreas()));
+        RefreshCollisionWarnings();
+        Flush();
+    }
+
     // ------------------------------------------------------------------ persistence
 
     /// <summary>Snapshots live geometry and writes the config now (also used on exit / session end).</summary>
@@ -281,6 +332,7 @@ public sealed class ZoneManager
         window.ReturnToDesktopRequested += OnReturnToDesktop;
         window.MoveToZoneRequested += OnMoveToZone;
         window.ItemDroppedFromOtherZone += OnItemDroppedFromOtherZone;
+        window.MoveCompleted += OnMoveCompleted;
 
         if (_windows.Count == 0)
         {
@@ -311,6 +363,39 @@ public sealed class ZoneManager
             {
                 w.Hide();
             }
+        }
+    }
+
+    private void OnMoveCompleted(ZoneWindow window, RectPx before, RectPx proposed)
+    {
+        var peers = _windows
+            .Where(peer => peer != window && peer.IsVisible)
+            .Select(peer => new LayoutElement(peer.Config.Id, peer.CurrentBounds()))
+            .ToList();
+        var result = DesktopLayoutEngine.Place(proposed, peers, CurrentLayoutOptions());
+        var placed = ZoneGeometry.ClampToWorkAreas(result.Bounds, Monitors.GetWorkAreas());
+        window.SetBounds(placed);
+        _layoutUndo.Record(new LayoutMove(window.Config.Id, before, placed));
+        RefreshCollisionWarnings();
+        ScheduleSave();
+        Changed?.Invoke();
+    }
+
+    private LayoutOptions CurrentLayoutOptions()
+        => new(
+            _config.Layout.SnapToElements,
+            _config.Layout.SnapToGrid,
+            _config.Layout.GridSize,
+            _config.Layout.Gap,
+            _config.Layout.SnapThreshold);
+
+    private void RefreshCollisionWarnings()
+    {
+        var visible = _windows.Where(window => window.IsVisible).ToList();
+        foreach (var window in _windows)
+        {
+            var collides = window.IsVisible && visible.Any(peer => peer != window && window.CurrentBounds().IntersectionArea(peer.CurrentBounds()) > 0);
+            window.SetCollisionWarning(collides);
         }
     }
 

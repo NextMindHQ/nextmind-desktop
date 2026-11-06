@@ -100,4 +100,28 @@ public class ConfigSerializationTests
         Assert.Equal(ZoneLimits.DefaultDpi, cfg.Zones[0].Dpi);
         Assert.Equal(ZoneLimits.MaxCoordinate, cfg.Zones[0].X);
     }
+
+    [Fact]
+    public void LayoutPreferences_RoundTrip_AndInvalidNumbersAreNormalized()
+    {
+        var cfg = new AppConfig
+        {
+            Layout = new LayoutPreferencesConfig
+            {
+                SnapToElements = false,
+                SnapToGrid = true,
+                GridSize = -5,
+                Gap = 500,
+                SnapThreshold = 0,
+            },
+        };
+
+        var back = ConfigSerializer.Deserialize(ConfigSerializer.Serialize(cfg));
+
+        Assert.False(back.Layout.SnapToElements);
+        Assert.True(back.Layout.SnapToGrid);
+        Assert.Equal(16, back.Layout.GridSize);
+        Assert.Equal(64, back.Layout.Gap);
+        Assert.Equal(1, back.Layout.SnapThreshold);
+    }
 }

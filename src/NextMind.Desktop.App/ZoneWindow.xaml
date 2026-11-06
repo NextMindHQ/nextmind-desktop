@@ -18,6 +18,7 @@
     <SolidColorBrush x:Key="PanelBrush" Color="#EE181C24" />
     <SolidColorBrush x:Key="PanelBorderBrush" Color="#40FFFFFF" />
     <SolidColorBrush x:Key="DropBorderBrush" Color="#CC5AA9FF" />
+    <SolidColorBrush x:Key="CollisionBorderBrush" Color="#D9F2A93B" />
     <SolidColorBrush x:Key="TitleBarBrush" Color="#22FFFFFF" />
     <SolidColorBrush x:Key="TextBrush" Color="#F0F4F8" />
     <SolidColorBrush x:Key="MutedBrush" Color="#8C98A8" />
