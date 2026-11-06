@@ -1,5 +1,6 @@
 using System.Runtime.ExceptionServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using NextMind.Desktop.App;
 using NextMind.Desktop.Core.Config;
@@ -96,6 +97,36 @@ public sealed class FutureThemeTests
             Assert.Equal(0d, Assert.IsType<double>(resources["WorkspaceGlowOpacity"]));
             Assert.Equal(TimeSpan.Zero, ((Duration)resources["FutureMotionDuration"]).TimeSpan);
             Assert.False((bool)resources["WorkspaceEffectsEnabled"]);
+        });
+    }
+
+    [Fact]
+    public void LivePreview_UpdatesBoundWorkspaceSurfaceBeforePersistence()
+    {
+        RunOnStaThread(() =>
+        {
+            var resources = new ResourceDictionary();
+            var surface = new Border { Resources = resources };
+            surface.SetResourceReference(Border.BackgroundProperty, "WorkspaceContentBrush");
+            var persisted = new List<AppearancePreferencesConfig>();
+            var initial = new AppearancePreferencesConfig { PanelOpacity = 0.90, GlowIntensity = 0.55 };
+            FutureTheme.Apply(resources, initial);
+            var session = new AppearancePreviewSession(initial, appearance => FutureTheme.Apply(resources, appearance), persisted.Add);
+
+            session.Preview(new AppearancePreferencesConfig
+            {
+                PanelOpacity = 0.55,
+                GlowIntensity = 1,
+                Accent = AppearanceAccent.Amber,
+            });
+
+            Assert.Equal(0x8C, Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
+            Assert.Equal(Color.FromRgb(0xF4, 0xB8, 0x60), resources["WorkspaceAccentColor"]);
+            Assert.Equal(0.7, resources["WorkspaceGlowOpacity"]);
+            Assert.Empty(persisted);
+
+            session.Rollback();
+            Assert.Equal(0xE6, Assert.IsType<SolidColorBrush>(surface.Background).Color.A);
         });
     }
 

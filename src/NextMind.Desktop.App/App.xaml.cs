@@ -45,10 +45,11 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-        // A development/test run (redirected config) is fully isolated from a production instance: own mutex, own activate message.
-        if (IsDevelopmentRun)
+        // Redirected development and explicit V3 test runs use distinct mutex and activation-message names.
+        var isolationSuffix = V3TestSession.SelectIsolationSuffixFromEnvironment();
+        if (isolationSuffix.Length > 0)
         {
-            SingleInstance.UseIsolation(".dev");
+            SingleInstance.UseIsolation(isolationSuffix);
         }
 
         _instance = SingleInstance.TryAcquire();
@@ -61,6 +62,7 @@ public partial class App : Application
 
         _log = new FileLog(AppPaths.LogDirectory());
         _log.Info("---- NextMind Desktop starting ----");
+        _log.Info($"Runtime marker: {V3TestSession.RuntimeMarker}; executable: {Environment.ProcessPath}");
         DispatcherUnhandledException += (_, args) =>
         {
             _log.Error("Unhandled UI exception (continuing).", args.Exception);
@@ -143,6 +145,11 @@ public partial class App : Application
         }
 
         _widgets.OpenConfiguredWidgets();
+
+        if (V3TestSession.ShouldOpenControlCenterFromEnvironment())
+        {
+            Dispatcher.BeginInvoke(OpenControlCenter, DispatcherPriority.ApplicationIdle);
+        }
 
         ConfigureAutostart(loaded.IsReadOnly);
 

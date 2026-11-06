@@ -12,6 +12,7 @@ set "PROJECT=%ROOT%\src\NextMind.Desktop.App\NextMind.Desktop.App.csproj"
 set "THEME=%ROOT%\src\NextMind.Desktop.App\Themes\FutureTheme.xaml"
 set "BUILD_DIR=%ROOT%\artifacts\NextMindDesktop-v3-current\build-%RANDOM%-%RANDOM%"
 set "V3_EXE=%BUILD_DIR%\NextMindDesktop.exe"
+set "RUNTIME_MARKER_FILE=%BUILD_DIR%\V3-RUNTIME-MARKER.txt"
 set "NORMAL_EXE=%LOCALAPPDATA%\NextMind\Desktop\app\NextMindDesktop.exe"
 
 echo ============================================================
@@ -48,6 +49,9 @@ echo V3 marker: %THEME%
 call dotnet build "%PROJECT%" -c Release --nologo -v minimal -m:1 -p:BuildInParallel=false "-p:OutDir=%BUILD_DIR%"
 if errorlevel 1 goto :build_failed
 if not exist "%V3_EXE%" goto :missing_output
+if not exist "%RUNTIME_MARKER_FILE%" goto :missing_runtime_marker
+findstr /C:"NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2" "%RUNTIME_MARKER_FILE%" >nul 2>&1
+if errorlevel 1 goto :missing_runtime_marker
 
 set "CONFIG_BASE=%TEMP%\NextMindDesktop-V3-Test"
 if not exist "%CONFIG_BASE%" mkdir "%CONFIG_BASE%" >nul 2>&1
@@ -61,11 +65,23 @@ if not exist "%TEST_CONFIG%" goto :config_failed
 set "NEXTMIND_DESKTOP_CONFIG_DIR=%TEST_CONFIG%"
 set "NEXTMIND_FAKE_USER_DESKTOP="
 set "NEXTMIND_ENABLE_MANAGED_MOVES="
+set "NEXTMIND_V3_TEST_OPEN_CONTROL_CENTER=1"
+set "NEXTMIND_V3_TEST_INSTANCE=1"
 echo Build V3: %V3_EXE%
 echo Isolated config: %TEST_CONFIG%
 echo FutureTheme.xaml validated.
-if "%VERIFY_ONLY%"=="1" goto :verified
+echo V3 runtime marker: NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2
+if "%VERIFY_ONLY%"=="1" (
+  echo V3 VERIFICATION PASSED - application was not started.
+  exit /b 0
+)
 
+call :is_running
+if not errorlevel 1 (
+  echo Another NextMind Desktop process appeared before launch.
+  echo Close it normally; the launcher will rebuild before starting V3.
+  goto :wait
+)
 echo Starting isolated V3. Do not toggle Start with Windows during the test.
 start "" /wait "%V3_EXE%"
 set "EXIT_CODE=%ERRORLEVEL%"
@@ -78,9 +94,6 @@ echo   %TEST_CONFIG%
 pause
 exit /b %EXIT_CODE%
 
-:verified
-echo V3 VERIFICATION PASSED - application was not started.
-exit /b 0
 :usage
 echo Usage: TEST-V3.cmd [--verify-only]
 exit /b 2
@@ -98,6 +111,9 @@ echo ERROR: Release build failed. V3 was not started.
 goto :failed
 :missing_output
 echo ERROR: Current build did not create %V3_EXE%. V3 was not started.
+goto :failed
+:missing_runtime_marker
+echo ERROR: Built output is not the V3 Live Preview 2 runtime. V3 was not started.
 goto :failed
 :config_failed
 echo ERROR: Isolated config directory could not be created. V3 was not started.

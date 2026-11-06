@@ -8,7 +8,9 @@ Launcher sam:
 2. Poczeka — nigdy nie używa `taskkill`, `Stop-Process` ani End task.
 3. Skompiluje aktualny kod V3 do nowego podkatalogu `artifacts\NextMindDesktop-v3-current\build-*`. Każdy test dostaje świeży build; przy błędzie launcher zatrzyma się i nie uruchomi starszego pliku.
 4. Utworzy nową konfigurację w `%TEMP%\NextMindDesktop-V3-Test`.
-5. Uruchomi V3 bez nadpisywania `%LOCALAPPDATA%\NextMind\Desktop` i bez automatycznej zmiany autostartu.
+5. Sprawdzi marker skompilowanego runtime `NEXTMIND-DESKTOP-V3-LIVE-PREVIEW-2`.
+6. Uruchomi V3 z osobnym testowym mutexem, bez nadpisywania `%LOCALAPPDATA%\NextMind\Desktop` i bez automatycznej zmiany autostartu.
+7. Automatycznie otworzy Control Center z tytułem **V3 Live Preview 2**, aby było jasne, że testujesz właściwy build.
 
 Podczas testu nie przełączaj ręcznie **Start with Windows**. Po zakończeniu V3 launcher pokaże ścieżkę normalnej wersji:
 
@@ -18,7 +20,7 @@ Nie uruchamiaj do tego testu `tools\start.ps1` ani starego ZIP-a.
 
 ## Hotfix Visual Calibration — szybka checklista
 
-Po uruchomieniu otwórz **Visual Calibration** w Control Center:
+Control Center otworzy się automatycznie. Przewiń do **Visual Calibration**:
 
 1. Przesuń **Glow intensity** i **Panel opacity** — efekt powinien być natychmiastowy na otwartych widgetach i strefach.
 2. Sprawdź, że nagłówki, tekst, przyciski i samo Control Center nie zmieniają przezroczystości ani intensywności glow.
@@ -26,4 +28,6 @@ Po uruchomieniu otwórz **Visual Calibration** w Control Center:
 4. Kliknij **Reset Style** — ma pokazać ustawienia domyślne bez zapisu.
 5. Zamknij Control Center bez **Apply Appearance** — ostatnio zapisany wygląd powinien wrócić.
 6. Otwórz Control Center ponownie, ustaw wygląd i kliknij **Apply Appearance**; po ponownym otwarciu wartości powinny zostać zachowane.
+
+Jeśli widzisz standardową rozwijaną listę `ComboBox` zamiast czterech stale widocznych próbek, nie testujesz buildu **V3 Live Preview 2**. Zamknij tę instancję normalnie i ponownie użyj wyłącznie `TEST-V3.cmd`.
 
