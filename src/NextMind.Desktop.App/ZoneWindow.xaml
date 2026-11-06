@@ -136,7 +136,7 @@
     </DataTemplate>
   </Window.Resources>
 
-  <Border x:Name="Root" CornerRadius="10" Background="{StaticResource PanelBrush}"
+  <Border x:Name="Root" CornerRadius="10" Background="{DynamicResource FuturePanelBrush}"
           BorderBrush="{StaticResource PanelBorderBrush}" BorderThickness="1" ClipToBounds="True" AllowDrop="True"
           Effect="{DynamicResource FuturePanelEffect}">
     <Grid>
