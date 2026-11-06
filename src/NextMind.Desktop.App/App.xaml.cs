@@ -87,6 +87,7 @@ public partial class App : Application
 
         var loaded = store.Load();
         _config = loaded.Config;
+        FutureTheme.Apply(_config.Appearance);
         _log.Info($"Config: {loaded.Status}{(loaded.Detail is null ? string.Empty : " - " + loaded.Detail)}; zones={_config.Zones.Count}");
         _log.Info($"Desktop known folder: {KnownFolders.TryGetPath(KnownFolders.Desktop)}");
 
