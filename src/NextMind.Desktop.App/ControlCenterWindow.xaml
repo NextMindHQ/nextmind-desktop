@@ -12,8 +12,11 @@
       <Setter Property="Margin" Value="6,0,0,0" />
     </Style>
   </Window.Resources>
-  <StackPanel Margin="24,20,24,22">
-    <TextBlock Text="NEXTMIND DESKTOP" FontSize="17" FontWeight="SemiBold" />
+  <StackPanel Margin="24,20,24,22" PreviewKeyDown="Root_PreviewKeyDown">
+    <Grid>
+      <TextBlock Text="NEXTMIND DESKTOP" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center" />
+      <Button Content="🔍  Search" HorizontalAlignment="Right" Margin="0" Click="Search_Click" ToolTip="Search (Ctrl+K)" />
+    </Grid>
     <TextBlock Text="Workspace Profiles" Margin="0,18,0,8" FontSize="13" Foreground="#FF8C98A8" />
     <StackPanel x:Name="ProfileRows" />
     <Button Content="+  New Profile" Margin="0,10,0,0" HorizontalAlignment="Left" Click="CreateProfile_Click" />

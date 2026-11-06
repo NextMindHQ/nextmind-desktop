@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using NextMind.Desktop.Core.Config;
 
 namespace NextMind.Desktop.App;
@@ -15,6 +16,7 @@ public partial class ControlCenterWindow : Window
     private readonly Func<bool> _autostartAvailable;
     private readonly Action _toggleAutostart;
     private readonly Action _createZone;
+    private readonly Action _openSearch;
     private readonly Action _exit;
 
     public ControlCenterWindow(
@@ -23,6 +25,7 @@ public partial class ControlCenterWindow : Window
         Func<bool> autostartAvailable,
         Action toggleAutostart,
         Action createZone,
+        Action openSearch,
         Action exit)
     {
         _zones = zones;
@@ -30,6 +33,7 @@ public partial class ControlCenterWindow : Window
         _autostartAvailable = autostartAvailable;
         _toggleAutostart = toggleAutostart;
         _createZone = createZone;
+        _openSearch = openSearch;
         _exit = exit;
 
         InitializeComponent();
@@ -191,6 +195,17 @@ public partial class ControlCenterWindow : Window
     }
 
     private void Create_Click(object sender, RoutedEventArgs e) => _createZone();
+
+    private void Search_Click(object sender, RoutedEventArgs e) => _openSearch();
+
+    private void Root_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.K && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            _openSearch();
+            e.Handled = true;
+        }
+    }
 
     private void Autostart_Click(object sender, RoutedEventArgs e)
     {

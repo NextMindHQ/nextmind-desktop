@@ -200,6 +200,22 @@ public sealed class ZoneManager
         Changed?.Invoke();
     }
 
+    public void ShowZone(string zoneId)
+    {
+        var zone = ZoneCatalog.Find(_config, zoneId);
+        if (zone is null)
+        {
+            return;
+        }
+
+        _config.ZonesVisible = true;
+        zone.Hidden = false;
+        ApplyVisibility();
+        WindowFor(zone.Id)?.Repin();
+        ScheduleSave();
+        Changed?.Invoke();
+    }
+
     public void RenameZoneById(string zoneId)
     {
         var window = _windows.FirstOrDefault(w => string.Equals(w.Config.Id, zoneId, StringComparison.OrdinalIgnoreCase));

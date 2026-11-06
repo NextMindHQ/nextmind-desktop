@@ -26,6 +26,7 @@ public partial class App : Application
     private TrayIcon? _tray;
     private ZoneManager? _zones;
     private ControlCenterWindow? _controlCenter;
+    private SearchWindow? _searchWindow;
     private IconService? _icons;
     private AppConfig? _config;
     private StartupManager? _startup;
@@ -401,10 +402,31 @@ public partial class App : Application
             () => _startup is not null,
             ToggleAutostart,
             PromptAndCreateZone,
+            OpenSearch,
             ExitApp);
         _controlCenter.Closed += (_, _) => _controlCenter = null;
         _controlCenter.Show();
         _controlCenter.Activate();
+    }
+
+    private void OpenSearch()
+    {
+        if (_zones is null)
+        {
+            return;
+        }
+
+        if (_searchWindow is { IsLoaded: true })
+        {
+            _searchWindow.Activate();
+            return;
+        }
+
+        var actions = LocalSearchCatalog.Build(_zones, PromptAndCreateZone, OpenControlCenter, _log);
+        _searchWindow = new SearchWindow(actions);
+        _searchWindow.Closed += (_, _) => _searchWindow = null;
+        _searchWindow.Show();
+        _searchWindow.Activate();
     }
 
     /// <summary>Exit closes the app NOW. It does not change "Start with Windows".</summary>
@@ -418,6 +440,7 @@ public partial class App : Application
         _exiting = true;
         _log.Info("Exit requested.");
         _controlCenter?.Close();
+        _searchWindow?.Close();
         _zones?.Flush();
         Cleanup();
         Shutdown();
