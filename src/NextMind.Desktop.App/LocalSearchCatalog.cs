@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using NextMind.Desktop.Core.Logging;
 using NextMind.Desktop.Core.Search;
+using NextMind.Desktop.Core.Widgets;
 
 namespace NextMind.Desktop.App;
 
@@ -11,6 +12,7 @@ public static class LocalSearchCatalog
 {
     public static IReadOnlyList<SearchAction> Build(
         ZoneManager zones,
+        WidgetManager widgets,
         Action createZone,
         Action openControlCenter,
         ILog log)
@@ -26,6 +28,18 @@ public static class LocalSearchCatalog
         actions.AddRange(zones.Zones.Select(zone => new SearchAction(
             new SearchEntry("zone:" + zone.Id, zone.Title, "Zone", SearchEntryKind.Zone, ["show open workspace"]),
             () => zones.ShowZone(zone.Id))));
+
+        actions.AddRange(WidgetCatalog.Definitions.Select(definition => new SearchAction(
+            new SearchEntry("widget:add:" + definition.Kind, "Add " + definition.Title, definition.Description, SearchEntryKind.Widget, ["widget desktop"]),
+            () => widgets.Add(definition.Kind))));
+
+        actions.AddRange(widgets.Widgets.Where(widget => widget.Hidden).Select(widget =>
+        {
+            var definition = WidgetCatalog.Definitions.Single(candidate => candidate.Kind == widget.Kind);
+            return new SearchAction(
+                new SearchEntry("widget:show:" + widget.Id, "Show " + definition.Title, "Hidden widget", SearchEntryKind.Widget, ["restore desktop"]),
+                () => widgets.Show(widget.Id));
+        }));
 
         foreach (var path in StartMenuShortcuts(log))
         {

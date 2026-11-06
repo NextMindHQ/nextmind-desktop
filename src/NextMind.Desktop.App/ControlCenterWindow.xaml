@@ -20,6 +20,9 @@
     <TextBlock Text="Workspace Profiles" Margin="0,18,0,8" FontSize="13" Foreground="#FF8C98A8" />
     <StackPanel x:Name="ProfileRows" />
     <Button Content="+  New Profile" Margin="0,10,0,0" HorizontalAlignment="Left" Click="CreateProfile_Click" />
+    <TextBlock Text="Widgets" Margin="0,18,0,8" FontSize="13" Foreground="#FF8C98A8" />
+    <WrapPanel x:Name="WidgetCatalogButtons" />
+    <StackPanel x:Name="WidgetRows" Margin="0,6,0,0" />
     <TextBlock Text="Zones" Margin="0,18,0,8" FontSize="13" Foreground="#FF8C98A8" />
     <StackPanel x:Name="ZoneRows" />
     <Button x:Name="CreateButton" Content="+  Create Zone" Margin="0,12,0,0" HorizontalAlignment="Left" Click="Create_Click" />

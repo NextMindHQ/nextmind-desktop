@@ -25,6 +25,7 @@ public partial class App : Application
     private MessageWindow? _messageWindow;
     private TrayIcon? _tray;
     private ZoneManager? _zones;
+    private WidgetManager? _widgets;
     private ControlCenterWindow? _controlCenter;
     private SearchWindow? _searchWindow;
     private IconService? _icons;
@@ -106,6 +107,8 @@ public partial class App : Application
         _log.Info($"Managed Desktop Moves: {(Gate() ? "ENABLED" : "DISABLED")}{(fakeDesktop ? " (development: FAKE Desktop " + desktops.UserDesktop + ")" : string.Empty)}.");
 
         _zones = new ZoneManager(_config, store, layer, _log, Dispatcher, _icons, service, assessor, desktops, Gate);
+        _widgets = new WidgetManager(_config, layer, _log, Dispatcher, _zones.Flush);
+        _zones.ProfileChanged += _widgets.ReloadProfile;
 
         var startedAt = Process.GetCurrentProcess().StartTime;
         _zones.FirstZoneRendered += () =>
@@ -114,7 +117,11 @@ public partial class App : Application
         _messageWindow = new MessageWindow();
         _messageWindow.HandlerFailed += ex => _log.Error("Message handler failed.", ex);
         _messageWindow.TaskbarCreated += OnTaskbarCreated;
-        _messageWindow.DisplayChanged += () => _zones!.ClampAll();
+        _messageWindow.DisplayChanged += () =>
+        {
+            _zones!.ClampAll();
+            _widgets!.ClampAll();
+        };
         _messageWindow.ActivateRequested += () => _zones!.ShowAll();
         _zones.ForegroundAnchor = () => _messageWindow?.Handle ?? IntPtr.Zero;
         _messageWindow.TrayMouse += OnTrayMouse;
@@ -133,6 +140,8 @@ public partial class App : Application
         {
             _zones.OpenConfiguredZones();
         }
+
+        _widgets.OpenConfiguredWidgets();
 
         ConfigureAutostart(loaded.IsReadOnly);
 
@@ -316,6 +325,7 @@ public partial class App : Application
         _trayRetryAttempt = 0;
         EnsureTray();
         _zones?.RepinAll();
+        _widgets?.RepinAll();
     }
 
     private void OnTrayMouse(TrayMouseEvent e)
@@ -398,6 +408,7 @@ public partial class App : Application
 
         _controlCenter = new ControlCenterWindow(
             _zones,
+            _widgets!,
             AutostartChecked,
             () => _startup is not null,
             ToggleAutostart,
@@ -422,7 +433,7 @@ public partial class App : Application
             return;
         }
 
-        var actions = LocalSearchCatalog.Build(_zones, PromptAndCreateZone, OpenControlCenter, _log);
+        var actions = LocalSearchCatalog.Build(_zones, _widgets!, PromptAndCreateZone, OpenControlCenter, _log);
         _searchWindow = new SearchWindow(actions);
         _searchWindow.Closed += (_, _) => _searchWindow = null;
         _searchWindow.Show();
@@ -453,6 +464,13 @@ public partial class App : Application
         _tray = null;
         _icons?.Dispose();
         _icons = null;
+        if (_widgets is not null && _zones is not null)
+        {
+            _zones.ProfileChanged -= _widgets.ReloadProfile;
+        }
+
+        _widgets?.Dispose();
+        _widgets = null;
         _messageWindow?.Dispose();
         _messageWindow = null;
         _instance?.Dispose();

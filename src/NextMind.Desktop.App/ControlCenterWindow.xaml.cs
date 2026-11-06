@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using NextMind.Desktop.Core.Config;
+using NextMind.Desktop.Core.Widgets;
 
 namespace NextMind.Desktop.App;
 
@@ -12,6 +13,7 @@ namespace NextMind.Desktop.App;
 public partial class ControlCenterWindow : Window
 {
     private readonly ZoneManager _zones;
+    private readonly WidgetManager _widgets;
     private readonly Func<bool> _autostartChecked;
     private readonly Func<bool> _autostartAvailable;
     private readonly Action _toggleAutostart;
@@ -21,6 +23,7 @@ public partial class ControlCenterWindow : Window
 
     public ControlCenterWindow(
         ZoneManager zones,
+        WidgetManager widgets,
         Func<bool> autostartChecked,
         Func<bool> autostartAvailable,
         Action toggleAutostart,
@@ -29,6 +32,7 @@ public partial class ControlCenterWindow : Window
         Action exit)
     {
         _zones = zones;
+        _widgets = widgets;
         _autostartChecked = autostartChecked;
         _autostartAvailable = autostartAvailable;
         _toggleAutostart = toggleAutostart;
@@ -38,7 +42,12 @@ public partial class ControlCenterWindow : Window
 
         InitializeComponent();
         _zones.Changed += OnZonesChanged;
-        Closed += (_, _) => _zones.Changed -= OnZonesChanged;
+        _widgets.Changed += OnZonesChanged;
+        Closed += (_, _) =>
+        {
+            _zones.Changed -= OnZonesChanged;
+            _widgets.Changed -= OnZonesChanged;
+        };
         Refresh();
     }
 
@@ -51,6 +60,20 @@ public partial class ControlCenterWindow : Window
         foreach (var profile in _zones.Profiles.ToList())
         {
             ProfileRows.Children.Add(BuildProfileRow(profile));
+        }
+
+        WidgetCatalogButtons.Children.Clear();
+        foreach (var definition in WidgetCatalog.Definitions)
+        {
+            var button = new Button { Content = "+  " + definition.Title, Margin = new Thickness(0, 0, 8, 6), ToolTip = definition.Description };
+            button.Click += (_, _) => _widgets.Add(definition.Kind);
+            WidgetCatalogButtons.Children.Add(button);
+        }
+
+        WidgetRows.Children.Clear();
+        foreach (var widget in _widgets.Widgets)
+        {
+            WidgetRows.Children.Add(BuildWidgetRow(widget));
         }
 
         ZoneRows.Children.Clear();
@@ -151,6 +174,30 @@ public partial class ControlCenterWindow : Window
         delete.Click += (_, _) => DeleteProfile(profile);
         Grid.SetColumn(delete, 4);
         grid.Children.Add(delete);
+        return grid;
+    }
+
+    private UIElement BuildWidgetRow(WidgetConfig widget)
+    {
+        var title = WidgetCatalog.Definitions.Single(definition => definition.Kind == widget.Kind).Title;
+        var grid = new Grid { Margin = new Thickness(0, 2, 0, 2) };
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        var label = new TextBlock
+        {
+            Text = $"• {title}{(widget.Hidden ? " (hidden)" : widget.Collapsed ? " (collapsed)" : string.Empty)}",
+            Foreground = System.Windows.Media.Brushes.LightGray,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        grid.Children.Add(label);
+        if (widget.Hidden)
+        {
+            var show = new Button { Content = "Show" };
+            show.Click += (_, _) => _widgets.Show(widget.Id);
+            Grid.SetColumn(show, 1);
+            grid.Children.Add(show);
+        }
+
         return grid;
     }
 

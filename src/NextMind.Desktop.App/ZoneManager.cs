@@ -90,6 +90,8 @@ public sealed class ZoneManager
     /// <summary>Raised when zones were added/removed/renamed/shown/hidden (the Control Center refreshes on it).</summary>
     public event Action? Changed;
 
+    public event Action? ProfileChanged;
+
     /// <summary>Raised once, when the first zone has actually been rendered (used for the cold-start measurement).</summary>
     public event Action? FirstZoneRendered;
 
@@ -449,6 +451,7 @@ public sealed class ZoneManager
 
         _windows.Clear();
         OpenConfiguredZones();
+        ProfileChanged?.Invoke();
         Changed?.Invoke();
     }
 

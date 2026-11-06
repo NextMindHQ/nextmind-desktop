@@ -73,6 +73,8 @@ public sealed class AppConfig
     public List<WorkspaceProfileConfig> Profiles { get; set; } = [];
 
     public List<ZoneConfig> Zones { get; set; } = [];
+
+    public List<WidgetConfig> Widgets { get; set; } = [];
 }
 
 public sealed class LayoutPreferencesConfig
@@ -97,6 +99,42 @@ public sealed class WorkspaceProfileConfig
     public LayoutPreferencesConfig Layout { get; set; } = new();
 
     public List<ZoneConfig> Zones { get; set; } = [];
+
+    public List<WidgetConfig> Widgets { get; set; } = [];
+}
+
+public static class WidgetLimits
+{
+    public const int MaxNoteLength = 10_000;
+}
+
+public enum WidgetKind
+{
+    Clock,
+    QuickNote,
+}
+
+public sealed class WidgetConfig
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("D");
+
+    public WidgetKind Kind { get; set; }
+
+    public int X { get; set; }
+
+    public int Y { get; set; }
+
+    public int Width { get; set; } = 260;
+
+    public int Height { get; set; } = 180;
+
+    public bool Collapsed { get; set; }
+
+    public bool Hidden { get; set; }
+
+    public int Dpi { get; set; } = ZoneLimits.DefaultDpi;
+
+    public string NoteText { get; set; } = string.Empty;
 }
 
 /// <summary>

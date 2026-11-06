@@ -14,12 +14,16 @@ public static class ConfigValidator
         config.Zones.RemoveAll(z => z is null);
 
         NormalizeZones(config.Zones);
+        config.Widgets ??= [];
+        NormalizeWidgets(config.Widgets);
         WorkspaceProfiles.EnsureInitialized(config);
         foreach (var profile in config.Profiles)
         {
             profile.Zones ??= [];
             profile.Zones.RemoveAll(zone => zone is null);
             NormalizeZones(profile.Zones);
+            profile.Widgets ??= [];
+            NormalizeWidgets(profile.Widgets);
         }
     }
 
@@ -110,5 +114,35 @@ public static class ConfigValidator
         }
 
         zone.Items = cleaned;
+    }
+
+    private static void NormalizeWidgets(List<WidgetConfig> widgets)
+    {
+        widgets.RemoveAll(widget => widget is null);
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var widget in widgets)
+        {
+            if (string.IsNullOrWhiteSpace(widget.Id) || !ids.Add(widget.Id))
+            {
+                widget.Id = Guid.NewGuid().ToString("D");
+                ids.Add(widget.Id);
+            }
+
+            if (!Enum.IsDefined(widget.Kind))
+            {
+                widget.Kind = WidgetKind.Clock;
+            }
+
+            widget.Width = Math.Clamp(widget.Width <= 0 ? 260 : widget.Width, ZoneLimits.MinWidth, ZoneLimits.MaxSize);
+            widget.Height = Math.Clamp(widget.Height <= 0 ? 150 : widget.Height, ZoneLimits.MinHeight, ZoneLimits.MaxSize);
+            widget.X = Math.Clamp(widget.X, -ZoneLimits.MaxCoordinate, ZoneLimits.MaxCoordinate);
+            widget.Y = Math.Clamp(widget.Y, -ZoneLimits.MaxCoordinate, ZoneLimits.MaxCoordinate);
+            widget.Dpi = widget.Dpi <= 0 ? ZoneLimits.DefaultDpi : Math.Clamp(widget.Dpi, 48, 960);
+            widget.NoteText ??= string.Empty;
+            if (widget.NoteText.Length > WidgetLimits.MaxNoteLength)
+            {
+                widget.NoteText = widget.NoteText[..WidgetLimits.MaxNoteLength];
+            }
+        }
     }
 }

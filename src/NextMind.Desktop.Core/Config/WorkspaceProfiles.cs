@@ -15,6 +15,7 @@ public static class WorkspaceProfiles
                 Name = "Default",
                 Layout = Clone(config.Layout),
                 Zones = CloneZones(config.Zones),
+                Widgets = CloneWidgets(config.Widgets),
             };
             config.Profiles.Add(profile);
             config.ActiveProfileId = profile.Id;
@@ -33,6 +34,7 @@ public static class WorkspaceProfiles
             profile.Name = NormalizeName(profile.Name, "Workspace");
             profile.Layout ??= new LayoutPreferencesConfig();
             profile.Zones ??= [];
+            profile.Widgets ??= [];
         }
 
         var active = config.Profiles.FirstOrDefault(profile => Same(profile.Id, config.ActiveProfileId));
@@ -41,6 +43,7 @@ public static class WorkspaceProfiles
             active = config.Profiles[0];
             config.ActiveProfileId = active.Id;
             config.Zones = CloneZones(active.Zones);
+            config.Widgets = CloneWidgets(active.Widgets);
             config.Layout = Clone(active.Layout);
         }
     }
@@ -50,6 +53,7 @@ public static class WorkspaceProfiles
         EnsureInitialized(config);
         var active = config.Profiles.First(profile => Same(profile.Id, config.ActiveProfileId));
         active.Zones = CloneZones(config.Zones);
+        active.Widgets = CloneWidgets(config.Widgets);
         active.Layout = Clone(config.Layout);
     }
 
@@ -61,11 +65,13 @@ public static class WorkspaceProfiles
             Name = UniqueName(config, NormalizeName(name, "Workspace")),
             Layout = Clone(config.Layout),
             Zones = [],
+            Widgets = [],
         };
         config.Profiles.Add(profile);
         config.ActiveProfileId = profile.Id;
         config.Layout = Clone(profile.Layout);
         config.Zones = [];
+        config.Widgets = [];
         return profile;
     }
 
@@ -96,6 +102,7 @@ public static class WorkspaceProfiles
             Name = UniqueName(config, NormalizeName(name, source.Name + " Copy")),
             Layout = Clone(source.Layout),
             Zones = CloneZones(source.Zones, newIds: true, includeManaged: false),
+            Widgets = CloneWidgets(source.Widgets, newIds: true),
         };
         config.Profiles.Add(duplicate);
         return duplicate;
@@ -112,6 +119,7 @@ public static class WorkspaceProfiles
 
         config.ActiveProfileId = target.Id;
         config.Zones = CloneZones(target.Zones);
+        config.Widgets = CloneWidgets(target.Widgets);
         config.Layout = Clone(target.Layout);
         return true;
     }
@@ -142,6 +150,7 @@ public static class WorkspaceProfiles
             var next = config.Profiles[0];
             config.ActiveProfileId = next.Id;
             config.Zones = CloneZones(next.Zones);
+            config.Widgets = CloneWidgets(next.Widgets);
             config.Layout = Clone(next.Layout);
         }
 
@@ -184,6 +193,21 @@ public static class WorkspaceProfiles
             Gap = layout.Gap,
             SnapThreshold = layout.SnapThreshold,
         };
+
+    private static List<WidgetConfig> CloneWidgets(IEnumerable<WidgetConfig> widgets, bool newIds = false)
+        => widgets.Select(widget => new WidgetConfig
+        {
+            Id = newIds ? Guid.NewGuid().ToString("D") : widget.Id,
+            Kind = widget.Kind,
+            X = widget.X,
+            Y = widget.Y,
+            Width = widget.Width,
+            Height = widget.Height,
+            Collapsed = widget.Collapsed,
+            Hidden = widget.Hidden,
+            Dpi = widget.Dpi,
+            NoteText = widget.NoteText,
+        }).ToList();
 
     private static string NormalizeName(string? name, string fallback)
     {
